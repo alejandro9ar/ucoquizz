@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Menú Principal</h1>
+    <table class="table text-center">
+        <tr>
+            <th class="active text-center">Nombre</th>
+            <th class="active text-center">Descripción</th>
+            <th class="active text-center">Tiempo</th>
+            <th class="active text-center">Usuario</th>
+        </tr>
+
+        {% for cuestionario in cuestionarios %}
+            <tr>
+                <td>
+                    <a href="{{ path('cuestionario.show', {id: cuestionario.id}) }}">
+                        {{ cuestionario.name}}
+                    </a>
+                </td>
+                <td> {{ cuestionario.description}} </a></td>
+                <td>{{ cuestionario.time }}</td>
+                <td>{{ cuestionario.user }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}
