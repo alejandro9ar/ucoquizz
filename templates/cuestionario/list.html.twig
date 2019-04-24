@@ -8,19 +8,33 @@
             <th class="active text-center">Descripción</th>
             <th class="active text-center">Tiempo</th>
             <th class="active text-center">Usuario</th>
+            <th class="active text-center">Preguntas</th>
         </tr>
 
         {% for cuestionario in cuestionarios %}
+
+            {% if cuestionario.type == "publico" %}
+
             <tr>
                 <td>
                     <a href="{{ path('cuestionario.show', {id: cuestionario.id}) }}">
                         {{ cuestionario.name}}
                     </a>
                 </td>
-                <td> {{ cuestionario.description}} </a></td>
+                <td> {{ cuestionario.description}} </td>
                 <td>{{ cuestionario.time }}</td>
                 <td>{{ cuestionario.user }}</td>
+
+                {% set myVal = 0 %}
+                {% for pregunta in cuestionario.pregunta %}
+                    {% set myVal = myVal +1 %}
+                {% endfor %}
+                <td>{{ myVal }}</td>
+
             </tr>
+
+            {% endif %}
+
         {% endfor %}
     </table>
 {% endblock %}

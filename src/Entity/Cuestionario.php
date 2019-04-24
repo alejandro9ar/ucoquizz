@@ -13,6 +13,15 @@ use Doctrine\ORM\Mapping as ORM;
 
 class Cuestionario
 {
+
+    public const PUBLICO = 'publico';
+    public const PRIVADO = 'privado';
+
+    public const TYPES = [
+        self::PUBLICO,
+        self::PRIVADO,
+    ];
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -56,6 +65,11 @@ class Cuestionario
      * @ORM\JoinColumn(nullable=false)
      */
     private $user;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $password;
 
     public function __construct()
     {
@@ -190,6 +204,18 @@ class Cuestionario
     public function setUser(?User $user): self
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    public function getPassword(): ?string
+    {
+        return $this->password;
+    }
+
+    public function setPassword(?string $password): self
+    {
+        $this->password = $password;
 
         return $this;
     }

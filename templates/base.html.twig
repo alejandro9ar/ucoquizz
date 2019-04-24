@@ -22,13 +22,18 @@
             <ul class="nav navbar-nav navbar-right">
                 <li>
                     <div>
-                        <a href="#" class="btn btn-default navbar-btn">Post a Job</a>
+                        <a href="{{ path('fos_user_profile_show') }}" class="btn btn-default navbar-btn"> Perfil / Login</a>
+
                     </div>
                 </li>
             </ul>
         </div>
     </div>
 </nav>
+
+<a href="{{ path('cuestionario.list') }}" class="btn btn-primary">Menú principal</a>
+<a href="{{ path('fos_user_profile_show') }}" class="btn btn-primary">Perfil</a>
+<a href="{{ path('cuestionario.create') }}" class="btn btn-primary">Crear Cuestionario</a>
 
 <div class="container">
     {% block body %}{% endblock %}

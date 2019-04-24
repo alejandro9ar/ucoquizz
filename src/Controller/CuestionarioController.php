@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Cuestionario;
+use App\Form\CuestionarioType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Response;
@@ -41,6 +42,23 @@ class CuestionarioController extends AbstractController
                 'cuestionario' => $cuestionario,
             ]);
 
+    }
+
+    /**
+     * Creates a new cuestionario entity.
+     *
+     * @Route("/cuestionario/create", name="cuestionario.create", methods="GET")
+     *
+     * @return Response
+     */
+    public function create() : Response
+    {
+        $cuestionario = new Cuestionario();
+        $form = $this->createForm(CuestionarioType::class, $cuestionario);
+
+        return $this->render('cuestionario/create.html.twig', [
+            'form' => $form->createView(),
+        ]);
     }
 
 }
