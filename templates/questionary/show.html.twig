@@ -35,10 +35,11 @@
             <div class="row">
             <div class="col-sm-10 text-right">
 
+                {% if is_granted('QUESTIONARY_OWNER', questionary) %}
                 <a class="btn btn-primary" href="{{ path('questionary.edit', {token: questionary.token}) }}"> Editar </a>
                 <a class="btn btn-primary" href="{{ path('question.create', {id: questionary.id}) }}"> Añadir question </a>
                 <a class="btn btn-primary" href="{{ path('questionary.export', {id: questionary.id}) }}"> Exportar Cuestionario </a>
-
+                {% endif %}
 
             </div>
 

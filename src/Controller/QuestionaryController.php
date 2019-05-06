@@ -176,25 +176,27 @@ class QuestionaryController extends AbstractController
      *
      * @Route("/export/{id}", name="questionary.export", requirements={"id":"\d+"})
      *
-     * @param Questionary $cuestionario
+     * @param Questionary $questionary
      *
      * @return Response
      */
-    public function export(Questionary $cuestionario) : Response
+    public function export(Questionary $questionary) : Response
     {
+        $this->denyAccessUnlessGranted('QUESTIONARY_OWNER', $questionary);
+
         $documento = new Spreadsheet();
 
-        $iddocumento = $cuestionario->getId();
-        $namedocumento = $cuestionario->getName();
+        $iddocumento = $questionary->getId();
+        $namedocumento = $questionary->getName();
 
         $documento
             ->getProperties()
             ->setCreator("UCOQUIZZ")
             ->setTitle('Preguntas exportadas por UCOQUIZZ')
             ->setDescription('Este documento fue generado por la aplicacion UCOQUIZZ')
-            ->setKeywords('preguntas cuestionario exportar UCOQUIZZ');
+            ->setKeywords('preguntas questionary exportar UCOQUIZZ');
 
-        $question = $cuestionario->getQuestion();
+        $question = $questionary->getQuestion();
 
         $hoja = $documento->getActiveSheet();
         $hoja->setTitle("CUESTIONARIO UCOQUIZZ");
