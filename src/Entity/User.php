@@ -22,41 +22,69 @@ class User extends BaseUser
 protected $id;
 
 /**
- * @ORM\OneToMany(targetEntity="App\Entity\Cuestionario", mappedBy="user")
+ * @ORM\OneToMany(targetEntity="App\Entity\Questionary", mappedBy="user", orphanRemoval=true)
  */
-private $cuestionario;
+private $questionary;
 
 public function __construct()
 {
     parent::__construct();
-    $this->cuestionario = new ArrayCollection();
+    $this->questionary = new ArrayCollection();
 }
 
 /**
- * @return Collection|Cuestionario[]
+ * @return Collection|Questionary[]
  */
-public function getCuestionario(): Collection
+public function getQuestionary(): Collection
 {
-    return $this->cuestionario;
+    return $this->questionary;
 }
 
-public function addCuestionario(Cuestionario $cuestionario): self
+public function addCuestionario(Questionary $cuestionario): self
 {
-    if (!$this->cuestionario->contains($cuestionario)) {
-        $this->cuestionario[] = $cuestionario;
+    if (!$this->questionary->contains($cuestionario)) {
+        $this->questionary[] = $cuestionario;
         $cuestionario->setUser($this);
     }
 
     return $this;
 }
 
-public function removeCuestionario(Cuestionario $cuestionario): self
+public function removeCuestionario(Questionary $cuestionario): self
 {
-    if ($this->cuestionario->contains($cuestionario)) {
-        $this->cuestionario->removeElement($cuestionario);
+    if ($this->questionary->contains($cuestionario)) {
+        $this->questionary->removeElement($cuestionario);
         // set the owning side to null (unless already changed)
         if ($cuestionario->getUser() === $this) {
             $cuestionario->setUser(null);
+        }
+    }
+
+    return $this;
+}
+
+public function getId(): ?int
+{
+    return $this->id;
+}
+
+public function addQuestionary(Questionary $questionary): self
+{
+    if (!$this->questionary->contains($questionary)) {
+        $this->questionary[] = $questionary;
+        $questionary->setUser($this);
+    }
+
+    return $this;
+}
+
+public function removeQuestionary(Questionary $questionary): self
+{
+    if ($this->questionary->contains($questionary)) {
+        $this->questionary->removeElement($questionary);
+        // set the owning side to null (unless already changed)
+        if ($questionary->getUser() === $this) {
+            $questionary->setUser(null);
         }
     }
 

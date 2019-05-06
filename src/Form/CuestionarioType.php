@@ -2,7 +2,7 @@
 
 namespace App\Form;
 
-use App\Entity\Cuestionario;
+use App\Entity\Questionary;
 use App\Entity\User;
 use App\Entity\Category;
 use phpDocumentor\Reflection\Types\Integer;
@@ -28,34 +28,31 @@ class CuestionarioType extends AbstractType
     {
 
         $builder
-            ->add('name', TextType::class)
+            ->add('name', TextType::class,
+                ['label' => 'Nombre'])
 
             ->add('password', RepeatedType::class, [
                 'type' => PasswordType::class,
                 'invalid_message' => 'The password fields must match.',
                 'options' => ['attr' => ['class' => 'password-field']],
-                'required' => true,
-                'first_options'  => ['label' => 'Password'],
-                'second_options' => ['label' => 'Repeat Password'],
+                'required' => false,
+                'first_options'  => ['label' => 'Contraseña'],
+                'second_options' => ['label' => 'Repetir contraseña'],
             ])
 
-            ->add('description', TextareaType::class)
+            ->add('description', TextareaType::class,
+                ['label' => 'Descripción'])
 
             ->add('type', ChoiceType::class, [
-                'choices' => array_combine(Cuestionario::TYPES, Cuestionario::TYPES),
+                'label' => 'Tipo de questionary:',
+                'choices' => array_combine(Questionary::TYPES, Questionary::TYPES),
                 'expanded' => true,
             ])
 
-            ->add('time', IntegerType::class)
-
             ->add('category', EntityType::class, [
+                'label' => 'Categoría',
                 'class' => Category::class,
                 'choice_label' => 'name',
-            ])
-
-            ->add('user', EntityType::class, [
-                'class' => User::class,
-                'choice_label' => 'username',
             ])
         ;
     }
@@ -63,7 +60,7 @@ class CuestionarioType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => Cuestionario::class,
+            'data_class' => Questionary::class,
         ]);
     }
 }

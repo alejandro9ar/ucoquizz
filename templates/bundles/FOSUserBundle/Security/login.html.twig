@@ -7,6 +7,11 @@
         <div>{{ error.messageKey|trans(error.messageData, 'security') }}</div>
     {% endif %}
 
+    <div>
+
+
+    </div>
+
     <form class="form-horizontal col-sm-offset-2 col-sm-8" action="{{ path("fos_user_security_check") }}" method="post">
 
         <input type="hidden" name="_csrf_token" value="{{ csrf_token }}"/>
@@ -38,8 +43,19 @@
         <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
                 <input type="submit" class="btn btn-default" id="_submit" name="_submit" value="{{ 'security.login.submit'|trans }}"/>
-            </div>
-        </div>
 
+            <a class="btn btn-default" href="{{ path('fos_user_registration_register') }}">
+                Registrar
+            </a>
+            </div>
+
+
+
+            <a class="btn btn-default" href="{{ path('fos_user_registration_register') }}">
+                <span class="glyphicon glyphicon-menu-left"aria-hidden="true"></span>
+                Volver al menú
+            </a>
+
+        </div>
     </form>
 {% endblock %}

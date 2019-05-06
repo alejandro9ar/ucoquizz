@@ -11,6 +11,7 @@ use FOS\UserBundle\Controller;
 /**
  * @ORM\Entity()
  * @ORM\Table(name="category")
+ * @ORM\Entity(repositoryClass="App\Repository\CategoryRepository")
  */
 class Category
 {
@@ -30,16 +31,16 @@ class Category
 
     /**
      *
-     * @var Cuestionario[]|ArrayCollection
+     * @var Questionary[]|ArrayCollection
      *
-     * @ORM\OneToMany(targetEntity="App\Entity\Cuestionario", mappedBy="category")
+     * @ORM\OneToMany(targetEntity="App\Entity\Questionary", mappedBy="category")
      */
-    private $cuestionario;
+    private $questionary;
 
 
     public function __construct()
     {
-        $this->cuestionario = new ArrayCollection();
+        $this->questionary = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -60,30 +61,53 @@ class Category
     }
 
     /**
-     * @return Collection|Cuestionario[]
+     * @return Collection|Questionary[]
      */
-    public function getCuestionario(): Collection
+    public function getQuestionary(): Collection
     {
-        return $this->cuestionario;
+        return $this->questionary;
     }
 
-    public function addCuestionario(Cuestionario $cuestionario): self
+    public function addCuestionario(Questionary $cuestionario): self
     {
-        if (!$this->cuestionario->contains($cuestionario)) {
-            $this->cuestionario[] = $cuestionario;
+        if (!$this->questionary->contains($cuestionario)) {
+            $this->questionary[] = $cuestionario;
             $cuestionario->setCategory($this);
         }
 
         return $this;
     }
 
-    public function removeCuestionario(Cuestionario $cuestionario): self
+    public function removeCuestionario(Questionary $cuestionario): self
     {
-        if ($this->cuestionario->contains($cuestionario)) {
-            $this->cuestionario->removeElement($cuestionario);
+        if ($this->questionary->contains($cuestionario)) {
+            $this->questionary->removeElement($cuestionario);
             // set the owning side to null (unless already changed)
             if ($cuestionario->getCategory() === $this) {
                 $cuestionario->setCategory(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function addQuestionary(Questionary $questionary): self
+    {
+        if (!$this->questionary->contains($questionary)) {
+            $this->questionary[] = $questionary;
+            $questionary->setCategory($this);
+        }
+
+        return $this;
+    }
+
+    public function removeQuestionary(Questionary $questionary): self
+    {
+        if ($this->questionary->contains($questionary)) {
+            $this->questionary->removeElement($questionary);
+            // set the owning side to null (unless already changed)
+            if ($questionary->getCategory() === $this) {
+                $questionary->setCategory(null);
             }
         }
 

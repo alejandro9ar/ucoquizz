@@ -1,0 +1,55 @@
+
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    {% if hasControlAccess is defined and hasControlAccess %}
+        {% include 'questionary/control_panel.html.twig' with {'questionary': questionary, 'deleteForm': deleteForm} %}
+    {% endif %}
+
+    <h1>Cuestionario</h1>
+
+<div class="media" style="margin-top: 60px;">
+    <div class="media-body">
+        <div class="row">
+            <div class="col-sm-10">
+                <h3 class="media-heading"><strong>Nombre:</strong>  {{ questionary.name}} </h3>
+            </div>
+
+            <div class="col-sm-10">
+                <h5 class="media-heading"><strong>Descripción: </strong> {{ questionary.description}}</h5>
+            </div>
+
+            <div class="col-sm-10">
+                <h5 class="media-heading"><strong>Tipo: </strong>{{ questionary.type}}</h5>
+            </div>
+
+            <div class="col-sm-10">
+                    {% set myVal = 0 %}
+                    {% for questionary in questionary.question %}
+                        {% set myVal = myVal +1 %}
+                    {% endfor %}
+                <h5 class="media-heading"><strong>Preguntas: </strong>{{ myVal }}</h5>
+            </div>
+
+            <div class="row">
+            <div class="col-sm-10 text-right">
+
+                <a class="btn btn-primary" href="{{ path('questionary.edit', {token: questionary.token}) }}"> Editar </a>
+                <a class="btn btn-primary" href="{{ path('question.create', {id: questionary.id}) }}"> Añadir question </a>
+                <a class="btn btn-primary" href="{{ path('questionary.export', {id: questionary.id}) }}"> Exportar Cuestionario </a>
+
+
+            </div>
+
+
+                <div class="col-sm-10 text-right">
+                <a class="btn btn-default" href="{{ path('questionary.list') }}">
+                    <span class="glyphicon glyphicon-menu-left"aria-hidden="true"></span>
+                    Volver al menú
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

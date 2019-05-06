@@ -5,9 +5,10 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="App\Repository\Pregunta1Repository")
+ * @ORM\Entity()
+ * @ORM\Entity(repositoryClass="App\Repository\QuestionRepository")
  */
-class Pregunta
+class Question
 {
     /**
      * @ORM\Id()
@@ -17,10 +18,10 @@ class Pregunta
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Cuestionario", inversedBy="pregunta")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Questionary", inversedBy="question")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $cuestionario;
+    private $questionary;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -35,7 +36,7 @@ class Pregunta
     /**
      * @ORM\Column(type="text")
      */
-    private $respuesta1;
+    private $answer1;
 
     /**
      * @ORM\Column(type="boolean")
@@ -45,7 +46,7 @@ class Pregunta
     /**
      * @ORM\Column(type="text")
      */
-    private $respuesta2;
+    private $answer2;
 
     /**
      * @ORM\Column(type="boolean")
@@ -55,7 +56,7 @@ class Pregunta
     /**
      * @ORM\Column(type="text")
      */
-    private $respuesta3;
+    private $answer3;
 
     /**
      * @ORM\Column(type="boolean")
@@ -65,7 +66,7 @@ class Pregunta
     /**
      * @ORM\Column(type="text")
      */
-    private $respuesta4;
+    private $answer4;
 
     /**
      * @ORM\Column(type="boolean")
@@ -73,23 +74,30 @@ class Pregunta
     private $check4;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255)
+     */
+    private $toke;
+
+    /**
      * @ORM\Column(type="integer")
      */
-    private $time;
+    private $duration;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getCuestionario(): ?Cuestionario
+    public function getQuestionary(): ?Questionary
     {
-        return $this->cuestionario;
+        return $this->questionary;
     }
 
-    public function setCuestionario(?Cuestionario $cuestionario): self
+    public function setQuestionary(?Questionary $questionary): self
     {
-        $this->cuestionario = $cuestionario;
+        $this->questionary = $questionary;
 
         return $this;
     }
@@ -118,14 +126,14 @@ class Pregunta
         return $this;
     }
 
-    public function getRespuesta1(): ?string
+    public function getAnswer1(): ?string
     {
-        return $this->respuesta1;
+        return $this->answer1;
     }
 
-    public function setRespuesta1(string $respuesta1): self
+    public function setAnswer1(string $answer1): self
     {
-        $this->respuesta1 = $respuesta1;
+        $this->answer1 = $answer1;
 
         return $this;
     }
@@ -142,14 +150,14 @@ class Pregunta
         return $this;
     }
 
-    public function getRespuesta2(): ?string
+    public function getAnswer2(): ?string
     {
-        return $this->respuesta2;
+        return $this->answer2;
     }
 
-    public function setRespuesta2(string $respuesta2): self
+    public function setAnswer2(string $answer2): self
     {
-        $this->respuesta2 = $respuesta2;
+        $this->answer2 = $answer2;
 
         return $this;
     }
@@ -166,14 +174,14 @@ class Pregunta
         return $this;
     }
 
-    public function getRespuesta3(): ?string
+    public function getAnswer3(): ?string
     {
-        return $this->respuesta3;
+        return $this->answer3;
     }
 
-    public function setRespuesta3(string $respuesta3): self
+    public function setAnswer3(string $answer3): self
     {
-        $this->respuesta3 = $respuesta3;
+        $this->answer3 = $answer3;
 
         return $this;
     }
@@ -190,14 +198,14 @@ class Pregunta
         return $this;
     }
 
-    public function getRespuesta4(): ?string
+    public function getAnswer4(): ?string
     {
-        return $this->respuesta4;
+        return $this->answer4;
     }
 
-    public function setRespuesta4(string $respuesta4): self
+    public function setAnswer4(string $answer4): self
     {
-        $this->respuesta4 = $respuesta4;
+        $this->answer4 = $answer4;
 
         return $this;
     }
@@ -214,15 +222,34 @@ class Pregunta
         return $this;
     }
 
-    public function getTime(): ?int
+    public function getDuration(): ?int
     {
-        return $this->time;
+        return $this->duration;
     }
 
-    public function setTime(int $time): self
+    public function setDuration(int $duration): self
     {
-        $this->time = $time;
+        $this->duration = $duration;
 
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getToke() : ?string
+    {
+        return $this->toke;
+    }
+
+    /**
+     * @param string $toke
+     *
+     * @return self
+     */
+    public function setToke(string $toke) : self
+    {
+        $this->toke = $toke;
         return $this;
     }
 }

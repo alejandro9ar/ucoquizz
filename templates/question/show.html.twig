@@ -1,0 +1,74 @@
+
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    {% if hasControlAccess is defined and hasControlAccess %}
+        {% include 'question/control_panel.html.twig' with {'question': question, 'deleteForm': deleteForm} %}
+    {% endif %}
+
+    <h1>Preguntas</h1>
+
+<div class="media" style="margin-top: 60px;">
+    <div class="media-body">
+        <div class="row">
+            <div class="col-sm-10">
+                <h3 class="media-heading"><strong>Nombre:</strong>  {{ question.title}} </h3>
+            </div>
+
+            <div class="col-sm-10">
+                <h5 class="media-heading"><strong>Descripción: </strong> {{ question.description}}</h5>
+            </div>
+            <div class="col-sm-10">
+                <h5 class="media-heading"><strong>
+
+                        {% if question.check1 == "1" %}
+                            ✔
+                        {% endif %}
+
+                        Respuesta 1: </strong> {{ question.answer1}}</h5>
+
+            </div>
+
+            <div class="col-sm-10">
+                <h5 class="media-heading"><strong>
+
+                        {% if question.check2 == "1" %}
+                            ✔
+                        {% endif %}
+
+                        Respuesta 2: </strong> {{ question.answer2}}</h5>
+            </div>
+
+            <div class="col-sm-10">
+                <h5 class="media-heading"><strong>
+
+                        {% if question.check3 == "1" %}
+                            ✔
+                        {% endif %}
+
+                        Respuesta3: </strong> {{ question.answer3}}</h5>
+            </div>
+
+            <div class="col-sm-10">Pregunta
+                <h5 class="media-heading"><strong>
+                        {% if question.check4 == "1" %}
+                            ✔
+                        {% endif %}
+
+                        Respuesta 4: </strong> {{ question.answer4}}</h5>
+            </div>
+
+            <div class="col-sm-10">
+                <h5 class="media-heading"><strong>Tiempo: </strong> {{ question.duration}}</h5>
+
+                <a class="btn btn-primary" href="{{ path('question.edit', {toke: question.toke}) }}"> Editar </a>
+            </div>
+
+
+
+
+        </div>
+    </div>
+</div>
+{% endblock %}

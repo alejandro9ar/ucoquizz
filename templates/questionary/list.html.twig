@@ -6,27 +6,25 @@
         <tr>
             <th class="active text-center">Nombre</th>
             <th class="active text-center">Descripción</th>
-            <th class="active text-center">Tiempo</th>
             <th class="active text-center">Usuario</th>
             <th class="active text-center">Preguntas</th>
         </tr>
 
-        {% for cuestionario in cuestionarios %}
+        {% for questionary in cuestionarios %}
 
-            {% if cuestionario.type == "publico" %}
+            {% if questionary.type == "público" %}
 
             <tr>
                 <td>
-                    <a href="{{ path('cuestionario.show', {id: cuestionario.id}) }}">
-                        {{ cuestionario.name}}
+                    <a href="{{ path('questionary.show', {id: questionary.id}) }}">
+                        {{ questionary.name}}
                     </a>
                 </td>
-                <td> {{ cuestionario.description}} </td>
-                <td>{{ cuestionario.time }}</td>
-                <td>{{ cuestionario.user }}</td>
+                <td> {{ questionary.description}} </td>
+                <td>{{ questionary.user }}</td>
 
                 {% set myVal = 0 %}
-                {% for pregunta in cuestionario.pregunta %}
+                {% for question in questionary.question %}
                     {% set myVal = myVal +1 %}
                 {% endfor %}
                 <td>{{ myVal }}</td>
