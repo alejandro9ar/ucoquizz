@@ -40,29 +40,6 @@ public function getQuestionary(): Collection
     return $this->questionary;
 }
 
-public function addCuestionario(Questionary $cuestionario): self
-{
-    if (!$this->questionary->contains($cuestionario)) {
-        $this->questionary[] = $cuestionario;
-        $cuestionario->setUser($this);
-    }
-
-    return $this;
-}
-
-public function removeCuestionario(Questionary $cuestionario): self
-{
-    if ($this->questionary->contains($cuestionario)) {
-        $this->questionary->removeElement($cuestionario);
-        // set the owning side to null (unless already changed)
-        if ($cuestionario->getUser() === $this) {
-            $cuestionario->setUser(null);
-        }
-    }
-
-    return $this;
-}
-
 public function getId(): ?int
 {
     return $this->id;

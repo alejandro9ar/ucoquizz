@@ -5,22 +5,24 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity()
  * @ORM\Table(name="questionary")
  * @ORM\Entity(repositoryClass="App\Repository\QuestionaryRepository")
+ * @UniqueEntity("token")
  */
 
 class Questionary
 {
 
-    public const PUBLICO = 'público';
-    public const PRIVADO = 'privado';
+    public const PUBLIC = 'público';
+    public const PRIVATE = 'privado';
 
     public const TYPES = [
-        self::PUBLICO,
-        self::PRIVADO,
+        self::PUBLIC,
+        self::PRIVATE,
     ];
 
     /**
@@ -54,7 +56,7 @@ class Questionary
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, unique=true)
      */
     private $token;
 
@@ -159,52 +161,6 @@ class Questionary
     public function getQuestion(): Collection
     {
         return $this->question;
-    }
-
-    public function addPreguntum(Question $preguntum): self
-    {
-        if (!$this->question->contains($preguntum)) {
-            $this->question[] = $preguntum;
-            $preguntum->setQuestionary($this);
-        }
-
-        return $this;
-    }
-
-    public function removePreguntum(Question $preguntum): self
-    {
-        if ($this->question->contains($preguntum)) {
-            $this->question->removeElement($preguntum);
-            // set the owning side to null (unless already changed)
-            if ($preguntum->getQuestionary() === $this) {
-                $preguntum->setQuestionary(null);
-            }
-        }
-
-        return $this;
-    }
-
-    public function addPregunta(Question $pregunta): self
-    {
-        if (!$this->question->contains($pregunta)) {
-            $this->question[] = $pregunta;
-            $pregunta->setQuestionary($this);
-        }
-
-        return $this;
-    }
-
-    public function removePregunta(Question $pregunta): self
-    {
-        if ($this->question->contains($pregunta)) {
-            $this->question->removeElement($pregunta);
-            // set the owning side to null (unless already changed)
-            if ($pregunta->getQuestionary() === $this) {
-                $pregunta->setQuestionary(null);
-            }
-        }
-
-        return $this;
     }
 
     public function getUser(): ?User

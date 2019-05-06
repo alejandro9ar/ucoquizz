@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Questionary;
 use App\Entity\Question;
-use App\Form\PreguntaType;
+use App\Form\QuestionType;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -22,15 +22,15 @@ class QuestionController extends AbstractController
      *
      * @Route("question/{id}", name="question.show", requirements={"id":"\d+"})
      *
-     * @param Question $pregunta
+     * @param Question $question
      *
      * @return Response
      */
-    public function show(Question $pregunta) : Response
+    public function show(Question $question) : Response
     {
 
         return $this->render('question/show.html.twig', [
-            'question' => $pregunta,
+            'question' => $question,
         ]);
 
     }
@@ -47,15 +47,17 @@ class QuestionController extends AbstractController
      */
     public function create(Request $request, EntityManagerInterface $em, Questionary $questionary) : Response
     {
-        $pregunta = new Question();
-        $form = $this->createForm(PreguntaType::class, $pregunta);
+        $this->denyAccessUnlessGranted('QUESTIONARY_OWNER', $questionary);
+
+        $question = new Question();
+        $form = $this->createForm(QuestionType::class, $question);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            $pregunta->setQuestionary($questionary);
+            $question->setQuestionary($questionary);
 
-            $em->persist($pregunta);
+            $em->persist($question);
             $em->flush();
 
             return $this->redirectToRoute('questionary.list');
@@ -79,7 +81,7 @@ class QuestionController extends AbstractController
      */
     public function edit(Request $request, Question $pregunta, EntityManagerInterface $em) : Response
     {
-        $form = $this->createForm(PreguntaType::class, $pregunta);
+        $form = $this->createForm(QuestionType::class, $pregunta);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {

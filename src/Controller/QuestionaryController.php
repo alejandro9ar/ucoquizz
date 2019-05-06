@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Questionary;
 use App\Entity\Question;
-use App\Form\CuestionarioType;
+use App\Form\QuestionaryType;
 use PhpOffice\PhpSpreadsheet\Chart\Title;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
@@ -28,10 +28,10 @@ class QuestionaryController extends AbstractController
      */
     public function list() : Response
     {
-        $cuestionarios = $this->getDoctrine()->getRepository(Questionary::class)->findAll();
+        $questionaries = $this->getDoctrine()->getRepository(Questionary::class)->findAll();
 
         return $this->render('questionary/list.html.twig', [
-            'cuestionarios' => $cuestionarios,
+            'questionarys' => $questionaries,
         ]);
     }
 
@@ -40,15 +40,15 @@ class QuestionaryController extends AbstractController
      *
      * @Route("/{id}", name="questionary.show", requirements={"id":"\d+"})
      *
-     * @param Questionary $cuestionario
+     * @param Questionary $questionary
      *
      * @return Response
      */
-    public function show(Questionary $cuestionario) : Response
+    public function show(Questionary $questionary) : Response
     {
 
             return $this->render('questionary/show.html.twig', [
-                'questionary' => $cuestionario,
+                'questionary' => $questionary,
             ]);
 
     }
@@ -65,15 +65,15 @@ class QuestionaryController extends AbstractController
      */
     public function create(Request $request, EntityManagerInterface $em) : Response
     {
-        $cuestionario = new Questionary();
-        $form = $this->createForm(CuestionarioType::class, $cuestionario);
+        $questionary = new Questionary();
+        $form = $this->createForm(QuestionaryType::class, $questionary);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            $cuestionario->setUser($this->getUser());
+            $questionary->setUser($this->getUser());
 
-            $em->persist($cuestionario);
+            $em->persist($questionary);
             $em->flush();
 
             return $this->redirectToRoute('questionary.list');
@@ -90,14 +90,17 @@ class QuestionaryController extends AbstractController
      * @Route("/questionary/{token}/edit", name="questionary.edit", methods={"GET", "POST"}, requirements={"token" = "\w+"})
      *
      * @param Request $request
-     * @param Questionary $cuestionario
+     * @param Questionary $questionary
      * @param EntityManagerInterface $em
      *
      * @return Response
      */
-    public function edit(Request $request, Questionary $cuestionario, EntityManagerInterface $em) : Response
+    public function edit(Request $request, Questionary $questionary, EntityManagerInterface $em) : Response
     {
-        $form = $this->createForm(CuestionarioType::class, $cuestionario);
+
+        $this->denyAccessUnlessGranted('QUESTIONARY_OWNER', $questionary);
+
+        $form = $this->createForm(QuestionaryType::class, $questionary);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -115,16 +118,16 @@ class QuestionaryController extends AbstractController
      *
      * @Route("questionary/{token}", name="questionary.preview", methods="GET", requirements={"token" = "\w+"})
      *
-     * @param Questionary $cuestionario
+     * @param Questionary $questionary
      *
      * @return Response
      */
-    public function preview(Questionary $cuestionario) : Response
+    public function preview(Questionary $questionary) : Response
     {
-        $deleteForm = $this->createDeleteForm($cuestionario);
+        $deleteForm = $this->createDeleteForm($questionary);
 
         return $this->render('questionary/show.html.twig', [
-            'questionary' => $cuestionario,
+            'questionary' => $questionary,
             'hasControlAccess' => true,
             'deleteForm' => $deleteForm->createView(),
         ]);
@@ -133,14 +136,14 @@ class QuestionaryController extends AbstractController
     /**
      * Creates a form to delete a questionary entity.
      *
-     * @param Questionary $cuestionario
+     * @param Questionary $questionary
      *
      * @return FormInterface
      */
-    private function createDeleteForm(Questionary $cuestionario) : FormInterface
+    private function createDeleteForm(Questionary $questionary) : FormInterface
     {
         return $this->createFormBuilder()
-            ->setAction($this->generateUrl('questionary.delete', ['token' => $cuestionario->getToken()]))
+            ->setAction($this->generateUrl('questionary.delete', ['token' => $questionary->getToken()]))
             ->setMethod('DELETE')
             ->getForm();
     }
@@ -152,18 +155,21 @@ class QuestionaryController extends AbstractController
      * @Route("questionary/{token}/delete", name="questionary.delete", methods="DELETE", requirements={"token" = "\w+"})
      *
      * @param Request $request
-     * @param Questionary $cuestionario
+     * @param Questionary $questionary
      * @param EntityManagerInterface $em
      *
      * @return Response
      */
-    public function delete(Request $request, Questionary $cuestionario, EntityManagerInterface $em) : Response
+    public function delete(Request $request, Questionary $questionary, EntityManagerInterface $em) : Response
     {
-        $form = $this->createDeleteForm($cuestionario);
+
+        $this->denyAccessUnlessGranted('QUESTIONARY_OWNER', $questionary);
+
+        $form = $this->createDeleteForm($questionary);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $em->remove($cuestionario);
+            $em->remove($questionary);
             $em->flush();
         }
 
@@ -184,12 +190,12 @@ class QuestionaryController extends AbstractController
     {
         $this->denyAccessUnlessGranted('QUESTIONARY_OWNER', $questionary);
 
-        $documento = new Spreadsheet();
+        $spreadsheet = new Spreadsheet();
 
-        $iddocumento = $questionary->getId();
-        $namedocumento = $questionary->getName();
+        $iddocument = $questionary->getId();
+        $namedocument = $questionary->getName();
 
-        $documento
+        $spreadsheet
             ->getProperties()
             ->setCreator("UCOQUIZZ")
             ->setTitle('Preguntas exportadas por UCOQUIZZ')
@@ -198,27 +204,39 @@ class QuestionaryController extends AbstractController
 
         $question = $questionary->getQuestion();
 
-        $hoja = $documento->getActiveSheet();
-        $hoja->setTitle("CUESTIONARIO UCOQUIZZ");
+        $activeSheet = $spreadsheet->getActiveSheet();
+        $activeSheet->setTitle("CUESTIONARIO UCOQUIZZ");
 
         $nquestion= count($question)-1;
 
+        $activeSheet->setCellValue("A1", "Título");
+        $activeSheet->setCellValue("B1", "Descripción");
+        $activeSheet->setCellValue("C1", "Respuesta 1");
+        $activeSheet->setCellValue("D1", "Check 1");
+        $activeSheet->setCellValue("E1", "Respuesta 2");
+        $activeSheet->setCellValue("F1", "Check 2");
+        $activeSheet->setCellValue("G1", "Respueta 3");
+        $activeSheet->setCellValue("H1", "Check 3");
+        $activeSheet->setCellValue("I1", "Respuesta 4");
+        $activeSheet->setCellValue("J1", "Check 4");
+        $activeSheet->setCellValue("K1", "Duración");
+        
         for($i=0; $i<=$nquestion ;$i++ ) {
             $var=$i+2;
-            $hoja->setCellValue("A$var", $question[$i]->getTitle());
-            $hoja->setCellValue("B$var", $question[$i]->getDuration());
-            $hoja->setCellValue("C$var", $question[$i]->getAnswer1());
-            $hoja->setCellValue("D$var", $question[$i]->getCheck1());
-            $hoja->setCellValue("E$var", $question[$i]->getAnswer2());
-            $hoja->setCellValue("F$var", $question[$i]->getCheck2());
-            $hoja->setCellValue("G$var", $question[$i]->getAnswer3());
-            $hoja->setCellValue("H$var", $question[$i]->getCheck3());
-            $hoja->setCellValue("I$var", $question[$i]->getAnswer4());
-            $hoja->setCellValue("J$var", $question[$i]->getCheck4());
-            $hoja->setCellValue("K$var", $question[$i]->getDuration());
+            $activeSheet->setCellValue("A$var", $question[$i]->getTitle());
+            $activeSheet->setCellValue("B$var", $question[$i]->getDescription());
+            $activeSheet->setCellValue("C$var", $question[$i]->getAnswer1());
+            $activeSheet->setCellValue("D$var", $question[$i]->getCheck1());
+            $activeSheet->setCellValue("E$var", $question[$i]->getAnswer2());
+            $activeSheet->setCellValue("F$var", $question[$i]->getCheck2());
+            $activeSheet->setCellValue("G$var", $question[$i]->getAnswer3());
+            $activeSheet->setCellValue("H$var", $question[$i]->getCheck3());
+            $activeSheet->setCellValue("I$var", $question[$i]->getAnswer4());
+            $activeSheet->setCellValue("J$var", $question[$i]->getCheck4());
+            $activeSheet->setCellValue("K$var", $question[$i]->getDuration());
 
         }
-        $nombreDelDocumento = "cuestionario_$iddocumento"."_$namedocumento";
+        $documentname = "cuestionario_$iddocument"."_$namedocument";
         /**
          * Los siguientes encabezados son necesarios para que
          * el navegador entienda que no le estamos mandando
@@ -227,10 +245,10 @@ class QuestionaryController extends AbstractController
          */
 
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="' . $nombreDelDocumento . '"');
+        header('Content-Disposition: attachment;filename="' . $documentname . '"');
         header('Cache-Control: max-age=0');
 
-        $writer = IOFactory::createWriter($documento, 'Xlsx');
+        $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
         $writer->save('php://output');
         exit;
 
