@@ -214,20 +214,33 @@ class QuestionaryController extends AbstractController
         $nquestion= count($question)-1;
 
         $activeSheet->setCellValue("A1", "Título");
-        $activeSheet->setCellValue("C1", "Respuesta 1");
-        $activeSheet->setCellValue("D1", "Check 1");
-        $activeSheet->setCellValue("E1", "Respuesta 2");
-        $activeSheet->setCellValue("F1", "Check 2");
-        $activeSheet->setCellValue("G1", "Respueta 3");
-        $activeSheet->setCellValue("H1", "Check 3");
-        $activeSheet->setCellValue("I1", "Respuesta 4");
-        $activeSheet->setCellValue("J1", "Check 4");
-        $activeSheet->setCellValue("K1", "Duración");
-        
+        $activeSheet->setCellValue("B1", "Respuesta 1");
+        $activeSheet->setCellValue("C1", "Check 1");
+        $activeSheet->setCellValue("D1", "Respuesta 2");
+        $activeSheet->setCellValue("E1", "Check 2");
+        $activeSheet->setCellValue("F1", "Respueta 3");
+        $activeSheet->setCellValue("G1", "Check 3");
+        $activeSheet->setCellValue("H1", "Respuesta 4");
+        $activeSheet->setCellValue("I1", "Check 4");
+        $activeSheet->setCellValue("J1", "Duración");
+
+
         for($i=0; $i<=$nquestion ;$i++ ) {
             $var=$i+2;
             $activeSheet->setCellValue("A$var", $question[$i]->getTitle());
-            $activeSheet->setCellValue("K$var", $question[$i]->getDuration());
+
+            $answer = $question[$i]->getAnswer();
+
+            $activeSheet->setCellValue("B$var", $answer[0]->getAnswertitle());
+            $activeSheet->setCellValue("C$var", $answer[0]->getCorrect());
+            $activeSheet->setCellValue("D$var", $answer[1]->getAnswertitle());
+            $activeSheet->setCellValue("E$var", $answer[1]->getCorrect());
+            $activeSheet->setCellValue("F$var", $answer[2]->getAnswertitle());
+            $activeSheet->setCellValue("G$var", $answer[2]->getCorrect());
+            $activeSheet->setCellValue("H$var", $answer[3]->getAnswertitle());
+            $activeSheet->setCellValue("I$var", $answer[3]->getCorrect());
+
+            $activeSheet->setCellValue("J$var", $question[$i]->getDuration());
 
         }
         $documentname = "cuestionario_$iddocument"."_$namedocument";
@@ -242,9 +255,18 @@ class QuestionaryController extends AbstractController
         header('Content-Disposition: attachment;filename="' . $documentname . '"');
         header('Cache-Control: max-age=0');
 
+        return $this->render('questionary/exported.html.twig', [
+            'questionary' => $questionary,
+        ]);
+
         $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
         $writer->save('php://output');
+
+
+
         exit;
+
+
 
 
 
