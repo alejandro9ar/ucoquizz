@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Answer;
 use App\Entity\Questionary;
 use App\Entity\Question;
 use App\Form\QuestionType;
@@ -13,6 +14,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\FormInterface;
+
 
 
 class QuestionController extends AbstractController
@@ -50,12 +52,35 @@ class QuestionController extends AbstractController
         $this->denyAccessUnlessGranted('QUESTIONARY_OWNER', $questionary);
 
         $question = new Question();
+
+        $answer1 = new Answer();
+        $answer1->setAnswertitle('answer1');
+        $question->getAnswer()->add($answer1);
+
+        $answer2 = new Answer();
+        $answer2->setAnswertitle('answer2');
+        $question->getAnswer()->add($answer2);
+
+        $answer3 = new Answer();
+        $answer3->setAnswertitle('answer3');
+        $question->getAnswer()->add($answer3);
+
+        $answer4 = new Answer();
+        $answer4->setAnswertitle('answer4');
+        $question->getAnswer()->add($answer4);
+
+
         $form = $this->createForm(QuestionType::class, $question);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
 
             $question->setQuestionary($questionary);
+
+            $answer1->setQuestion($question);
+            $answer2->setQuestion($question);
+            $answer3->setQuestion($question);
+            $answer4->setQuestion($question);
 
             $em->persist($question);
             $em->flush();

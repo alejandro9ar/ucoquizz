@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Questionary;
+use App\Entity\Answer;
 use App\Entity\Question;
 use App\Form\QuestionaryType;
 use PhpOffice\PhpSpreadsheet\Chart\Title;
@@ -14,6 +15,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\FormInterface;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+
 
 class QuestionaryController extends AbstractController
 {
@@ -46,9 +48,11 @@ class QuestionaryController extends AbstractController
      */
     public function show(Questionary $questionary) : Response
     {
+            $question = $questionary->getQuestion();
 
             return $this->render('questionary/show.html.twig', [
                 'questionary' => $questionary,
+                'question'=> $question,
             ]);
 
     }
@@ -210,7 +214,6 @@ class QuestionaryController extends AbstractController
         $nquestion= count($question)-1;
 
         $activeSheet->setCellValue("A1", "Título");
-        $activeSheet->setCellValue("B1", "Descripción");
         $activeSheet->setCellValue("C1", "Respuesta 1");
         $activeSheet->setCellValue("D1", "Check 1");
         $activeSheet->setCellValue("E1", "Respuesta 2");
@@ -224,15 +227,6 @@ class QuestionaryController extends AbstractController
         for($i=0; $i<=$nquestion ;$i++ ) {
             $var=$i+2;
             $activeSheet->setCellValue("A$var", $question[$i]->getTitle());
-            $activeSheet->setCellValue("B$var", $question[$i]->getDescription());
-            $activeSheet->setCellValue("C$var", $question[$i]->getAnswer1());
-            $activeSheet->setCellValue("D$var", $question[$i]->getCheck1());
-            $activeSheet->setCellValue("E$var", $question[$i]->getAnswer2());
-            $activeSheet->setCellValue("F$var", $question[$i]->getCheck2());
-            $activeSheet->setCellValue("G$var", $question[$i]->getAnswer3());
-            $activeSheet->setCellValue("H$var", $question[$i]->getCheck3());
-            $activeSheet->setCellValue("I$var", $question[$i]->getAnswer4());
-            $activeSheet->setCellValue("J$var", $question[$i]->getCheck4());
             $activeSheet->setCellValue("K$var", $question[$i]->getDuration());
 
         }

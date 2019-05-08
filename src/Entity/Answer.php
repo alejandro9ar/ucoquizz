@@ -19,7 +19,7 @@ class Answer
     /**
      * @ORM\Column(type="text")
      */
-    private $title;
+    private $answertitle;
 
     /**
      * @ORM\Column(type="boolean")
@@ -27,7 +27,7 @@ class Answer
     private $correct;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Question", inversedBy="answers")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Question", inversedBy="answer")
      * @ORM\JoinColumn(nullable=false)
      */
     private $question;
@@ -37,14 +37,14 @@ class Answer
         return $this->id;
     }
 
-    public function getTitle(): ?string
+    public function getAnswertitle(): ?string
     {
-        return $this->title;
+        return $this->answertitle;
     }
 
-    public function setTitle(string $title): self
+    public function setAnswertitle(string $answertitle): self
     {
-        $this->title = $title;
+        $this->answertitle = $answertitle;
 
         return $this;
     }
