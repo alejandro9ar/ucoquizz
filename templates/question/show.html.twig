@@ -13,56 +13,32 @@
     <div class="media-body">
         <div class="row">
             <div class="col-sm-10">
-                <h3 class="media-heading"><strong>Nombre:</strong>  {{ question.answertitle}} </h3>
+                <h3 class="media-heading"><strong>Nombre:</strong>  {{ question.title}} </h3>
             </div>
 
-            <div class="col-sm-10">
-                <h5 class="media-heading"><strong>Descripción: </strong> {{ question.description}}</h5>
-            </div>
-            <div class="col-sm-10">
-                <h5 class="media-heading"><strong>
 
-                        {% if question.check1 == "1" %}
-                            ✔
-                        {% endif %}
+            {% set Val = 0 %}
+            {% for answer in answer %}
 
-                        Respuesta 1: </strong> {{ question.answer1}}</h5>
+                <div class="col-sm-10">
+                    <h5 class="media-heading"><strong>
 
-            </div>
+                            {% set Val = Val +1 %}
 
-            <div class="col-sm-10">
-                <h5 class="media-heading"><strong>
+                            {% if answer.correct == "1" %}
+                                ✔
+                            {% endif %}
 
-                        {% if question.check2 == "1" %}
-                            ✔
-                        {% endif %}
+                            Respuesta {{ Val }}: </strong> {{ answer.answertitle}}</h5>
 
-                        Respuesta 2: </strong> {{ question.answer2}}</h5>
-            </div>
+                </div>
 
-            <div class="col-sm-10">
-                <h5 class="media-heading"><strong>
-
-                        {% if question.check3 == "1" %}
-                            ✔
-                        {% endif %}
-
-                        Respuesta3: </strong> {{ question.answer3}}</h5>
-            </div>
-
-            <div class="col-sm-10">Pregunta
-                <h5 class="media-heading"><strong>
-                        {% if question.check4 == "1" %}
-                            ✔
-                        {% endif %}
-
-                        Respuesta 4: </strong> {{ question.answer4}}</h5>
-            </div>
+            {% endfor %}
 
             <div class="col-sm-10">
                 <h5 class="media-heading"><strong>Tiempo: </strong> {{ question.duration}}</h5>
 
-                <a class="btn btn-primary" href="{{ path('question.edit', {toke: question.toke}) }}"> Editar </a>
+                <a class="btn btn-primary" href="{{ path('question.edit', {id: question.id}) }}"> Editar </a>
             </div>
 
 

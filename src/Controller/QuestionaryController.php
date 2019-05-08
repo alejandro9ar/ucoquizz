@@ -91,7 +91,7 @@ class QuestionaryController extends AbstractController
     /**
      * Edit existing questionary entity
      *
-     * @Route("/questionary/{token}/edit", name="questionary.edit", methods={"GET", "POST"}, requirements={"token" = "\w+"})
+     * @Route("/questionary/{id}/edit", name="questionary.edit", methods={"GET", "POST"}, requirements={"id":"\d+"})
      *
      * @param Request $request
      * @param Questionary $questionary
@@ -167,7 +167,7 @@ class QuestionaryController extends AbstractController
     public function delete(Request $request, Questionary $questionary, EntityManagerInterface $em) : Response
     {
 
-        $this->denyAccessUnlessGranted('QUESTIONARY_OWNER', $questionary);
+        $this->denyAccessUnlessGranted('QUESTION_OWNER', $questionary);
 
         $form = $this->createDeleteForm($questionary);
         $form->handleRequest($request);

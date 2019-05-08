@@ -31,8 +31,11 @@ class QuestionController extends AbstractController
     public function show(Question $question) : Response
     {
 
+        $this->denyAccessUnlessGranted('QUESTION_OWNER', $question);
+
         return $this->render('question/show.html.twig', [
             'question' => $question,
+            'answer' => $question->getAnswer(),
         ]);
 
     }
@@ -96,17 +99,20 @@ class QuestionController extends AbstractController
     /**
      * Edit existing question entity
      *
-     * @Route("/question/{toke}/edit", name="question.edit", methods={"GET", "POST"}, requirements={"toke" = "\w+"})
+     * @Route("/question/{id}/edit", name="question.edit", methods={"GET", "POST"}, requirements={"id":"\d+"})
      *
      * @param Request $request
-     * @param Question $pregunta
+     * @param Question $question
      * @param EntityManagerInterface $em
      *
      * @return Response
      */
-    public function edit(Request $request, Question $pregunta, EntityManagerInterface $em) : Response
+    public function edit(Request $request, Question $question, EntityManagerInterface $em) : Response
     {
-        $form = $this->createForm(QuestionType::class, $pregunta);
+
+        $this->denyAccessUnlessGranted('QUESTION_OWNER', $question);
+
+        $form = $this->createForm(QuestionType::class, $question);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -125,16 +131,16 @@ class QuestionController extends AbstractController
      *
      * @Route("questions/{toke}", name="question.preview", methods="GET", requirements={"toke" = "\w+"})
      *
-     * @param Question $pregunta
+     * @param Question $question
      *
      * @return Response
      */
-    public function preview(Question $pregunta) : Response
+    public function preview(Question $question) : Response
     {
-        $deleteForm = $this->createDeleteForm($pregunta);
+        $deleteForm = $this->createDeleteForm($question);
 
         return $this->render('question/show.html.twig', [
-            'question' => $pregunta,
+            'question' => $question,
             'hasControlAccess' => true,
             'deleteForm' => $deleteForm->createView(),
         ]);
@@ -143,14 +149,14 @@ class QuestionController extends AbstractController
     /**
      * Creates a form to delete a question entity.
      *
-     * @param Question $pregunta
+     * @param Question $question
      *
      * @return FormInterface
      */
-    private function createDeleteForm(Question $pregunta) : FormInterface
+    private function createDeleteForm(Question $question) : FormInterface
     {
         return $this->createFormBuilder()
-            ->setAction($this->generateUrl('question.delete', ['toke' => $pregunta->getToke()]))
+            ->setAction($this->generateUrl('question.delete', ['toke' => $question->getToke()]))
             ->setMethod('DELETE')
             ->getForm();
     }
@@ -162,18 +168,18 @@ class QuestionController extends AbstractController
      * @Route("question/{toke}/delete", name="question.delete", methods="DELETE", requirements={"toke" = "\w+"})
      *
      * @param Request $request
-     * @param Question $pregunta
+     * @param Question $question
      * @param EntityManagerInterface $em
      *
      * @return Response
      */
-    public function delete(Request $request, Question $pregunta, EntityManagerInterface $em) : Response
+    public function delete(Request $request, Question $question, EntityManagerInterface $em) : Response
     {
-        $form = $this->createDeleteForm($pregunta);
+        $form = $this->createDeleteForm($question);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $em->remove($pregunta);
+            $em->remove($question);
             $em->flush();
         }
 
