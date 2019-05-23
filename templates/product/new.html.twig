@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+
+{% block body %}
+    {# templates/product/new.html.twig #}
+    <h1>Exportar cuestionario</h1>
+
+    {{ form_start(form) }}
+
+
+
+        {{ form_row(form.fileupdate) }}
+    <button type="submit" class="btn btn-primary">Create</button>
+    {{ form_end(form) }}
+{% endblock %}

@@ -20,12 +20,13 @@ class QuestionType extends AbstractType
                 ['label' => 'Titulo'])
 
 
-
         ;
 
         $builder->add('answer', CollectionType::class, [
             'entry_type' => AnswerType::class,
             'entry_options' => ['label' => false],
+            'allow_delete' => true,
+            'label' => 'Preguntas',
         ]);
 
         $builder->add('duration');

@@ -29,12 +29,9 @@
                     {% for questionary in questionary.question %}
                         {% set myVal = myVal +1 %}
 
-                        <h5 class="media-heading"><strong>Numero de preguntas: </strong>{{ myVal }}</h5>
-
-
                     {% endfor %}
 
-
+                <h5 class="media-heading"><strong>Numero de preguntas: </strong>{{ myVal }}</h5>
 
 
             <div class="row">
@@ -44,7 +41,16 @@
                 <a class="btn btn-primary" href="{{ path('questionary.edit', {id: questionary.id}) }}"> Editar </a>
                 <a class="btn btn-primary" href="{{ path('question.create', {id: questionary.id}) }}"> Añadir question </a>
                 <a class="btn btn-primary" href="{{ path('questionary.export', {id: questionary.id}) }}"> Exportar Cuestionario </a>
+                <a class="btn btn-primary" href="{{ path('questionary.import', {id: questionary.id}) }}"> Importar Cuestionario </a>
 
+                {{ form_start(deleteForm, {'attr': {'class': 'navbar-form navbar-left'}}) }}
+                {{ form_widget(deleteForm) }}
+
+                <button type="submit" class="btn btn-default" onclick="return confirm('Are you sure?')">
+                    <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                    Delete
+                </button>
+                {{ form_end(deleteForm) }}
 
             </div>
             </div>

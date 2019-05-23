@@ -20,7 +20,7 @@ class Question
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Questionary", inversedBy="question")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Questionary", inversedBy="question", cascade={"remove"})
      * @ORM\JoinColumn(nullable=false)
      */
     private $questionary;
@@ -43,7 +43,7 @@ class Question
     private $duration;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Answer", mappedBy="question", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity="App\Entity\Answer", mappedBy="question",cascade={"persist"})
      */
     private $answer;
 

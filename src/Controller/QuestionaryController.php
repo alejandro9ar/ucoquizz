@@ -2,11 +2,11 @@
 
 namespace App\Controller;
 
-use App\Entity\Questionary;
 use App\Entity\Answer;
 use App\Entity\Question;
+use App\Entity\Questionary;
 use App\Form\QuestionaryType;
-use PhpOffice\PhpSpreadsheet\Chart\Title;
+use App\Form\QuestionType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,7 +15,9 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\FormInterface;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
-
+use App\DTO\FileUpdated;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use App\Form\FileImportType;
 
 class QuestionaryController extends AbstractController
 {
@@ -28,7 +30,7 @@ class QuestionaryController extends AbstractController
      *
      * @return Response
      */
-    public function list() : Response
+    public function list(): Response
     {
         $questionaries = $this->getDoctrine()->getRepository(Questionary::class)->findAll();
 
@@ -46,14 +48,16 @@ class QuestionaryController extends AbstractController
      *
      * @return Response
      */
-    public function show(Questionary $questionary) : Response
+    public function show(Questionary $questionary): Response
     {
-            $question = $questionary->getQuestion();
+        $question = $questionary->getQuestion();
+        $deleteForm = $this->createDeleteForm($questionary);
 
-            return $this->render('questionary/show.html.twig', [
-                'questionary' => $questionary,
-                'question'=> $question,
-            ]);
+        return $this->render('questionary/show.html.twig', [
+            'questionary' => $questionary,
+            'question' => $question,
+            'deleteForm' => $deleteForm->createView(),
+        ]);
 
     }
 
@@ -67,7 +71,7 @@ class QuestionaryController extends AbstractController
      *
      * @return RedirectResponse|Response
      */
-    public function create(Request $request, EntityManagerInterface $em) : Response
+    public function create(Request $request, EntityManagerInterface $em): Response
     {
         $questionary = new Questionary();
         $form = $this->createForm(QuestionaryType::class, $questionary);
@@ -80,8 +84,7 @@ class QuestionaryController extends AbstractController
             $em->persist($questionary);
             $em->flush();
 
-            return $this->redirectToRoute('questionary.list');
-        }
+            return $this->redirectToRoute('questionary.show', ['id' => $questionary->getId()]);        }
 
         return $this->render('questionary/create.html.twig', [
             'form' => $form->createView(),
@@ -99,7 +102,7 @@ class QuestionaryController extends AbstractController
      *
      * @return Response
      */
-    public function edit(Request $request, Questionary $questionary, EntityManagerInterface $em) : Response
+    public function edit(Request $request, Questionary $questionary, EntityManagerInterface $em): Response
     {
 
         $this->denyAccessUnlessGranted('QUESTIONARY_OWNER', $questionary);
@@ -117,6 +120,7 @@ class QuestionaryController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
+
     /**
      * Finds and displays the prEditeview page for a questionary entity.
      *
@@ -126,7 +130,7 @@ class QuestionaryController extends AbstractController
      *
      * @return Response
      */
-    public function preview(Questionary $questionary) : Response
+    public function preview(Questionary $questionary): Response
     {
         $deleteForm = $this->createDeleteForm($questionary);
 
@@ -144,10 +148,10 @@ class QuestionaryController extends AbstractController
      *
      * @return FormInterface
      */
-    private function createDeleteForm(Questionary $questionary) : FormInterface
+    private function createDeleteForm(Questionary $questionary): FormInterface
     {
         return $this->createFormBuilder()
-            ->setAction($this->generateUrl('questionary.delete', ['token' => $questionary->getToken()]))
+            ->setAction($this->generateUrl('questionary.delete', ['id' => $questionary->getId()]))
             ->setMethod('DELETE')
             ->getForm();
     }
@@ -156,7 +160,7 @@ class QuestionaryController extends AbstractController
     /**
      * Delete a questionary entity.
      *
-     * @Route("questionary/{token}/delete", name="questionary.delete", methods="DELETE", requirements={"token" = "\w+"})
+     * @Route("questionary/{id}/delete", name="questionary.delete", methods="DELETE", requirements={"id":"\d+"})
      *
      * @param Request $request
      * @param Questionary $questionary
@@ -164,10 +168,10 @@ class QuestionaryController extends AbstractController
      *
      * @return Response
      */
-    public function delete(Request $request, Questionary $questionary, EntityManagerInterface $em) : Response
+    public function delete(Request $request, Questionary $questionary, EntityManagerInterface $em): Response
     {
 
-        $this->denyAccessUnlessGranted('QUESTION_OWNER', $questionary);
+        $this->denyAccessUnlessGranted('QUESTIONARY_OWNER', $questionary);
 
         $form = $this->createDeleteForm($questionary);
         $form->handleRequest($request);
@@ -190,7 +194,7 @@ class QuestionaryController extends AbstractController
      *
      * @return Response
      */
-    public function export(Questionary $questionary) : Response
+    public function export(Questionary $questionary): Response
     {
         $this->denyAccessUnlessGranted('QUESTIONARY_OWNER', $questionary);
 
@@ -211,39 +215,43 @@ class QuestionaryController extends AbstractController
         $activeSheet = $spreadsheet->getActiveSheet();
         $activeSheet->setTitle("CUESTIONARIO UCOQUIZZ");
 
-        $nquestion= count($question)-1;
+        $nquestion = count($question) - 1;
 
         $activeSheet->setCellValue("A1", "Título");
         $activeSheet->setCellValue("B1", "Respuesta 1");
-        $activeSheet->setCellValue("C1", "Check 1");
-        $activeSheet->setCellValue("D1", "Respuesta 2");
-        $activeSheet->setCellValue("E1", "Check 2");
-        $activeSheet->setCellValue("F1", "Respueta 3");
-        $activeSheet->setCellValue("G1", "Check 3");
-        $activeSheet->setCellValue("H1", "Respuesta 4");
-        $activeSheet->setCellValue("I1", "Check 4");
-        $activeSheet->setCellValue("J1", "Duración");
+        $activeSheet->setCellValue("C1", "Respuesta 2");
+        $activeSheet->setCellValue("D1", "Respuesta 3");
+        $activeSheet->setCellValue("E1", "Respuesta 4");
+        $activeSheet->setCellValue("F1", "Correcta");
+        $activeSheet->setCellValue("G1", "Duración");
 
 
-        for($i=0; $i<=$nquestion ;$i++ ) {
-            $var=$i+2;
+        for ($i = 0; $i <= $nquestion; $i++) {
+            $var = $i + 2;
             $activeSheet->setCellValue("A$var", $question[$i]->getTitle());
 
             $answer = $question[$i]->getAnswer();
 
             $activeSheet->setCellValue("B$var", $answer[0]->getAnswertitle());
-            $activeSheet->setCellValue("C$var", $answer[0]->getCorrect());
-            $activeSheet->setCellValue("D$var", $answer[1]->getAnswertitle());
-            $activeSheet->setCellValue("E$var", $answer[1]->getCorrect());
-            $activeSheet->setCellValue("F$var", $answer[2]->getAnswertitle());
-            $activeSheet->setCellValue("G$var", $answer[2]->getCorrect());
-            $activeSheet->setCellValue("H$var", $answer[3]->getAnswertitle());
-            $activeSheet->setCellValue("I$var", $answer[3]->getCorrect());
-
-            $activeSheet->setCellValue("J$var", $question[$i]->getDuration());
+            if($answer[0]->getCorrect()=="1"){
+                $activeSheet->setCellValue("F$var", 1);
+            }
+            $activeSheet->setCellValue("C$var", $answer[1]->getAnswertitle());
+            if($answer[1]->getCorrect()=="1"){
+                $activeSheet->setCellValue("F$var", 2);
+            }
+            $activeSheet->setCellValue("D$var", $answer[2]->getAnswertitle());
+            if($answer[2]->getCorrect()=="1"){
+                $activeSheet->setCellValue("F$var", 3);
+            }
+            $activeSheet->setCellValue("E$var", $answer[3]->getAnswertitle());
+            if($answer[3]->getCorrect()=="1"){
+                $activeSheet->setCellValue("F$var", 4);
+            }
+            $activeSheet->setCellValue("G$var", $question[$i]->getDuration());
 
         }
-        $documentname = "cuestionario_$iddocument"."_$namedocument";
+        $documentname = "cuestionario_$iddocument" . "_$namedocument".".xlsx";
         /**
          * Los siguientes encabezados son necesarios para que
          * el navegador entienda que no le estamos mandando
@@ -255,20 +263,130 @@ class QuestionaryController extends AbstractController
         header('Content-Disposition: attachment;filename="' . $documentname . '"');
         header('Cache-Control: max-age=0');
 
-        return $this->render('questionary/exported.html.twig', [
-            'questionary' => $questionary,
-        ]);
-
         $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
         $writer->save('php://output');
 
-
+        return $this->redirectToRoute('questionary.show', ['id' => $questionary->getId()]);
 
         exit;
 
-
-
-
-
     }
+
+    /**
+     * Finds and displays a questionary entity.
+     *
+     * @Route("/import/{id}", name="questionary.import", requirements={"id":"\d+"})
+     *
+     * @param Request $request
+     * @param EntityManagerInterface $em
+     * @param Questionary $questionary
+     */
+
+
+
+    public function new(Request $request, EntityManagerInterface $em, Questionary $questionary)
+    {
+        $product = new FileUpdated();
+        $form = $this->createForm(FileImportType::class, $product);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            // $file stores the uploaded PDF file
+            /** @var symfony/http-foundation/File/File.php $file */
+            $file = $product->getFileupdate();
+
+            $fileName = $this->generateUniqueFileName().'.'.$file->guessExtension();
+
+            // Move the file to the directory where brochures are stored
+            try {
+
+
+                $reader = IOFactory::createReaderForFile($file);
+
+                $locations = $reader->load($file)->getSheet(0);
+
+            } catch (FileException $e) {
+                throw new InvalidArgumentException(sprintf('El fichero especificado (%s) no existe.', $file));
+            }
+
+            // updates the 'passwordgame' property to store the PDF file name
+            // instead of its contents
+
+            $question = new Question();
+            $answer[0] =new Answer();
+            $answer[1] =new Answer();
+            $answer[2] =new Answer();
+            $answer[3] =new Answer();
+
+            foreach ($locations->getRowIterator(2) as $location) {
+                $rowIndex = 2;
+
+                $question->setTitle($locations->getCellByColumnAndRow(1, $rowIndex));
+
+                $question->setDuration($locations->getCellByColumnAndRow(7, $rowIndex)->getFormattedValue());
+
+                $answer[0]->setAnswertitle($locations->getCellByColumnAndRow(2, $rowIndex));
+                    if ($locations->getCellByColumnAndRow(6, $rowIndex)->getFormattedValue()==1){
+                        $answer[0]->setCorrect(1);
+                    }else{
+                        $answer[0]->setCorrect(0);
+                    }
+                $question->addAnswer($answer[0]);
+
+                $answer[1]->setAnswertitle($locations->getCellByColumnAndRow(3, $rowIndex));
+                    if ($locations->getCellByColumnAndRow(6, $rowIndex)->getFormattedValue()==2){
+                        $answer[1]->setCorrect(1);
+                    }else{
+                        $answer[1]->setCorrect(0);
+                    }
+                $question->addAnswer($answer[1]);
+
+                $answer[2]->setAnswertitle($locations->getCellByColumnAndRow(4, $rowIndex));
+                    if ($locations->getCellByColumnAndRow(6, $rowIndex)->getFormattedValue()==3){
+                        $answer[2]->setCorrect(1);
+                    }else{
+                        $answer[2]->setCorrect(0);
+                    }
+                $question->addAnswer($answer[2]);
+
+
+                $answer[3]->setAnswertitle($locations->getCellByColumnAndRow(5, $rowIndex));
+                    if ($locations->getCellByColumnAndRow(6, $rowIndex)->getFormattedValue()==4){
+                        $answer[3]->setCorrect(1);
+                    }else{
+                        $answer[3]->setCorrect(0);
+                    }
+
+                $question->addAnswer($answer[3]);
+
+                $question->setQuestionary($questionary);
+
+                $em->persist($question);
+                $em->flush();
+
+            }
+
+
+            // ... persist the $product variable or any other work
+
+            return $this->redirectToRoute('questionary.show', ['id' => $questionary->getId()]);
+        }
+
+        return $this->render('product/new.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+
+    /**
+     * @return string
+     */
+    private function generateUniqueFileName()
+    {
+        // md5() reduces the similarity of the file names generated by
+        // uniqid(), which is based on timestamps
+        return md5(uniqid());
+    }
+
+
+
 }

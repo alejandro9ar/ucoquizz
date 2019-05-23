@@ -27,7 +27,7 @@ class Answer
     private $correct;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Question", inversedBy="answer")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Question", inversedBy="answer", cascade={"remove"})
      * @ORM\JoinColumn(nullable=false)
      */
     private $question;

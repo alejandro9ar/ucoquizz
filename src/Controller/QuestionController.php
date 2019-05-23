@@ -33,9 +33,12 @@ class QuestionController extends AbstractController
 
         $this->denyAccessUnlessGranted('QUESTION_OWNER', $question);
 
+        $deleteForm = $this->createDeleteForm($question);
+
         return $this->render('question/show.html.twig', [
             'question' => $question,
             'answer' => $question->getAnswer(),
+            'deleteForm' => $deleteForm->createView(),
         ]);
 
     }
@@ -57,19 +60,15 @@ class QuestionController extends AbstractController
         $question = new Question();
 
         $answer1 = new Answer();
-        $answer1->setAnswertitle('answer1');
         $question->getAnswer()->add($answer1);
 
         $answer2 = new Answer();
-        $answer2->setAnswertitle('answer2');
         $question->getAnswer()->add($answer2);
 
         $answer3 = new Answer();
-        $answer3->setAnswertitle('answer3');
         $question->getAnswer()->add($answer3);
 
         $answer4 = new Answer();
-        $answer4->setAnswertitle('answer4');
         $question->getAnswer()->add($answer4);
 
 
@@ -88,7 +87,7 @@ class QuestionController extends AbstractController
             $em->persist($question);
             $em->flush();
 
-            return $this->redirectToRoute('questionary.list');
+            return $this->redirectToRoute('questionary.show', ['id' => $questionary->getId()]);
         }
 
         return $this->render( 'question/create.html.twig', [
@@ -156,7 +155,7 @@ class QuestionController extends AbstractController
     private function createDeleteForm(Question $question) : FormInterface
     {
         return $this->createFormBuilder()
-            ->setAction($this->generateUrl('question.delete', ['toke' => $question->getToke()]))
+            ->setAction($this->generateUrl('question.delete', ['id' => $question->getId()]))
             ->setMethod('DELETE')
             ->getForm();
     }
@@ -165,7 +164,7 @@ class QuestionController extends AbstractController
     /**
      * Delete a question entity.
      *
-     * @Route("question/{toke}/delete", name="question.delete", methods="DELETE", requirements={"toke" = "\w+"})
+     * @Route("question/{id}/delete", name="question.delete", methods="DELETE", requirements={"id":"\d+"})
      *
      * @param Request $request
      * @param Question $question
