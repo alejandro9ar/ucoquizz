@@ -28,6 +28,11 @@ class GameSession
      */
     private $questionary;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true, unique=true)
+     */
+    private $password;
+
     public function __construct()
     {
         $this->User = new ArrayCollection();
@@ -65,6 +70,18 @@ class GameSession
                 $user->setGameSession(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getPassword(): ?string
+    {
+        return $this->password;
+    }
+
+    public function setPassword(?string $password): self
+    {
+        $this->password = $password;
 
         return $this;
     }

@@ -31,15 +31,6 @@ class QuestionaryType extends AbstractType
             ->add('name', TextType::class,
                 ['label' => 'Nombre'])
 
-            ->add('password', RepeatedType::class, [
-                'type' => PasswordType::class,
-                'invalid_message' => 'The password fields must match.',
-                'options' => ['attr' => ['class' => 'password-field']],
-                'required' => false,
-                'first_options'  => ['label' => 'Contraseña'],
-                'second_options' => ['label' => 'Repetir contraseña'],
-            ])
-
             ->add('description', TextareaType::class,
                 ['label' => 'Descripción'])
 

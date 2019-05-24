@@ -72,10 +72,6 @@ class Questionary
      */
     private $user;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $password;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\GameSession", mappedBy="questionary", cascade={"remove"})
@@ -177,18 +173,6 @@ class Questionary
     public function setUser(?User $user): self
     {
         $this->user = $user;
-
-        return $this;
-    }
-
-    public function getPassword(): ?string
-    {
-        return $this->password;
-    }
-
-    public function setPassword(?string $password): self
-    {
-        $this->password = $password;
 
         return $this;
     }

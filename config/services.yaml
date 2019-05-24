@@ -32,6 +32,6 @@ services:
         tags:
             - { name: doctrine.event_listener, event: prePersist }
 
-    App\EventListener\QuestionTokeListener:
+    App\EventListener\GameSessionPasswordListener:
         tags:
             - { name: doctrine.event_listener, event: prePersist }

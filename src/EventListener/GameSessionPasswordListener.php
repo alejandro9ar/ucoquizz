@@ -1,10 +1,11 @@
 <?php
 namespace App\EventListener;
 
+use App\Entity\GameSession;
 use App\Entity\Question;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 
-class QuestionTokeListener
+class GameSessionPasswordListener
 {
     /**
      * @param LifecycleEventArgs $args
@@ -13,12 +14,12 @@ class QuestionTokeListener
     {
         $entity = $args->getEntity();
 
-        if (!$entity instanceof Question) {
+        if (!$entity instanceof GameSession) {
             return;
         }
 
-        if (!$entity->getToke()) {
-            $entity->setToke(\bin2hex(\random_bytes(10)));
+        if (!$entity->getPassword()) {
+            $entity->setPassword(\bin2hex(\random_bytes(3)));
         }
     }
 }

@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use App\Entity\GameSession;
 use App\Entity\Questionary;
-use App\DTO\GameDisponible;
+use App\DTO\IntroducePassword;
 use App\Entity\User;
 use App\Form\PasswordGameType;
 use Doctrine\ORM\EntityManagerInterface;
@@ -19,39 +19,42 @@ class GameSessionController extends AbstractController
     /**
      * Creates a new questionary entity.
      *
-     * @Route("/enterkey/{id}", name="gamesession.enterkey", methods={"GET", "POST"}, requirements={"id":"\d+"})
+     * @Route("/enterkey", name="gamesession.enterkey", methods={"GET", "POST"})
      *
      * @param Request $request
      * @param EntityManagerInterface $em
      *
      * @return RedirectResponse|Response
      */
-    public function enterkey(Request $request, EntityManagerInterface $em, Questionary $questionary): Response
+    public function enterkey(Request $request, EntityManagerInterface $em): Response
     {
-        $questionary2 = new GameDisponible();
-        $game = new GameSession();
-        $form = $this->createForm(PasswordGameType::class, $questionary2);
+        $introducedpassword = new IntroducePassword();
+
+
+        $form = $this->createForm(PasswordGameType::class, $introducedpassword);
         $form->handleRequest($request);
 
-        $passwordform = $questionary2->getPasswordgame();
+        $passwordform = $introducedpassword->getPasswordgame();
+
+        $sessions = $this->getDoctrine()->getRepository(GameSession::class)->findAll();
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-                if ($passwordform == $questionary->getPassword()) {
+            foreach($sessions as $session)
+                if ($passwordform == $session->getPassword()) {
 
                     $user = $this->getUser();
-                    $game->setQuestionary($questionary);
-                    $game->addUser($user);
+                    $session->addUser($user);
 
-                    $em->persist($game);
+                    $em->persist($session);
                     $em->flush();
 
-                    return $this->redirectToRoute('gamesession.gamestarting', ['id' => $game->getId()]);
+                    return $this->redirectToRoute('gamesession.gamestarting', ['id' => $session->getId()]);
                 }
 
 
 
-            return $this->redirectToRoute('questionary.show',['id' => $questionary->getId()]);
+            return $this->redirectToRoute('gamesession.enterkey');
 
         }
 
@@ -107,6 +110,7 @@ class GameSessionController extends AbstractController
         return $this->render('game_session/gamedisponible.html.twig', [
             'users' => $users,
             'questionary' => $questionary,
+            'game' => $game,
 
         ]);
     }
