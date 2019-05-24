@@ -77,9 +77,15 @@ class Questionary
      */
     private $password;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\GameSession", mappedBy="questionary", cascade={"remove"})
+     */
+    private $gameSessions;
+
     public function __construct()
     {
         $this->question = new ArrayCollection();
+        $this->gameSessions = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -204,6 +210,37 @@ class Questionary
             // set the owning side to null (unless already changed)
             if ($question->getQuestionary() === $this) {
                 $question->setQuestionary(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|GameSession[]
+     */
+    public function getGameSessions(): Collection
+    {
+        return $this->gameSessions;
+    }
+
+    public function addGameSession(GameSession $gameSession): self
+    {
+        if (!$this->gameSessions->contains($gameSession)) {
+            $this->gameSessions[] = $gameSession;
+            $gameSession->setQuestionary($this);
+        }
+
+        return $this;
+    }
+
+    public function removeGameSession(GameSession $gameSession): self
+    {
+        if ($this->gameSessions->contains($gameSession)) {
+            $this->gameSessions->removeElement($gameSession);
+            // set the owning side to null (unless already changed)
+            if ($gameSession->getQuestionary() === $this) {
+                $gameSession->setQuestionary(null);
             }
         }
 

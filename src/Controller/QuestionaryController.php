@@ -17,7 +17,7 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use App\DTO\FileUpdated;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
-use App\Form\FileImportType;
+use App\Form\FileImpType;
 
 class QuestionaryController extends AbstractController
 {
@@ -205,7 +205,7 @@ class QuestionaryController extends AbstractController
 
         $spreadsheet
             ->getProperties()
-            ->setCreator("UCOQUIZZ")
+            ->setCre2341a0cc82f47141db04ator("UCOQUIZZ")
             ->setTitle('Preguntas exportadas por UCOQUIZZ')
             ->setDescription('Este documento fue generado por la aplicacion UCOQUIZZ')
             ->setKeywords('preguntas questionary exportar UCOQUIZZ');
@@ -286,8 +286,11 @@ class QuestionaryController extends AbstractController
 
     public function new(Request $request, EntityManagerInterface $em, Questionary $questionary)
     {
+
+        $this->denyAccessUnlessGranted('QUESTIONARY_OWNER', $questionary);
+
         $product = new FileUpdated();
-        $form = $this->createForm(FileImportType::class, $product);
+        $form = $this->createForm(FileImpType::class, $product);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -319,7 +322,7 @@ class QuestionaryController extends AbstractController
             $answer[3] =new Answer();
 
             foreach ($locations->getRowIterator(2) as $location) {
-                $rowIndex = 2;
+                $rowIndex = $location->getRowIndex();
 
                 $question->setTitle($locations->getCellByColumnAndRow(1, $rowIndex));
 

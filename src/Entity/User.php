@@ -26,11 +26,18 @@ protected $id;
  */
 private $questionary;
 
+/**
+ * @ORM\ManyToOne(targetEntity="App\Entity\GameSession", inversedBy="User")
+ */
+private $gameSession;
+
+
 public function __construct()
 {
     parent::__construct();
     $this->questionary = new ArrayCollection();
 }
+
 
 /**
  * @return Collection|Questionary[]
@@ -64,6 +71,18 @@ public function removeQuestionary(Questionary $questionary): self
             $questionary->setUser(null);
         }
     }
+
+    return $this;
+}
+
+public function getGameSession(): ?GameSession
+{
+    return $this->gameSession;
+}
+
+public function setGameSession(?GameSession $gameSession): self
+{
+    $this->gameSession = $gameSession;
 
     return $this;
 }
