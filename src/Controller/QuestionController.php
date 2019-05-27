@@ -1,21 +1,26 @@
 <?php
 
+/*
+ * This file is part of the ucoquizz project.
+ *
+ * (c) Alejandro Arroyo Ruiz <i42arrua@uco.es>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace App\Controller;
 
 use App\Entity\Answer;
-use App\Entity\Questionary;
 use App\Entity\Question;
+use App\Entity\Questionary;
 use App\Form\QuestionType;
-use PhpOffice\PhpSpreadsheet\IOFactory;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormInterface;
-
-
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
 class QuestionController extends AbstractController
 {
@@ -28,9 +33,8 @@ class QuestionController extends AbstractController
      *
      * @return Response
      */
-    public function show(Question $question) : Response
+    public function show(Question $question): Response
     {
-
         $this->denyAccessUnlessGranted('QUESTION_OWNER', $question);
 
         $deleteForm = $this->createDeleteForm($question);
@@ -40,7 +44,6 @@ class QuestionController extends AbstractController
             'answer' => $question->getAnswer(),
             'deleteForm' => $deleteForm->createView(),
         ]);
-
     }
 
     /**
@@ -48,12 +51,12 @@ class QuestionController extends AbstractController
      *
      * @Route("/question/create/{id}", name="question.create", methods={"GET", "POST"}, requirements={"id":"\d+"})
      *
-     * @param Request $request
+     * @param Request                $request
      * @param EntityManagerInterface $em
      *
      * @return RedirectResponse|Response
      */
-    public function create(Request $request, EntityManagerInterface $em, Questionary $questionary) : Response
+    public function create(Request $request, EntityManagerInterface $em, Questionary $questionary): Response
     {
         $this->denyAccessUnlessGranted('QUESTIONARY_OWNER', $questionary);
 
@@ -71,12 +74,10 @@ class QuestionController extends AbstractController
         $answer4 = new Answer();
         $question->getAnswer()->add($answer4);
 
-
         $form = $this->createForm(QuestionType::class, $question);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
             $question->setQuestionary($questionary);
 
             $answer1->setQuestion($question);
@@ -90,25 +91,24 @@ class QuestionController extends AbstractController
             return $this->redirectToRoute('questionary.show', ['id' => $questionary->getId()]);
         }
 
-        return $this->render( 'question/create.html.twig', [
+        return $this->render('question/create.html.twig', [
             'form' => $form->createView(),
         ]);
     }
 
     /**
-     * Edit existing question entity
+     * Edit existing question entity.
      *
      * @Route("/question/{id}/edit", name="question.edit", methods={"GET", "POST"}, requirements={"id":"\d+"})
      *
-     * @param Request $request
-     * @param Question $question
+     * @param Request                $request
+     * @param Question               $question
      * @param EntityManagerInterface $em
      *
      * @return Response
      */
-    public function edit(Request $request, Question $question, EntityManagerInterface $em) : Response
+    public function edit(Request $request, Question $question, EntityManagerInterface $em): Response
     {
-
         $this->denyAccessUnlessGranted('QUESTION_OWNER', $question);
 
         $form = $this->createForm(QuestionType::class, $question);
@@ -134,7 +134,7 @@ class QuestionController extends AbstractController
      *
      * @return Response
      */
-    public function preview(Question $question) : Response
+    public function preview(Question $question): Response
     {
         $deleteForm = $this->createDeleteForm($question);
 
@@ -152,7 +152,7 @@ class QuestionController extends AbstractController
      *
      * @return FormInterface
      */
-    private function createDeleteForm(Question $question) : FormInterface
+    private function createDeleteForm(Question $question): FormInterface
     {
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('question.delete', ['id' => $question->getId()]))
@@ -160,19 +160,18 @@ class QuestionController extends AbstractController
             ->getForm();
     }
 
-
     /**
      * Delete a question entity.
      *
      * @Route("question/{id}/delete", name="question.delete", methods="DELETE", requirements={"id":"\d+"})
      *
-     * @param Request $request
-     * @param Question $question
+     * @param Request                $request
+     * @param Question               $question
      * @param EntityManagerInterface $em
      *
      * @return Response
      */
-    public function delete(Request $request, Question $question, EntityManagerInterface $em) : Response
+    public function delete(Request $request, Question $question, EntityManagerInterface $em): Response
     {
         $form = $this->createDeleteForm($question);
         $form->handleRequest($request);
@@ -184,10 +183,4 @@ class QuestionController extends AbstractController
 
         return $this->redirectToRoute('questionary.list');
     }
-
-
-
-
-
-
 }

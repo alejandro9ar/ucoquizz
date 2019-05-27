@@ -1,28 +1,34 @@
 <?php
 
+/*
+ * This file is part of the ucoquizz project.
+ *
+ * (c) Alejandro Arroyo Ruiz <i42arrua@uco.es>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace App\Controller;
 
+use App\DTO\FileUpdated;
 use App\Entity\Answer;
 use App\Entity\Question;
 use App\Entity\Questionary;
+use App\Form\FileImpType;
 use App\Form\QuestionaryType;
-use App\Form\QuestionType;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Form\FormInterface;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use App\DTO\FileUpdated;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
-use App\Form\FileImpType;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
 class QuestionaryController extends AbstractController
 {
-
-
     /**
      * Lists all questionary entities.
      *
@@ -58,7 +64,6 @@ class QuestionaryController extends AbstractController
             'question' => $question,
             'deleteForm' => $deleteForm->createView(),
         ]);
-
     }
 
     /**
@@ -66,7 +71,7 @@ class QuestionaryController extends AbstractController
      *
      * @Route("/questionary/create", name="questionary.create", methods={"GET", "POST"})
      *
-     * @param Request $request
+     * @param Request                $request
      * @param EntityManagerInterface $em
      *
      * @return RedirectResponse|Response
@@ -78,13 +83,13 @@ class QuestionaryController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
             $questionary->setUser($this->getUser());
 
             $em->persist($questionary);
             $em->flush();
 
-            return $this->redirectToRoute('questionary.show', ['id' => $questionary->getId()]);        }
+            return $this->redirectToRoute('questionary.show', ['id' => $questionary->getId()]);
+        }
 
         return $this->render('questionary/create.html.twig', [
             'form' => $form->createView(),
@@ -92,19 +97,18 @@ class QuestionaryController extends AbstractController
     }
 
     /**
-     * Edit existing questionary entity
+     * Edit existing questionary entity.
      *
      * @Route("/questionary/{id}/edit", name="questionary.edit", methods={"GET", "POST"}, requirements={"id":"\d+"})
      *
-     * @param Request $request
-     * @param Questionary $questionary
+     * @param Request                $request
+     * @param Questionary            $questionary
      * @param EntityManagerInterface $em
      *
      * @return Response
      */
     public function edit(Request $request, Questionary $questionary, EntityManagerInterface $em): Response
     {
-
         $this->denyAccessUnlessGranted('QUESTIONARY_OWNER', $questionary);
 
         $form = $this->createForm(QuestionaryType::class, $questionary);
@@ -156,21 +160,19 @@ class QuestionaryController extends AbstractController
             ->getForm();
     }
 
-
     /**
      * Delete a questionary entity.
      *
      * @Route("questionary/{id}/delete", name="questionary.delete", methods="DELETE", requirements={"id":"\d+"})
      *
-     * @param Request $request
-     * @param Questionary $questionary
+     * @param Request                $request
+     * @param Questionary            $questionary
      * @param EntityManagerInterface $em
      *
      * @return Response
      */
     public function delete(Request $request, Questionary $questionary, EntityManagerInterface $em): Response
     {
-
         $this->denyAccessUnlessGranted('QUESTIONARY_OWNER', $questionary);
 
         $form = $this->createDeleteForm($questionary);
@@ -183,7 +185,6 @@ class QuestionaryController extends AbstractController
 
         return $this->redirectToRoute('questionary.list');
     }
-
 
     /**
      * Finds and displays a questionary entity.
@@ -205,7 +206,7 @@ class QuestionaryController extends AbstractController
 
         $spreadsheet
             ->getProperties()
-            ->setCre2341a0cc82f47141db04ator("UCOQUIZZ")
+            ->setCre2341a0cc82f47141db04ator('UCOQUIZZ')
             ->setTitle('Preguntas exportadas por UCOQUIZZ')
             ->setDescription('Este documento fue generado por la aplicacion UCOQUIZZ')
             ->setKeywords('preguntas questionary exportar UCOQUIZZ');
@@ -213,46 +214,44 @@ class QuestionaryController extends AbstractController
         $question = $questionary->getQuestion();
 
         $activeSheet = $spreadsheet->getActiveSheet();
-        $activeSheet->setTitle("CUESTIONARIO UCOQUIZZ");
+        $activeSheet->setTitle('CUESTIONARIO UCOQUIZZ');
 
-        $nquestion = count($question) - 1;
+        $nquestion = \count($question) - 1;
 
-        $activeSheet->setCellValue("A1", "Título");
-        $activeSheet->setCellValue("B1", "Respuesta 1");
-        $activeSheet->setCellValue("C1", "Respuesta 2");
-        $activeSheet->setCellValue("D1", "Respuesta 3");
-        $activeSheet->setCellValue("E1", "Respuesta 4");
-        $activeSheet->setCellValue("F1", "Correcta");
-        $activeSheet->setCellValue("G1", "Duración");
+        $activeSheet->setCellValue('A1', 'Título');
+        $activeSheet->setCellValue('B1', 'Respuesta 1');
+        $activeSheet->setCellValue('C1', 'Respuesta 2');
+        $activeSheet->setCellValue('D1', 'Respuesta 3');
+        $activeSheet->setCellValue('E1', 'Respuesta 4');
+        $activeSheet->setCellValue('F1', 'Correcta');
+        $activeSheet->setCellValue('G1', 'Duración');
 
-
-        for ($i = 0; $i <= $nquestion; $i++) {
+        for ($i = 0; $i <= $nquestion; ++$i) {
             $var = $i + 2;
             $activeSheet->setCellValue("A$var", $question[$i]->getTitle());
 
             $answer = $question[$i]->getAnswer();
 
             $activeSheet->setCellValue("B$var", $answer[0]->getAnswertitle());
-            if($answer[0]->getCorrect()=="1"){
+            if ('1' === $answer[0]->getCorrect()) {
                 $activeSheet->setCellValue("F$var", 1);
             }
             $activeSheet->setCellValue("C$var", $answer[1]->getAnswertitle());
-            if($answer[1]->getCorrect()=="1"){
+            if ('1' === $answer[1]->getCorrect()) {
                 $activeSheet->setCellValue("F$var", 2);
             }
             $activeSheet->setCellValue("D$var", $answer[2]->getAnswertitle());
-            if($answer[2]->getCorrect()=="1"){
+            if ('1' === $answer[2]->getCorrect()) {
                 $activeSheet->setCellValue("F$var", 3);
             }
             $activeSheet->setCellValue("E$var", $answer[3]->getAnswertitle());
-            if($answer[3]->getCorrect()=="1"){
+            if ('1' === $answer[3]->getCorrect()) {
                 $activeSheet->setCellValue("F$var", 4);
             }
             $activeSheet->setCellValue("G$var", $question[$i]->getDuration());
-
         }
-        $documentname = "cuestionario_$iddocument" . "_$namedocument".".xlsx";
-        /**
+        $documentname = "cuestionario_$iddocument"."_$namedocument".'.xlsx';
+        /*
          * Los siguientes encabezados son necesarios para que
          * el navegador entienda que no le estamos mandando
          * simple HTML
@@ -260,7 +259,7 @@ class QuestionaryController extends AbstractController
          */
 
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="' . $documentname . '"');
+        header('Content-Disposition: attachment;filename="'.$documentname.'"');
         header('Cache-Control: max-age=0');
 
         $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
@@ -269,7 +268,6 @@ class QuestionaryController extends AbstractController
         return $this->redirectToRoute('questionary.show', ['id' => $questionary->getId()]);
 
         exit;
-
     }
 
     /**
@@ -277,16 +275,12 @@ class QuestionaryController extends AbstractController
      *
      * @Route("/import/{id}", name="questionary.import", requirements={"id":"\d+"})
      *
-     * @param Request $request
+     * @param Request                $request
      * @param EntityManagerInterface $em
-     * @param Questionary $questionary
+     * @param Questionary            $questionary
      */
-
-
-
     public function new(Request $request, EntityManagerInterface $em, Questionary $questionary)
     {
-
         $this->denyAccessUnlessGranted('QUESTIONARY_OWNER', $questionary);
 
         $product = new FileUpdated();
@@ -302,12 +296,9 @@ class QuestionaryController extends AbstractController
 
             // Move the file to the directory where brochures are stored
             try {
-
-
                 $reader = IOFactory::createReaderForFile($file);
 
                 $locations = $reader->load($file)->getSheet(0);
-
             } catch (FileException $e) {
                 throw new InvalidArgumentException(sprintf('El fichero especificado (%s) no existe.', $file));
             }
@@ -316,10 +307,10 @@ class QuestionaryController extends AbstractController
             // instead of its contents
 
             $question = new Question();
-            $answer[0] =new Answer();
-            $answer[1] =new Answer();
-            $answer[2] =new Answer();
-            $answer[3] =new Answer();
+            $answer[0] = new Answer();
+            $answer[1] = new Answer();
+            $answer[2] = new Answer();
+            $answer[3] = new Answer();
 
             foreach ($locations->getRowIterator(2) as $location) {
                 $rowIndex = $location->getRowIndex();
@@ -329,36 +320,35 @@ class QuestionaryController extends AbstractController
                 $question->setDuration($locations->getCellByColumnAndRow(7, $rowIndex)->getFormattedValue());
 
                 $answer[0]->setAnswertitle($locations->getCellByColumnAndRow(2, $rowIndex));
-                    if ($locations->getCellByColumnAndRow(6, $rowIndex)->getFormattedValue()==1){
-                        $answer[0]->setCorrect(1);
-                    }else{
-                        $answer[0]->setCorrect(0);
-                    }
+                if (1 === $locations->getCellByColumnAndRow(6, $rowIndex)->getFormattedValue()) {
+                    $answer[0]->setCorrect(1);
+                } else {
+                    $answer[0]->setCorrect(0);
+                }
                 $question->addAnswer($answer[0]);
 
                 $answer[1]->setAnswertitle($locations->getCellByColumnAndRow(3, $rowIndex));
-                    if ($locations->getCellByColumnAndRow(6, $rowIndex)->getFormattedValue()==2){
-                        $answer[1]->setCorrect(1);
-                    }else{
-                        $answer[1]->setCorrect(0);
-                    }
+                if (2 === $locations->getCellByColumnAndRow(6, $rowIndex)->getFormattedValue()) {
+                    $answer[1]->setCorrect(1);
+                } else {
+                    $answer[1]->setCorrect(0);
+                }
                 $question->addAnswer($answer[1]);
 
                 $answer[2]->setAnswertitle($locations->getCellByColumnAndRow(4, $rowIndex));
-                    if ($locations->getCellByColumnAndRow(6, $rowIndex)->getFormattedValue()==3){
-                        $answer[2]->setCorrect(1);
-                    }else{
-                        $answer[2]->setCorrect(0);
-                    }
+                if (3 === $locations->getCellByColumnAndRow(6, $rowIndex)->getFormattedValue()) {
+                    $answer[2]->setCorrect(1);
+                } else {
+                    $answer[2]->setCorrect(0);
+                }
                 $question->addAnswer($answer[2]);
 
-
                 $answer[3]->setAnswertitle($locations->getCellByColumnAndRow(5, $rowIndex));
-                    if ($locations->getCellByColumnAndRow(6, $rowIndex)->getFormattedValue()==4){
-                        $answer[3]->setCorrect(1);
-                    }else{
-                        $answer[3]->setCorrect(0);
-                    }
+                if (4 === $locations->getCellByColumnAndRow(6, $rowIndex)->getFormattedValue()) {
+                    $answer[3]->setCorrect(1);
+                } else {
+                    $answer[3]->setCorrect(0);
+                }
 
                 $question->addAnswer($answer[3]);
 
@@ -366,9 +356,7 @@ class QuestionaryController extends AbstractController
 
                 $em->persist($question);
                 $em->flush();
-
             }
-
 
             // ... persist the $product variable or any other work
 
@@ -389,7 +377,4 @@ class QuestionaryController extends AbstractController
         // uniqid(), which is based on timestamps
         return md5(uniqid());
     }
-
-
-
 }

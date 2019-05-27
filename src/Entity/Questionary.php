@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the ucoquizz project.
+ *
+ * (c) Alejandro Arroyo Ruiz <i42arrua@uco.es>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -13,10 +22,8 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * @ORM\Entity(repositoryClass="App\Repository\QuestionaryRepository")
  * @UniqueEntity("token")
  */
-
 class Questionary
 {
-
     public const PUBLIC = 'público';
     public const PRIVATE = 'privado';
 
@@ -71,7 +78,6 @@ class Questionary
      * @ORM\JoinColumn(nullable=false)
      */
     private $user;
-
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\GameSession", mappedBy="questionary", cascade={"remove"})
@@ -141,7 +147,7 @@ class Questionary
     /**
      * @return string
      */
-    public function getToken() : ?string
+    public function getToken(): ?string
     {
         return $this->token;
     }
@@ -151,9 +157,10 @@ class Questionary
      *
      * @return self
      */
-    public function setToken(string $token) : self
+    public function setToken(string $token): self
     {
         $this->token = $token;
+
         return $this;
     }
 

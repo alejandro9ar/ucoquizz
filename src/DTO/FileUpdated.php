@@ -1,25 +1,29 @@
 <?php
 
-// src/Entity/FileUpdated.php.php
-namespace App\DTO;
+/*
+ * This file is part of the ucoquizz project.
+ *
+ * (c) Alejandro Arroyo Ruiz <i42arrua@uco.es>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
-use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
+namespace App\DTO;
 
 class FileUpdated
 {
-
     private $fileupdate;
 
     public function getFileupdate()
     {
-    return $this->fileupdate;
+        return $this->fileupdate;
     }
 
     public function setFileupdate($fileupdate)
     {
-    $this->fileupdate = $fileupdate;
+        $this->fileupdate = $fileupdate;
 
-    return $this;
+        return $this;
     }
 }

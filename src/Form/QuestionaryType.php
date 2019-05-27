@@ -1,24 +1,23 @@
 <?php
 
+/*
+ * This file is part of the ucoquizz project.
+ *
+ * (c) Alejandro Arroyo Ruiz <i42arrua@uco.es>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace App\Form;
 
-use App\Entity\Questionary;
-use App\Entity\User;
 use App\Entity\Category;
-use phpDocumentor\Reflection\Types\Integer;
-
+use App\Entity\Questionary;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\UrlType;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
-
-use Symfony\Component\Form\Extension\Core\Type\PasswordType;
-use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
-
-use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -26,7 +25,6 @@ class QuestionaryType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-
         $builder
             ->add('name', TextType::class,
                 ['label' => 'Nombre'])

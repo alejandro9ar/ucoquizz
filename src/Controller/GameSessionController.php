@@ -1,10 +1,19 @@
 <?php
 
+/*
+ * This file is part of the ucoquizz project.
+ *
+ * (c) Alejandro Arroyo Ruiz <i42arrua@uco.es>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace App\Controller;
 
+use App\DTO\IntroducePassword;
 use App\Entity\GameSession;
 use App\Entity\Questionary;
-use App\DTO\IntroducePassword;
 use App\Entity\User;
 use App\Form\PasswordGameType;
 use Doctrine\ORM\EntityManagerInterface;
@@ -15,13 +24,12 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class GameSessionController extends AbstractController
 {
-
     /**
      * Creates a new questionary entity.
      *
      * @Route("/enterkey", name="gamesession.enterkey", methods={"GET", "POST"})
      *
-     * @param Request $request
+     * @param Request                $request
      * @param EntityManagerInterface $em
      *
      * @return RedirectResponse|Response
@@ -29,7 +37,6 @@ class GameSessionController extends AbstractController
     public function enterkey(Request $request, EntityManagerInterface $em): Response
     {
         $introducedpassword = new IntroducePassword();
-
 
         $form = $this->createForm(PasswordGameType::class, $introducedpassword);
         $form->handleRequest($request);
@@ -39,10 +46,8 @@ class GameSessionController extends AbstractController
         $sessions = $this->getDoctrine()->getRepository(GameSession::class)->findAll();
 
         if ($form->isSubmitted() && $form->isValid()) {
-
-            foreach($sessions as $session)
-                if ($passwordform == $session->getPassword()) {
-
+            foreach ($sessions as $session) {
+                if ($passwordform === $session->getPassword()) {
                     $user = $this->getUser();
                     $session->addUser($user);
 
@@ -51,11 +56,9 @@ class GameSessionController extends AbstractController
 
                     return $this->redirectToRoute('gamesession.gamestarting', ['id' => $session->getId()]);
                 }
-
-
+            }
 
             return $this->redirectToRoute('gamesession.enterkey');
-
         }
 
         return $this->render('game_session/enterpassword.html.twig', [
@@ -67,6 +70,7 @@ class GameSessionController extends AbstractController
      * Creates a new questionary entity.
      *
      * @Route("/play/{id}", name="gamesession.play", methods={"GET", "POST"}, requirements={"id":"\d+"})
+     *
      * @param EntityManagerInterface $em
      *
      * @return RedirectResponse|Response
@@ -75,19 +79,14 @@ class GameSessionController extends AbstractController
     {
         $game = new GameSession();
 
-
         $user = $this->getUser();
         $game->setQuestionary($questionary);
         $game->addUser($user);
-
 
         $em->persist($game);
         $em->flush();
 
         return $this->redirectToRoute('gamesession.gamestarting', ['id' => $game->getId()]);
-
-
-
     }
 
     /**
@@ -99,7 +98,6 @@ class GameSessionController extends AbstractController
      */
     public function gamestarting(GameSession $game): Response
     {
-
         $this->denyAccessUnlessGranted('GAME_DISPONIBLE', $game);
 
         //$users = $this->getDoctrine()->getRepository(User::class)->findAll();
@@ -111,9 +109,6 @@ class GameSessionController extends AbstractController
             'users' => $users,
             'questionary' => $questionary,
             'game' => $game,
-
         ]);
     }
-
-
 }

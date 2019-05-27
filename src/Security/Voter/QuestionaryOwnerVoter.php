@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the ucoquizz project.
+ *
+ * (c) Alejandro Arroyo Ruiz <i42arrua@uco.es>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace App\Security\Voter;
 
 use App\Entity\Questionary;
@@ -13,14 +22,15 @@ class QuestionaryOwnerVoter extends Voter
     {
         // replace with your own logic
         // https://symfony.com/doc/current/security/voters.html
-        return in_array($attribute, ['QUESTIONARY_OWNER'])
+        return \in_array($attribute, ['QUESTIONARY_OWNER'], true)
             && $subject instanceof \App\Entity\Questionary;
     }
 
     /**
-     * @param string $attribute
-     * @param Questionary $subject
+     * @param string         $attribute
+     * @param Questionary    $subject
      * @param TokenInterface $token
+     *
      * @return bool
      */
     protected function voteOnAttribute($attribute, $subject, TokenInterface $token)
@@ -31,7 +41,7 @@ class QuestionaryOwnerVoter extends Voter
             return false;
         }
 
-        if($subject->getUser()==$user) {
+        if ($subject->getUser() === $user) {
             return true;
         }
 

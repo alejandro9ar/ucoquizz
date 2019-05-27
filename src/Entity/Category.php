@@ -1,12 +1,19 @@
 <?php
 
+/*
+ * This file is part of the ucoquizz project.
+ *
+ * (c) Alejandro Arroyo Ruiz <i42arrua@uco.es>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use FOS\UserBundle\Controller;
-
 
 /**
  * @ORM\Entity()
@@ -30,13 +37,11 @@ class Category
     private $name;
 
     /**
-     *
      * @var Questionary[]|ArrayCollection
      *
      * @ORM\OneToMany(targetEntity="App\Entity\Questionary", mappedBy="category")
      */
     private $questionary;
-
 
     public function __construct()
     {
@@ -113,5 +118,4 @@ class Category
 
         return $this;
     }
-
 }
