@@ -39,12 +39,6 @@ class Question
      */
     private $title;
 
-    /**
-     * @var string
-     *
-     * @ORM\Column(type="string", length=255)
-     */
-    private $toke;
 
     /**
      * @ORM\Column(type="integer")
@@ -102,25 +96,7 @@ class Question
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getToke(): ?string
-    {
-        return $this->toke;
-    }
 
-    /**
-     * @param string $toke
-     *
-     * @return self
-     */
-    public function setToke(string $toke): self
-    {
-        $this->toke = $toke;
-
-        return $this;
-    }
 
     /**
      * @return Collection|Answer[]

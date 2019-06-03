@@ -29,6 +29,7 @@ class GameSession
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\User", mappedBy="gameSession")
+     * @ORM\JoinColumn(onDelete="CASCADE")
      */
     private $User;
 
@@ -38,7 +39,7 @@ class GameSession
     private $questionary;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true, unique=true)
+     * @ORM\Column(type="string", length=255)
      */
     private $password;
 

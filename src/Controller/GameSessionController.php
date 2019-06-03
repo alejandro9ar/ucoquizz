@@ -11,6 +11,7 @@
 
 namespace App\Controller;
 
+use App\Message\AddGameSessionMessage;
 use App\DTO\IntroducePassword;
 use App\Entity\GameSession;
 use App\Entity\Questionary;
@@ -20,10 +21,22 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 class GameSessionController extends AbstractController
 {
+
+    /**
+     * @var MessageBusInterface
+     */
+    private $bus;
+
+    public function __construct(MessageBusInterface $bus)
+    {
+        $this->bus = $bus;
+    }
+
     /**
      * Creates a new questionary entity.
      *
@@ -51,8 +64,9 @@ class GameSessionController extends AbstractController
                     $user = $this->getUser();
                     $session->addUser($user);
 
-                    $em->persist($session);
-                    $em->flush();
+                    $this->bus->dispatch(
+                        new AddGameSessionMessage($session)
+                    );
 
                     return $this->redirectToRoute('gamesession.gamestarting', ['id' => $session->getId()]);
                 }
@@ -83,8 +97,12 @@ class GameSessionController extends AbstractController
         $game->setQuestionary($questionary);
         $game->addUser($user);
 
-        $em->persist($game);
-        $em->flush();
+        $this->bus->dispatch(
+            new AddGameSessionMessage($game)
+        );
+
+        //$em->persist($game);
+        //$em->flush();
 
         return $this->redirectToRoute('gamesession.gamestarting', ['id' => $game->getId()]);
     }

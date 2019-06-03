@@ -17,6 +17,7 @@ use App\Entity\Question;
 use App\Entity\Questionary;
 use App\Form\FileImpType;
 use App\Form\QuestionaryType;
+use App\Message\AddGameSessionMessage;
 use Doctrine\ORM\EntityManagerInterface;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -25,10 +26,21 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 class QuestionaryController extends AbstractController
 {
+    /**
+     * @var MessageBusInterface
+     */
+    private $bus;
+
+    public function __construct(MessageBusInterface $bus)
+    {
+        $this->bus = $bus;
+    }
+
     /**
      * Lists all questionary entities.
      *
@@ -306,13 +318,13 @@ class QuestionaryController extends AbstractController
             // updates the 'passwordgame' property to store the PDF file name
             // instead of its contents
 
-            $question = new Question();
-            $answer[0] = new Answer();
-            $answer[1] = new Answer();
-            $answer[2] = new Answer();
-            $answer[3] = new Answer();
-
             foreach ($locations->getRowIterator(2) as $location) {
+                $question = new Question();
+                $answer[0] = new Answer();
+                $answer[1] = new Answer();
+                $answer[2] = new Answer();
+                $answer[3] = new Answer();
+
                 $rowIndex = $location->getRowIndex();
 
                 $question->setTitle($locations->getCellByColumnAndRow(1, $rowIndex));
@@ -355,8 +367,9 @@ class QuestionaryController extends AbstractController
                 $question->setQuestionary($questionary);
 
                 $em->persist($question);
-                $em->flush();
             }
+
+            $em->flush();
 
             // ... persist the $product variable or any other work
 

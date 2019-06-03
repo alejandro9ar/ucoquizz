@@ -20,7 +20,6 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * @ORM\Entity()
  * @ORM\Table(name="questionary")
  * @ORM\Entity(repositoryClass="App\Repository\QuestionaryRepository")
- * @UniqueEntity("token")
  */
 class Questionary
 {
@@ -60,12 +59,6 @@ class Questionary
      */
     private $type;
 
-    /**
-     * @var string
-     *
-     * @ORM\Column(type="string", length=255, unique=true)
-     */
-    private $token;
 
     /**
      * @ORM\JoinColumn(nullable=true)
@@ -140,26 +133,6 @@ class Questionary
     public function setType(string $type): self
     {
         $this->type = $type;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getToken(): ?string
-    {
-        return $this->token;
-    }
-
-    /**
-     * @param string $token
-     *
-     * @return self
-     */
-    public function setToken(string $token): self
-    {
-        $this->token = $token;
 
         return $this;
     }
