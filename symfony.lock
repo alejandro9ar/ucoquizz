@@ -117,11 +117,20 @@
             ".php_cs.dist"
         ]
     },
+    "friendsofsymfony/User-bundle": {
+        "version": "v2.1.2"
+    },
     "friendsofsymfony/user-bundle": {
         "version": "v2.1.2"
     },
     "jdorn/sql-formatter": {
         "version": "v1.2.17"
+    },
+    "knplabs/knp-components": {
+        "version": "v1.3.10"
+    },
+    "knplabs/knp-paginator-bundle": {
+        "version": "v3.0.0"
     },
     "markbaker/complex": {
         "version": "1.4.7"
@@ -290,6 +299,9 @@
             "src/Kernel.php"
         ]
     },
+    "symfony/http-client": {
+        "version": "v4.3.0"
+    },
     "symfony/http-foundation": {
         "version": "v4.2.5"
     },
@@ -310,6 +322,18 @@
             "version": "1.0",
             "ref": "fadbfe33303a76e25cb63401050439aa9b1a9c7f"
         }
+    },
+    "symfony/messenger": {
+        "version": "4.1",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "4.1",
+            "ref": "2c72a5331d001fce2e8e8e94371b97afd5c32f34"
+        },
+        "files": [
+            "config/packages/messenger.yaml"
+        ]
     },
     "symfony/monolog-bridge": {
         "version": "v4.2.5"
@@ -363,6 +387,9 @@
         "version": "v1.11.0"
     },
     "symfony/polyfill-php72": {
+        "version": "v1.11.0"
+    },
+    "symfony/polyfill-php73": {
         "version": "v1.11.0"
     },
     "symfony/process": {

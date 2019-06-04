@@ -77,6 +77,11 @@ class Questionary
      */
     private $gameSessions;
 
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $state;
+
     public function __construct()
     {
         $this->question = new ArrayCollection();
@@ -207,6 +212,18 @@ class Questionary
                 $gameSession->setQuestionary(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getState(): ?bool
+    {
+        return $this->state;
+    }
+
+    public function setState(?bool $state): self
+    {
+        $this->state = $state;
 
         return $this;
     }

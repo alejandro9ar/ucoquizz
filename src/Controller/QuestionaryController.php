@@ -28,6 +28,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Knp\Component\Pager\PaginatorInterface;
 
 class QuestionaryController extends AbstractController
 {
@@ -48,12 +49,21 @@ class QuestionaryController extends AbstractController
      *
      * @return Response
      */
-    public function list(): Response
+    public function list(Request $request, PaginatorInterface $paginator): Response
     {
-        $questionaries = $this->getDoctrine()->getRepository(Questionary::class)->findAll();
+        $questionaries = $this->getDoctrine()->getRepository(Questionary::class)->findBy(array('type' => 'publico'));
+
+        $questionarieswithpaginator = $paginator->paginate(
+        // Doctrine Query, not results
+            $questionaries,
+            // Define the page parameter
+            $request->query->getInt('page', 1),
+            // Items per page
+            15
+        );
 
         return $this->render('questionary/list.html.twig', [
-            'questionarys' => $questionaries,
+            'questionarys' => $questionarieswithpaginator,
         ]);
     }
 
@@ -270,9 +280,11 @@ class QuestionaryController extends AbstractController
          * Por cierto: no hagas ningún echo ni cosas de esas; es decir, no imprimas nada
          */
 
+
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment;filename="'.$documentname.'"');
         header('Cache-Control: max-age=0');
+
 
         $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
         $writer->save('php://output');
@@ -376,7 +388,7 @@ class QuestionaryController extends AbstractController
             return $this->redirectToRoute('questionary.show', ['id' => $questionary->getId()]);
         }
 
-        return $this->render('product/new.html.twig', [
+        return $this->render('questionary/export.html.twig', [
             'form' => $form->createView(),
         ]);
     }

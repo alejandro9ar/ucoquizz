@@ -28,7 +28,7 @@ class GameSession
     private $id;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\user", mappedBy="gameSession")
+     * @ORM\OneToMany(targetEntity="App\Entity\User", mappedBy="gameSession")
      * @ORM\JoinColumn(onDelete="CASCADE")
      */
     private $user;

@@ -9,11 +9,10 @@
             <th class="active text-center">Descripción</th>
             <th class="active text-center">Usuario</th>
             <th class="active text-center">Preguntas</th>
+            <th class="active text-center">Estado</th>
         </tr>
 
         {% for questionary in questionarys %}
-
-            {% if questionary.type == "público" %}
 
             <tr>
                 <td>
@@ -23,7 +22,12 @@
                 </td>
                 <td> {{ questionary.id}} </td>
                 <td> {{ questionary.description}} </td>
-                <td>{{ questionary.user }}</td>
+
+                {% if questionary.User == app.user.username %}
+                    <td><b><font color=#008000>{{ questionary.User }}</font></b></td>
+                {% else %}
+                    <td>{{ questionary.User }}</td>
+                    {% endif %}
 
                 {% set myVal = 0 %}
                 {% for question in questionary.question %}
@@ -31,10 +35,21 @@
                 {% endfor %}
                 <td>{{ myVal }}</td>
 
-            </tr>
+                {% if questionary.state == '1' %}
+                    <td><b><font color=#008000>Abierto</font></b></td>
+                {% else %}
+                   <td><b><font color=#FF0000>Cerrado</font></b></td></td>
+                {% endif %}
 
-            {% endif %}
+
+            </tr>
 
         {% endfor %}
     </table>
+
+    <div class="navigation">
+        {{ knp_pagination_render(questionarys) }}
+    </div>
+
+
 {% endblock %}

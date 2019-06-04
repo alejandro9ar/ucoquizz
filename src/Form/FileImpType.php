@@ -22,7 +22,7 @@ class FileImpType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-        ->add('fileupdate', FileType::class, ['label' => '.XLSX FILE'])
+        ->add('fileupdate', FileType::class, ['label' => 'Selecciona un fichero .xlsx'])
 
         ;
     }

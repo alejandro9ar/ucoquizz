@@ -36,7 +36,7 @@ class QuestionaryOwnerVoter extends Voter
     protected function voteOnAttribute($attribute, $subject, TokenInterface $token)
     {
         $user = $token->getUser();
-        // if the user is anonymous, do not grant access
+        // if the User is anonymous, do not grant access
         if (!$user instanceof UserInterface) {
             return false;
         }
