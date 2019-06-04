@@ -84,7 +84,7 @@ class QuestionaryController extends AbstractController
 
         $request->query->get('id');
 
-        $questionaries = $this->getDoctrine()->getRepository(Questionary::class)->findBy(array( 'category' => $id ));
+        $questionaries = $this->getDoctrine()->getRepository(Questionary::class)->findBy(array( 'category' => $id , 'state'=> '1' ));
 
         $categories = $this->getDoctrine()->getRepository(Category::class)->findAll();
 
@@ -115,13 +115,12 @@ class QuestionaryController extends AbstractController
      */
     public function show(Questionary $questionary): Response
     {
-        $question = $questionary->getQuestion();
-        $deleteForm = $this->createDeleteForm($questionary);
+        $question = $questionary->getQuestion();;
 
         return $this->render('questionary/show.html.twig', [
             'questionary' => $questionary,
             'question' => $question,
-            'deleteForm' => $deleteForm->createView(),
+
         ]);
     }
 
@@ -241,28 +240,10 @@ class QuestionaryController extends AbstractController
 
         return $this->render('questionary/edit.html.twig', [
             'form' => $form->createView(),
-        ]);
-    }
-
-    /**
-     * Finds and displays the prEditeview page for a questionary entity.
-     *
-     * @Route("questionary/{token}", name="questionary.preview", methods="GET", requirements={"token" = "\w+"})
-     *
-     * @param Questionary $questionary
-     *
-     * @return Response
-     */
-    public function preview(Questionary $questionary): Response
-    {
-        $deleteForm = $this->createDeleteForm($questionary);
-
-        return $this->render('questionary/show.html.twig', [
             'questionary' => $questionary,
-            'hasControlAccess' => true,
-            'deleteForm' => $deleteForm->createView(),
         ]);
     }
+
 
     /**
      * Creates a form to delete a questionary entity.

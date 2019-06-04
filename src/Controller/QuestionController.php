@@ -154,36 +154,11 @@ class QuestionController extends AbstractController
 
         return $this->render('question/edit.html.twig', [
             'form' => $form->createView(),
+            'questionary' => $question->getQuestionary(),
         ]);
     }
 
-    /**
-     * Finds and displays the preview page for a question entity.
-     *
-     * @Route("questions/{toke}", name="question.preview", methods="GET", requirements={"toke" = "\w+"})
-     *
-     * @param Question $question
-     *
-     * @return Response
-     */
-    public function preview(Question $question): Response
-    {
-        $deleteForm = $this->createDeleteForm($question);
 
-        return $this->render('question/show.html.twig', [
-            'question' => $question,
-            'hasControlAccess' => true,
-            'deleteForm' => $deleteForm->createView(),
-        ]);
-    }
-
-    /**
-     * Creates a form to delete a question entity.
-     *
-     * @param Question $question
-     *
-     * @return FormInterface
-     */
     private function createDeleteForm(Question $question): FormInterface
     {
         return $this->createFormBuilder()
@@ -208,11 +183,21 @@ class QuestionController extends AbstractController
         $form = $this->createDeleteForm($question);
         $form->handleRequest($request);
 
+        $questionary = $question->getQuestionary();
+
+        $answer = $question->getAnswer();
+
+
+        for ($i = 0; $i <= 3; $i++){
+            $em->remove($answer[$i]);
+        }
+            $em->flush();
+
         if ($form->isSubmitted() && $form->isValid()) {
             $em->remove($question);
             $em->flush();
         }
 
-        return $this->redirectToRoute('questionary.list');
+        return $this->redirectToRoute('questionary.show', ['id' => $questionary->getId()]);
     }
 }

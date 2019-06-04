@@ -90,17 +90,11 @@
                 <a class="btn btn-primary" href="{{ path('questionary.import', {id: questionary.id}) }}"> Importar Cuestionario </a>
 
 
-                    {{ form_start(deleteForm) }}
-                {{ form_widget(deleteForm) }}
-
-                <button type="submit" class="btn btn-default" onclick="return confirm('Are you sure?')">
-                    <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
-                    Delete
-                </button>
-                {{ form_end(deleteForm) }}
 
             </div>
             </div>
+
+                <h5 class="media-heading"><strong>Preguntas: </strong></h5>
 
                     {% set Val = 0 %}
                     {% for question in question %}
