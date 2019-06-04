@@ -37,7 +37,7 @@ class User extends BaseUser
     private $questionary;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\GameSession", inversedBy="User")
+     * @ORM\ManyToOne(targetEntity="App\Entity\GameSession", inversedBy="user")
      */
     private $gameSession;
 

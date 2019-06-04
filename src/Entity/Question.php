@@ -29,7 +29,7 @@ class Question
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Questionary", inversedBy="question", cascade={"remove"})
+     * @ORM\ManyToOne(targetEntity="App\Entity\Questionary", inversedBy="question")
      * @ORM\JoinColumn(nullable=false)
      */
     private $questionary;

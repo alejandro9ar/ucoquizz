@@ -28,10 +28,10 @@ class GameSession
     private $id;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\User", mappedBy="gameSession")
+     * @ORM\OneToMany(targetEntity="App\Entity\user", mappedBy="gameSession")
      * @ORM\JoinColumn(onDelete="CASCADE")
      */
-    private $User;
+    private $user;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Questionary", inversedBy="gameSessions")
@@ -45,7 +45,7 @@ class GameSession
 
     public function __construct()
     {
-        $this->User = new ArrayCollection();
+        $this->user = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -58,13 +58,13 @@ class GameSession
      */
     public function getUser(): Collection
     {
-        return $this->User;
+        return $this->user;
     }
 
     public function addUser(User $user): self
     {
-        if (!$this->User->contains($user)) {
-            $this->User[] = $user;
+        if (!$this->user->contains($user)) {
+            $this->user[] = $user;
             $user->setGameSession($this);
         }
 
@@ -73,8 +73,8 @@ class GameSession
 
     public function removeUser(User $user): self
     {
-        if ($this->User->contains($user)) {
-            $this->User->removeElement($user);
+        if ($this->user->contains($user)) {
+            $this->user->removeElement($user);
             // set the owning side to null (unless already changed)
             if ($user->getGameSession() === $this) {
                 $user->setGameSession(null);

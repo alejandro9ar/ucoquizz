@@ -218,7 +218,7 @@ class QuestionaryController extends AbstractController
 
         $spreadsheet
             ->getProperties()
-            ->setCre2341a0cc82f47141db04ator('UCOQUIZZ')
+            ->setCreator('UCOQUIZZ')
             ->setTitle('Preguntas exportadas por UCOQUIZZ')
             ->setDescription('Este documento fue generado por la aplicacion UCOQUIZZ')
             ->setKeywords('preguntas questionary exportar UCOQUIZZ');
@@ -245,19 +245,19 @@ class QuestionaryController extends AbstractController
             $answer = $question[$i]->getAnswer();
 
             $activeSheet->setCellValue("B$var", $answer[0]->getAnswertitle());
-            if ('1' === $answer[0]->getCorrect()) {
+            if($answer[0]->getCorrect()=="1"){
                 $activeSheet->setCellValue("F$var", 1);
             }
             $activeSheet->setCellValue("C$var", $answer[1]->getAnswertitle());
-            if ('1' === $answer[1]->getCorrect()) {
+            if($answer[1]->getCorrect()=="1"){
                 $activeSheet->setCellValue("F$var", 2);
             }
             $activeSheet->setCellValue("D$var", $answer[2]->getAnswertitle());
-            if ('1' === $answer[2]->getCorrect()) {
+            if($answer[2]->getCorrect()=="1"){
                 $activeSheet->setCellValue("F$var", 3);
             }
             $activeSheet->setCellValue("E$var", $answer[3]->getAnswertitle());
-            if ('1' === $answer[3]->getCorrect()) {
+            if($answer[3]->getCorrect()=="1"){
                 $activeSheet->setCellValue("F$var", 4);
             }
             $activeSheet->setCellValue("G$var", $question[$i]->getDuration());
@@ -291,7 +291,7 @@ class QuestionaryController extends AbstractController
      * @param EntityManagerInterface $em
      * @param Questionary            $questionary
      */
-    public function new(Request $request, EntityManagerInterface $em, Questionary $questionary)
+    public function import(Request $request, EntityManagerInterface $em, Questionary $questionary)
     {
         $this->denyAccessUnlessGranted('QUESTIONARY_OWNER', $questionary);
 

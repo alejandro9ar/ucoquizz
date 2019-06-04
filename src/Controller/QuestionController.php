@@ -85,9 +85,22 @@ class QuestionController extends AbstractController
             $answer3->setQuestion($question);
             $answer4->setQuestion($question);
 
-            $em->persist($question);
-            $em->flush();
 
+            if(($answer1->getCorrect() == 1 && $answer2->getCorrect()== 0 && $answer3->getCorrect() == 0 && $answer4->getCorrect() ==0)
+                || ($answer1->getCorrect() == 0 && $answer2->getCorrect()== 1 && $answer3->getCorrect() == 0 && $answer4->getCorrect() ==0)
+                || ($answer1->getCorrect() == 0 && $answer2->getCorrect()== 0 && $answer3->getCorrect() == 1 && $answer4->getCorrect() ==0)
+                || ($answer1->getCorrect() == 0 && $answer2->getCorrect()== 0 && $answer3->getCorrect() == 0 && $answer4->getCorrect() ==1)) {
+
+                $em->persist($question);
+                $em->flush();
+
+            }else{
+                $this->addFlash('notice', 'Selecciona (solo) una correcta');
+
+                return $this->render('question/create.html.twig', [
+                    'form' => $form->createView(),
+                ]);
+            }
             return $this->redirectToRoute('questionary.show', ['id' => $questionary->getId()]);
         }
 

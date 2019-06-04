@@ -3,8 +3,16 @@
 {% block body %}
     <h1>Pregunta creation</h1>
 
+    {% for message in app.flashes('notice') %}
+        <div class="alert alert-danger" role="alert">
+            {{ message }}
+        </div>
+    {% endfor %}
+
     {{ form_start(form) }}
     {{ form_widget(form) }}
+
+
 
     <div class="form-group">
         <div class="col-sm-offset-2 col-sm-10">
