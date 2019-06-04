@@ -72,6 +72,8 @@ class GameSessionController extends AbstractController
                 }
             }
 
+            $this->addFlash('notice3', 'La clave introducida no coincide con la de ninguna sesión de juego actual.');
+
             return $this->redirectToRoute('gamesession.enterkey');
         }
 
@@ -81,7 +83,7 @@ class GameSessionController extends AbstractController
     }
 
     /**
-     * Creates a new questionary entity.
+     * Creates a new session game
      *
      * @Route("/play/{id}", name="gamesession.play", methods={"GET", "POST"}, requirements={"id":"\d+"})
      *
@@ -91,15 +93,26 @@ class GameSessionController extends AbstractController
      */
     public function play(EntityManagerInterface $em, Questionary $questionary): Response
     {
+
         $game = new GameSession();
 
         $user = $this->getUser();
         $game->setQuestionary($questionary);
         $game->addUser($user);
 
-        $this->bus->dispatch(
-            new AddGameSessionMessage($game)
-        );
+        if($questionary->getState()== '1' ) {
+
+            $this->denyAccessUnlessGranted('QUESTIONARY_STATE', $questionary);
+
+            $this->bus->dispatch(
+                new AddGameSessionMessage($game)
+            );
+
+        }else{
+            $this->addFlash('notice2', 'El cuestionario esta cerrado. No se puede comenzar una nueva partida');
+            return $this->redirectToRoute('questionary.show', ['id' => $questionary->getId()]);
+
+        }
 
         //$em->persist($game);
         //$em->flush();
@@ -108,7 +121,7 @@ class GameSessionController extends AbstractController
     }
 
     /**
-     * Lists all questionary entities.
+     * Screen to start a game
      *
      * @Route("/gamestarting/{id}", name="gamesession.gamestarting", methods="GET")
      *

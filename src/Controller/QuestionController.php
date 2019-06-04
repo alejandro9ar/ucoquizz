@@ -127,10 +127,29 @@ class QuestionController extends AbstractController
         $form = $this->createForm(QuestionType::class, $question);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em->flush();
+        $answer = $question->getAnswer();
 
-            return $this->redirectToRoute('questionary.list');
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            if(($answer[0]->getCorrect() == 1 && $answer[1]->getCorrect()== 0 && $answer[2]->getCorrect() == 0 && $answer[3]->getCorrect() ==0)
+                || ($answer[0]->getCorrect() == 0 && $answer[1]->getCorrect()== 1 && $answer[2]->getCorrect() == 0 && $answer[3]->getCorrect() ==0)
+                || ($answer[0]->getCorrect() == 0 && $answer[1]->getCorrect()== 0 && $answer[2]->getCorrect() == 1 && $answer[3]->getCorrect() ==0)
+                || ($answer[0]->getCorrect() == 0 && $answer[1]->getCorrect()== 0 && $answer[2]->getCorrect() == 0 && $answer[3]->getCorrect() ==1)) {
+
+
+                $em->persist($question);
+                $em->flush();
+
+                return $this->redirectToRoute('questionary.list');
+            }else{
+                $this->addFlash('notice', 'Selecciona (solo) una correcta');
+
+                return $this->render('question/create.html.twig', [
+                    'form' => $form->createView(),
+                ]);
+            }
+            return $this->redirectToRoute('questionary.show', ['id' => $questionary->getId()]);
         }
 
         return $this->render('question/edit.html.twig', [

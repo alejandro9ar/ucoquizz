@@ -13,6 +13,7 @@ namespace App\Controller;
 
 use App\DTO\FileUpdated;
 use App\Entity\Answer;
+use App\Entity\Category;
 use App\Entity\Question;
 use App\Entity\Questionary;
 use App\Form\FileImpType;
@@ -51,7 +52,9 @@ class QuestionaryController extends AbstractController
      */
     public function list(Request $request, PaginatorInterface $paginator): Response
     {
-        $questionaries = $this->getDoctrine()->getRepository(Questionary::class)->findBy(array('type' => 'publico'));
+        $questionaries = $this->getDoctrine()->getRepository(Questionary::class)->findBy(array('type' => 'publico', 'state'=> '1'));
+
+        $categories = $this->getDoctrine()->getRepository(Category::class)->findAll();
 
         $questionarieswithpaginator = $paginator->paginate(
         // Doctrine Query, not results
@@ -64,6 +67,40 @@ class QuestionaryController extends AbstractController
 
         return $this->render('questionary/list.html.twig', [
             'questionarys' => $questionarieswithpaginator,
+            'categories' => $categories,
+
+        ]);
+    }
+
+    /**
+     * Lists all questionary entities.
+     *
+     * @Route("/listcategory/{id}", name="questionary.listcategory", methods="GET", requirements={"id":"\d+"})
+     *
+     * @return Response
+     */
+    public function listcategory(Request $request, PaginatorInterface $paginator,$id): Response
+    {
+
+        $request->query->get('id');
+
+        $questionaries = $this->getDoctrine()->getRepository(Questionary::class)->findBy(array( 'category' => $id ));
+
+        $categories = $this->getDoctrine()->getRepository(Category::class)->findAll();
+
+        $questionarieswithpaginator = $paginator->paginate(
+        // Doctrine Query, not results
+            $questionaries,
+            // Define the page parameter
+            $request->query->getInt('page', 1),
+            // Items per page
+            15
+        );
+
+        return $this->render('questionary/list.html.twig', [
+            'questionarys' => $questionarieswithpaginator,
+            'categories' => $categories,
+
         ]);
     }
 
@@ -80,6 +117,66 @@ class QuestionaryController extends AbstractController
     {
         $question = $questionary->getQuestion();
         $deleteForm = $this->createDeleteForm($questionary);
+
+        return $this->render('questionary/show.html.twig', [
+            'questionary' => $questionary,
+            'question' => $question,
+            'deleteForm' => $deleteForm->createView(),
+        ]);
+    }
+
+    /**
+     * Finds and displays a questionary entity.
+     *
+     * @Route("/close/{id}", name="questionary.close", requirements={"id":"\d+"})
+     *
+     * @param Questionary $questionary
+     *
+     * @return Response
+     */
+    public function close(Questionary $questionary, EntityManagerInterface $em): Response
+    {
+        $questionary->setState(0);
+        $deleteForm = $this->createDeleteForm($questionary);
+        $question = $questionary->getQuestion();
+
+            $questionary->setState(0);
+
+        $this->addFlash('notice', '¡Cuestionario cerrado con éxito!');
+
+
+        $em->persist($questionary);
+        $em->flush();
+
+        return $this->render('questionary/show.html.twig', [
+            'questionary' => $questionary,
+            'question' => $question,
+            'deleteForm' => $deleteForm->createView(),
+        ]);
+    }
+
+    /**
+     * Finds and displays a questionary entity.
+     *
+     * @Route("/open/{id}", name="questionary.open", requirements={"id":"\d+"})
+     *
+     * @param Questionary $questionary
+     *
+     * @return Response
+     */
+    public function open(Questionary $questionary, EntityManagerInterface $em): Response
+    {
+        $questionary->setState(0);
+        $deleteForm = $this->createDeleteForm($questionary);
+        $question = $questionary->getQuestion();
+
+        $questionary->setState(1);
+
+        $this->addFlash('notice', '¡Cuestionario abierto con éxito!');
+
+
+        $em->persist($questionary);
+        $em->flush();
 
         return $this->render('questionary/show.html.twig', [
             'questionary' => $questionary,
@@ -139,7 +236,7 @@ class QuestionaryController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $em->flush();
 
-            return $this->redirectToRoute('questionary.list');
+            return $this->redirectToRoute('questionary.show', ['id' => $questionary->getId()]);
         }
 
         return $this->render('questionary/edit.html.twig', [

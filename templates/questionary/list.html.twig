@@ -2,10 +2,20 @@
 
 {% block body %}
     <h1>Menú Principal</h1>
+
+    <h3>Categorias:</h3>
+    {% for category in categories %}
+
+        <a href="{{ path('questionary.listcategory', {id: category.id}) }}">
+            {{ category.name}}
+        </a>
+    {% endfor %}
+
+    <h3>Cuestionarios:</h3>
     <table class="table text-center">
         <tr>
-            <th class="active text-center">Nombre</th>
             <th class="active text-center">ID</th>
+            <th class="active text-center">Nombre</th>
             <th class="active text-center">Descripción</th>
             <th class="active text-center">Usuario</th>
             <th class="active text-center">Preguntas</th>
@@ -15,12 +25,12 @@
         {% for questionary in questionarys %}
 
             <tr>
+                <td> {{ questionary.id}} </td>
                 <td>
                     <a href="{{ path('questionary.show', {id: questionary.id}) }}">
                         {{ questionary.name}}
                     </a>
                 </td>
-                <td> {{ questionary.id}} </td>
                 <td> {{ questionary.description}} </td>
 
                 {% if questionary.User == app.user.username %}

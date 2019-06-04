@@ -7,7 +7,20 @@
         {% include 'questionary/control_panel.html.twig' with {'questionary': questionary, 'deleteForm': deleteForm} %}
     {% endif %}
 
+
     <h1>Cuestionario</h1>
+
+    {% for message in app.flashes('notice') %}
+        <div class="alert alert-success" role="alert">
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    {% for message in app.flashes('notice2') %}
+        <div class="alert alert-danger" role="alert">
+            {{ message }}
+        </div>
+    {% endfor %}
 
 <div class="media" style="margin-top: 60px;">
     <div class="media-body">
@@ -19,15 +32,20 @@
 
             <div class="col-sm-10">
                 <h3 class="media-heading"><strong>ID:</strong>  {{ questionary.id}} </h3>
-            </div>
-            <div class="col-sm-10">
+
                 <h5 class="media-heading"><strong>Descripción: </strong> {{ questionary.description}}</h5>
-            </div>
 
-            <div class="col-sm-10">
+                <h5 class="media-heading"><strong>Categoría: </strong>{{ questionary.category.name}}</h5>
+
                 <h5 class="media-heading"><strong>Tipo: </strong>{{ questionary.type}}</h5>
-            </div>
 
+
+            {% if questionary.state == '1' %}
+                <h5 class="media-heading"><strong>Estado: </strong><b><font color=#008000>Abierto</font></b></h5>
+            {% else %}
+                <h5 class="media-heading"><strong>Estado: </strong><b><font color=#FF0000>Cerrado</font></b></h5>
+            {% endif %}
+            </div>
             <div class="col-sm-10">
                     {% set myVal = 0 %}
                     {% for questionary in questionary.question %}
@@ -57,6 +75,12 @@
                         <a class="btn btn-success" href="{{ path('gamesession.play', {id: questionary.id}) }}"> Crear juego </a>
                     {% endif %}
 
+
+                    {% if questionary.state == '1' %}
+                        <a class="btn btn-danger" href="{{ path('questionary.close', {id: questionary.id}) }}"> Cerrar juego </a>
+                    {% else %}
+                        <a class="btn btn-info" href="{{ path('questionary.open', {id: questionary.id}) }}"> Abrir juego </a>
+                    {% endif %}
                 </div>
 
                 <div class="col-sm-10">
@@ -84,7 +108,7 @@
 
                             <h5 class="media-heading"><strong>Pregunta {{ Val }}: </strong> <a href="{{ path('question.show', {id: question.id}) }}">
 
-                                    {{ question.title}} </a
+                                    {{ question.title}} </a>
 
                             </h5>
 
