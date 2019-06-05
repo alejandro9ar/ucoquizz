@@ -1,0 +1,40 @@
+easy_admin:
+
+
+  entities:
+    # change the following to the namespaces of your own entities
+    Answer:
+      class: App\Entity\Answer
+      list:
+        fields:
+        - id
+        - { property: 'correct', type: 'boolean' }
+        - question
+
+    Questionary:
+      class: App\Entity\Questionary
+    User:
+      class: App\Entity\User
+      list:
+        actions: ['-new', 'search', 'show' ]
+
+
+
+    Question:
+      class: App\Entity\Question
+
+    GameSession:
+      class: App\Entity\GameSession
+
+    Category:
+      class: App\Entity\Category
+
+  site_name: 'UCOQUIZZ'
+
+  user:
+      display_name: true
+
+
+  design:
+    brand_color: 'rgba(26, 188, 156, 0.85)'
+

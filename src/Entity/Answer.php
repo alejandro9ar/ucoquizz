@@ -81,4 +81,9 @@ class Answer
 
         return $this;
     }
+
+    public function __toString()
+    {
+        return $this->getAnswertitle();
+    }
 }

@@ -1,0 +1,5 @@
+easy_admin_bundle:
+    resource: '@EasyAdminBundle/Controller/AdminController.php'
+    prefix: /_secret_backend
+    type: annotation
+
