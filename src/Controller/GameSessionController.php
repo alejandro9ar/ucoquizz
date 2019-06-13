@@ -58,15 +58,15 @@ class GameSessionController extends AbstractController
 
         $sessions = $this->getDoctrine()->getRepository(GameSession::class)->findAll();
 
+
         if ($form->isSubmitted() && $form->isValid()) {
             foreach ($sessions as $session) {
                 if ($passwordform === $session->getPassword()) {
                     $user = $this->getUser();
                     $session->addUser($user);
 
-                    $this->bus->dispatch(
-                        new AddGameSessionMessage($session)
-                    );
+                    $em->persist($session);
+                    $em->flush();
 
                     return $this->redirectToRoute('gamesession.gamestarting', ['id' => $session->getId()]);
                 }
@@ -96,28 +96,46 @@ class GameSessionController extends AbstractController
 
         $game = new GameSession();
 
+        $games= $this->getDoctrine()->getRepository(GameSession::class)->findAll();
+
         $user = $this->getUser();
-        $game->setQuestionary($questionary);
-        $game->addUser($user);
-
-        if($questionary->getState()== '1' ) {
-
-            $this->denyAccessUnlessGranted('QUESTIONARY_STATE', $questionary);
-
-            $this->bus->dispatch(
-                new AddGameSessionMessage($game)
-            );
-
-        }else{
-            $this->addFlash('notice2', 'El cuestionario esta cerrado. No se puede comenzar una nueva partida');
-            return $this->redirectToRoute('questionary.show', ['id' => $questionary->getId()]);
-
+        for ($i = 0; $i <= \count($games) - 1; ++$i) {
+            if ($games[$i]->getUserCreator() == $user ) {
+                $variable = 1;
+            }else{
+                $variable = 0;
+            }
         }
 
-        //$em->persist($game);
-        //$em->flush();
+            if($variable==1){
 
-        return $this->redirectToRoute('gamesession.gamestarting', ['id' => $game->getId()]);
+            $this->addFlash('notice3', 'El usuario ya tiene una partida creada.');
+            return $this->redirectToRoute('questionary.show', ['id' => $questionary->getId()]);
+            }
+
+            $game->setQuestionary($questionary);
+            $game->setUserCreator($user);
+            $game->addUser($user);
+
+            if ($questionary->getState() == '1') {
+
+
+                $this->bus->dispatch(
+                    new AddGameSessionMessage($game)
+                );
+
+            } else {
+                $this->addFlash('notice2', 'El cuestionario esta cerrado. No se puede comenzar una nueva partida');
+                return $this->redirectToRoute('questionary.show', ['id' => $questionary->getId()]);
+
+            }
+
+            //$em->persist($game);
+            //$em->flush();
+
+            return $this->redirectToRoute('gamesession.gamestarting', ['id' => $game->getId()]);
+
+
     }
 
     /**

@@ -23,6 +23,8 @@
                 <li>
                     <div>
 
+
+
                         {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
                             Registrado como: <a class="link" href="{{ path('fos_user_profile_show') }}">{{ app.User.username }}</a>
                             <a class="btn btn-default navbar-btn" href="{{ path('fos_user_security_logout') }}">Logout</a>

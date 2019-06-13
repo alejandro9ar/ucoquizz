@@ -9,17 +9,20 @@
                     <div class="col-sm-10">
                         <h2 class="media-heading"><strong>  ¡Puede jugar el cuestionario, sesion de juego: {{ game.id }} !</strong> </h2>
                         <h2 class="media-heading"><strong> Contraseña para acceder: {{ game.password }}</strong> </h2>
-                    </div>
 
+
+
+                    <h3 class="media-heading"><strong> <font color=#008000>Usuario administrador</font> </strong> {{ users[0].username}}  </h3>
+                    </div>
                     {% for User in users %}
 
-
+                            {% if User != users[0] %}
                             <ul>
                                 <div class="col-sm-10">
                                     <h4 class="media-heading"><strong>  <li> {{ User.username}} </li> </strong> </h4>
                                 </div>
                             </ul>
-
+                            {% endif %}
 
                     {% endfor %}
 

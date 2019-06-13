@@ -43,6 +43,15 @@ class GameSession
      */
     private $password;
 
+    /**
+     * @ORM\OneToOne(targetEntity="App\Entity\User", cascade={"persist", "remove"})
+     * @ORM\JoinColumn(unique=true)
+     */
+    private $UserCreator;
+
+
+    
+
     public function __construct()
     {
         $this->user = new ArrayCollection();
@@ -111,5 +120,21 @@ class GameSession
     {
         return $this->getPassword();
     }
+
+    public function getUserCreator(): ?User
+    {
+        return $this->UserCreator;
+    }
+
+    public function setUserCreator(?User $UserCreator): self
+    {
+        $this->UserCreator = $UserCreator;
+
+        return $this;
+    }
+
+
+
+
 }
 

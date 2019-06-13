@@ -12,7 +12,7 @@ use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 class AddGameSessionMessageHandler implements MessageHandlerInterface
 {
     /**
-     * @var EntityManagerf
+     * @var EntityManager
      */
     private $manager;
 
