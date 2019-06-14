@@ -9,6 +9,14 @@
         </div>
     {% endfor %}
 
+    <h4 class="media-heading"><strong> Título: </strong>  {{ question.title }}</li>  </h4>
+
+    <ol>
+    {% for answer in question.answer %}
+    <h4 class="media-heading"><strong> </strong><li> {{ answer.answertitle }}</li>  </h4>
+    {% endfor %}
+    </ol>
+
     {{ form_start(form) }}
     {{ form_widget(form) }}
 

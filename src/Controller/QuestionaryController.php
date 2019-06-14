@@ -422,35 +422,36 @@ class QuestionaryController extends AbstractController
                 $question->setDuration($locations->getCellByColumnAndRow(7, $rowIndex)->getFormattedValue());
 
                 $answer[0]->setAnswertitle($locations->getCellByColumnAndRow(2, $rowIndex));
-                if (1 === $locations->getCellByColumnAndRow(6, $rowIndex)->getFormattedValue()) {
+                if ($locations->getCellByColumnAndRow(6, $rowIndex)->getFormattedValue()==1){
                     $answer[0]->setCorrect(1);
-                } else {
+                }else{
                     $answer[0]->setCorrect(0);
                 }
                 $question->addAnswer($answer[0]);
 
                 $answer[1]->setAnswertitle($locations->getCellByColumnAndRow(3, $rowIndex));
-                if (2 === $locations->getCellByColumnAndRow(6, $rowIndex)->getFormattedValue()) {
+                if ($locations->getCellByColumnAndRow(6, $rowIndex)->getFormattedValue()==2){
                     $answer[1]->setCorrect(1);
-                } else {
+                }else{
                     $answer[1]->setCorrect(0);
                 }
                 $question->addAnswer($answer[1]);
 
                 $answer[2]->setAnswertitle($locations->getCellByColumnAndRow(4, $rowIndex));
-                if (3 === $locations->getCellByColumnAndRow(6, $rowIndex)->getFormattedValue()) {
+                if ($locations->getCellByColumnAndRow(6, $rowIndex)->getFormattedValue()==3){
                     $answer[2]->setCorrect(1);
-                } else {
+                }else{
                     $answer[2]->setCorrect(0);
                 }
                 $question->addAnswer($answer[2]);
 
                 $answer[3]->setAnswertitle($locations->getCellByColumnAndRow(5, $rowIndex));
-                if (4 === $locations->getCellByColumnAndRow(6, $rowIndex)->getFormattedValue()) {
+                if ($locations->getCellByColumnAndRow(6, $rowIndex)->getFormattedValue()==4){
                     $answer[3]->setCorrect(1);
-                } else {
+                }else{
                     $answer[3]->setCorrect(0);
                 }
+
 
                 $question->addAnswer($answer[3]);
 

@@ -11,6 +11,7 @@ namespace App\Controller;
 
 use App\Entity\PlayerAnswer;
 use App\DTO\PlayerAnswerDTO;
+use App\Entity\Question;
 use App\Form\PlayerAnswerType;
 use App\Message\AddGameSessionMessage;
 use App\DTO\IntroducePassword;
@@ -232,6 +233,8 @@ class GameSessionController extends AbstractController
         $questionary = new Questionary();
 
         $gamesession = $this->getDoctrine()->getRepository(GameSession::class)->findAll();
+        $question = $this->getDoctrine()->getRepository(Question::class)->findOneBy(array( 'id' => $idquestion  ));
+        $answerofquestion = $question->getAnswer();
 
         for ($i = 0; $i <= \count($gamesession) - 1; ++$i) {
             if ($gamesession[$i]->getId() == $idsession ) {
@@ -262,14 +265,31 @@ class GameSessionController extends AbstractController
                 $answer->setPlayerAnswer(4);
             }
 
+            if($answer->getPlayerAnswer() == 1 and $answerofquestion[0]->getCorrect() == 1)
+            $answer->setPuntuation(100);
+
+            if($answer->getPlayerAnswer() == 2 and $answerofquestion[1]->getCorrect() == 1)
+                $answer->setPuntuation(100);
+
+            if($answer->getPlayerAnswer() == 3 and $answerofquestion[2]->getCorrect() == 1)
+                $answer->setPuntuation(100);
+
+            if($answer->getPlayerAnswer() == 4 and $answerofquestion[3]->getCorrect() == 1)
+                $answer->setPuntuation(100);
+
+
             $em->persist($answer);
             $em->flush();
 
             return $this->redirectToRoute('gamesession.gamestarting', ['id' => $idsession]);
         }
 
+
+
         return $this->render('game_session/answerplayer.html.twig', [
             'form' => $form->createView(),
+            'question' => $question,
+
         ]);
 
     }
