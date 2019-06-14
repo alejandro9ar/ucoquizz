@@ -41,6 +41,7 @@ class User extends BaseUser
      */
     private $gameSession;
 
+
     public function __construct()
     {
         parent::__construct();
@@ -94,4 +95,5 @@ class User extends BaseUser
 
         return $this;
     }
+
 }

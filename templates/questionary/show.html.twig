@@ -67,11 +67,14 @@
                 {% if questionary.type == "público" %}
 
                     <a class="btn btn-success" href="{{ path('gamesession.play', {id: questionary.id}) }}"> Crear juego </a>
-
+                    <a class="btn btn-warning" href="{{ path('gamesession.returntogame', {id: questionary.id}) }}"> Volver al juego </a>
                 {% endif %}
 
                  <a class="btn btn-success" href="{{ path('gamesession.enterkey', {id: questionary.id}) }}"> Unirse a un juego </a>
+
             </div>
+
+
 
 
                 <div class="col-sm-10">
@@ -79,6 +82,7 @@
 
                     {% if questionary.type == "privado" %}
                         <a class="btn btn-success" href="{{ path('gamesession.play', {id: questionary.id}) }}"> Crear juego </a>
+                        <a class="btn btn-warning" href="{{ path('gamesession.returntogame', {id: questionary.id}) }}"> Volver al juego </a>
                     {% endif %}
 
 

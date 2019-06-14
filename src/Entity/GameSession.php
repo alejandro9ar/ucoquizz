@@ -49,8 +49,11 @@ class GameSession
      */
     private $UserCreator;
 
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $started;
 
-    
 
     public function __construct()
     {
@@ -132,6 +135,20 @@ class GameSession
 
         return $this;
     }
+
+    public function getStarted(): ?bool
+    {
+        return $this->started;
+    }
+
+    public function setStarted(?bool $started): self
+    {
+        $this->started = $started;
+
+        return $this;
+    }
+
+
 
 
 
