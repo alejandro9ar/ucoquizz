@@ -57,27 +57,50 @@ class GameSessionController extends AbstractController
         $passwordform = $introducedpassword->getPasswordgame();
         $sessions = $this->getDoctrine()->getRepository(GameSession::class)->findAll();
 
+        $games= $this->getDoctrine()->getRepository(GameSession::class)->findAll();
+
+        $user = $this->getUser()->getId();
+
+        $variable = 0;
+        for ($i = 0; $i <= \count($games) - 1; ++$i) {
+            $usersofgame = $games[$i]->getUser();
+
+            for ($a = 0; $a <= \count($usersofgame) - 1; ++$a) {
+
+                if ($usersofgame[$a]->getId() == $user) {
+
+                    $variable = 1;
+
+                }
+            }
+        }
+
+
         if ($form->isSubmitted() && $form->isValid()) {
 
             foreach ($sessions as $session) {
 
                 if ($passwordform === $session->getPassword()) {
 
+                    if($variable ==0 ) {
+                        if ($session->getStarted() != 1) {
 
-                    if($session->getStarted() !=1) {
+                            $user = $this->getUser();
+                            $session->addUser($user);
+                            $em->persist($session);
+                            $em->flush();
 
-                        $user = $this->getUser();
-                        $session->addUser($user);
-                        $em->persist($session);
-                        $em->flush();
+                            return $this->redirectToRoute('gamesession.gamestarting', ['id' => $session->getId()]);
+                        } else {
+                            $this->addFlash('notice4', 'El juego ya ha empezado.');
+                            return $this->redirectToRoute('gamesession.enterkey');
 
-                        return $this->redirectToRoute('gamesession.gamestarting', ['id' => $session->getId()]);
+                        }
                     }else{
-                        $this->addFlash('notice4', 'El juego ya ha empezado.');
-                        return $this->redirectToRoute('gamesession.enterkey');
+                        $this->addFlash('notice5', 'Ya estas en juego.');
+                        return $this->redirectToRoute('gamesession.gamestarting', ['id' => $session->getId()]);
 
                     }
-
                 }
             }
             $this->addFlash('notice3', 'La clave introducida no coincide con la de ninguna sesión de juego actual.');
@@ -122,7 +145,22 @@ class GameSessionController extends AbstractController
         $game->setQuestionary($questionary);
         $game->setUserCreator($user);
         $game->addUser($user);
+        $games= $this->getDoctrine()->getRepository(GameSession::class)->findAll();
 
+        $user = $this->getUser()->getId();
+
+        for ($i = 0; $i <= \count($games) - 1; ++$i) {
+            $usersofgame = $games[$i]->getUser();
+
+            for ($a = 0; $a <= \count($usersofgame) - 1; ++$a) {
+
+                if ($usersofgame[$a]->getId() == $user) {
+
+                    $variable = $games[$i]->getId();
+                    return $this->redirectToRoute('gamesession.gamestarting', ['id' => $games[$i]->getId()]);
+                }
+            }
+        }
         if ($questionary->getState() == '1') {
             $this->bus->dispatch(
                 new AddGameSessionMessage($game)
@@ -202,15 +240,18 @@ class GameSessionController extends AbstractController
     {
         $games= $this->getDoctrine()->getRepository(GameSession::class)->findAll();
 
-        $user = $this->getUser();
-
+        $user = $this->getUser()->getId();
 
         for ($i = 0; $i <= \count($games) - 1; ++$i) {
-            if ($games[$i]->getUserCreator() == $user ) {
-                $variable = $games[$i]->getId();
-            }else{
-                return $this->redirectToRoute('questionary.list');
+            $usersofgame = $games[$i]->getUser();
 
+            for ($a = 0; $a <= \count($usersofgame) - 1; ++$a) {
+
+                if ($usersofgame[$a]->getId() == $user) {
+
+                    $variable = $games[$i]->getId();
+                    return $this->redirectToRoute('gamesession.gamestarting', ['id' => $games[$i]->getId()]);
+                }
             }
         }
 
@@ -231,10 +272,22 @@ class GameSessionController extends AbstractController
         $answerPlayer = new PlayerAnswerDTO();
         $answer = new PlayerAnswer();
         $questionary = new Questionary();
+        $user = $this->getUser();
 
+        //question of logged user
+        $questionsuser = $this->getDoctrine()->getRepository(PlayerAnswer::class)->findBy(array( 'user' => $this->getUser()->getId() ));
+
+        $variable=0;
+        for ($i = 0; $i <= \count($questionsuser) - 1; ++$i) {
+            if ($questionsuser[$i]->getQuestion()== $idquestion )
+                $variable =1;
+        }
+
+        if($variable == 0) {
         $gamesession = $this->getDoctrine()->getRepository(GameSession::class)->findAll();
         $question = $this->getDoctrine()->getRepository(Question::class)->findOneBy(array( 'id' => $idquestion  ));
         $answerofquestion = $question->getAnswer();
+
 
         for ($i = 0; $i <= \count($gamesession) - 1; ++$i) {
             if ($gamesession[$i]->getId() == $idsession ) {
@@ -265,6 +318,7 @@ class GameSessionController extends AbstractController
                 $answer->setPlayerAnswer(4);
             }
 
+
             if($answer->getPlayerAnswer() == 1 and $answerofquestion[0]->getCorrect() == 1)
             $answer->setPuntuation(100);
 
@@ -278,9 +332,15 @@ class GameSessionController extends AbstractController
                 $answer->setPuntuation(100);
 
 
-            $em->persist($answer);
-            $em->flush();
+                $em->persist($answer);
+                $em->flush();
 
+
+            return $this->redirectToRoute('gamesession.gamestarting', ['id' => $idsession]);
+        }
+
+        }else{
+            $this->addFlash('notice4', 'Ya has respondido la pregunta');
             return $this->redirectToRoute('gamesession.gamestarting', ['id' => $idsession]);
         }
 
