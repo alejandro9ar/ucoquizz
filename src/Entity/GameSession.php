@@ -54,6 +54,11 @@ class GameSession
      */
     private $started;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Question")
+     */
+    private $activatedQuestion;
+
 
     public function __construct()
     {
@@ -144,6 +149,18 @@ class GameSession
     public function setStarted(?bool $started): self
     {
         $this->started = $started;
+
+        return $this;
+    }
+
+    public function getActivatedQuestion(): ?Question
+    {
+        return $this->activatedQuestion;
+    }
+
+    public function setActivatedQuestion(?Question $activatedQuestion): self
+    {
+        $this->activatedQuestion = $activatedQuestion;
 
         return $this;
     }

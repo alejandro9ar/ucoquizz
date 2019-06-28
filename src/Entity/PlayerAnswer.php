@@ -16,21 +16,6 @@ class PlayerAnswer
      */
     private $id;
 
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private $gamesession;
-
-    /**
-     * @ORM\Column(type="integer")
-     * @ORM\JoinColumn(nullable=true)
-     */
-    private $questionary;
-
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private $question;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -48,45 +33,30 @@ class PlayerAnswer
     private $answered;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\ManyToOne(targetEntity="App\Entity\GameSession")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $gamesession;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\User")
+     * @ORM\JoinColumn(nullable=false)
      */
     private $user;
 
-    public function getGamesession(): ?int
-    {
-        return $this->gamesession;
-    }
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Questionary")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $questionary;
 
-    public function setGamesession(int $gamesession): self
-    {
-        $this->gamesession = $gamesession;
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Question")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $question;
 
-        return $this;
-    }
-
-    public function getQuestionary(): ?int
-    {
-        return $this->questionary;
-    }
-
-    public function setQuestionary(int $questionary): self
-    {
-        $this->questionary = $questionary;
-
-        return $this;
-    }
-
-    public function getQuestion(): ?int
-    {
-        return $this->question;
-    }
-
-    public function setQuestion(int $question): self
-    {
-        $this->question = $question;
-
-        return $this;
-    }
+    
 
     public function getPlayerAnswer(): ?string
     {
@@ -124,17 +94,57 @@ class PlayerAnswer
         return $this;
     }
 
-    public function getUser(): ?int
+    public function getGamesession(): ?GameSession
+    {
+        return $this->gamesession;
+    }
+
+    public function setGamesession(?GameSession $gamesession): self
+    {
+        $this->gamesession = $gamesession;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
     {
         return $this->user;
     }
 
-    public function setUser(int $user): self
+    public function setUser(?User $user): self
     {
         $this->user = $user;
 
         return $this;
     }
+
+    public function getQuestionary(): ?Questionary
+    {
+        return $this->questionary;
+    }
+
+    public function setQuestionary(?Questionary $questionary): self
+    {
+        $this->questionary = $questionary;
+
+        return $this;
+    }
+
+    public function getQuestion(): ?Question
+    {
+        return $this->question;
+    }
+
+    public function setQuestion(?Question $question): self
+    {
+        $this->question = $question;
+
+        return $this;
+    }
+
+
+
+    
 
     
 }

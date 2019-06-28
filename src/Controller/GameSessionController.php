@@ -227,6 +227,7 @@ class GameSessionController extends AbstractController
             'answered' => $answer,
         ]);
     }
+    
 
     /**
      * Return to a game
@@ -276,10 +277,11 @@ class GameSessionController extends AbstractController
 
         //question of logged user
         $questionsuser = $this->getDoctrine()->getRepository(PlayerAnswer::class)->findBy(array( 'user' => $this->getUser()->getId() ));
+        $actualgamesession = $this->getDoctrine()->getRepository(GameSession::class)->findOneBy(array( 'id' => $idsession) );
 
         $variable=0;
         for ($i = 0; $i <= \count($questionsuser) - 1; ++$i) {
-            if ($questionsuser[$i]->getQuestion()== $idquestion )
+            if ($questionsuser[$i]->getQuestion()->getId() == $idquestion )
                 $variable =1;
         }
 
@@ -291,7 +293,7 @@ class GameSessionController extends AbstractController
 
         for ($i = 0; $i <= \count($gamesession) - 1; ++$i) {
             if ($gamesession[$i]->getId() == $idsession ) {
-                $questionary = $gamesession[$i]->getQuestionary()->getId();
+                $questionary = $gamesession[$i]->getQuestionary();
             }
         }
 
@@ -299,11 +301,11 @@ class GameSessionController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $answer->setUser($this->getUser()->getId());
-            $answer->setGamesession($idsession);
+            $answer->setUser($this->getUser());
+            $answer->setGamesession($actualgamesession);
             $answer->setAnswered(true);
             $answer->setQuestionary($questionary);
-            $answer->setQuestion($idquestion);
+            $answer->setQuestion($question);
 
             if($answerPlayer->getAnswer1() == 1){
                 $answer->setPlayerAnswer(1);
@@ -349,9 +351,44 @@ class GameSessionController extends AbstractController
         return $this->render('game_session/answerplayer.html.twig', [
             'form' => $form->createView(),
             'question' => $question,
+            'game' => $actualgamesession,
 
         ]);
 
     }
+
+
+    /**
+     * Return to a game
+     *
+     * @Route("/activate/{idsession}/{idquestion}", name="gamesession.activatequestion", methods={"GET", "POST"})
+     *
+     * @return Response
+     */
+    public function activatequestion (Request $request, EntityManagerInterface $em, $idsession, $idquestion): Response
+    {
+        $question = $this->getDoctrine()->getRepository(Question::class)->findOneBy(array( 'id' => $idquestion) );
+        $gamesesion = $this->getDoctrine()->getRepository(GameSession::class)->findOneBy(array( 'id' => $idsession) );
+
+
+            $gamesesion->setActivatedQuestion($question);
+
+                $em->persist($gamesesion);
+                $em->flush();
+
+
+                return $this->redirectToRoute('gamesession.gamestarting', ['id' => $idsession]);
+    }
+
+
+
+
+
+
+
+
+
+
+
 
 }

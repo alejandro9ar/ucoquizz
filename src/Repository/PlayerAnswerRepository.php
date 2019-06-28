@@ -34,7 +34,7 @@ class PlayerAnswerRepository extends ServiceEntityRepository
             ->getResult()
         ;
     }
-    */
+
 
     /*
     public function findOneBySomeField($value): ?PlayerAnswer
