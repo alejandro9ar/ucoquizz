@@ -78,12 +78,14 @@ class GameSessionController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
 
+
+
             foreach ($sessions as $session) {
 
                 if ($passwordform === $session->getPassword()) {
 
                     if($variable ==0 ) {
-                        if ($session->getStarted() != 1) {
+                        if (($session->getStarted() != 1)|| ($session->getClosed() == 1)) {
 
                             $user = $this->getUser();
                             $session->addUser($user);
@@ -92,7 +94,7 @@ class GameSessionController extends AbstractController
 
                             return $this->redirectToRoute('gamesession.gamestarting', ['id' => $session->getId()]);
                         } else {
-                            $this->addFlash('notice4', 'El juego ya ha empezado.');
+                            $this->addFlash('notice4', 'El juego ya ha empezado o esta cerrado.');
                             return $this->redirectToRoute('gamesession.enterkey');
 
                         }
@@ -227,7 +229,68 @@ class GameSessionController extends AbstractController
             'answered' => $answer,
         ]);
     }
-    
+
+    /**
+     * Screen to start a game
+     *
+     * @Route("/gameclose/{id}", name="gamesession.gameclose", methods="GET")
+     *
+     * @return Response
+     */
+    public function gameclose(GameSession $game, EntityManagerInterface $em, $id): Response
+    {
+
+        $users = $this->getDoctrine()->getRepository(User::class)->findBy(array( 'gameSession' => $id ));
+
+        for ($i = 0; $i <= \count($users) - 1; ++$i) {
+
+            $users[$i]->setGameSession(null);
+            $em->persist($users[$i]);
+
+
+        }
+
+        $game->setClosed(1);
+        $em->persist($game);
+
+        $em->flush();
+
+
+        return $this->redirectToRoute('questionary.list');
+
+    }
+
+    /**
+     * Screen to start a game
+     *
+     * @Route("/gameexit/{id}", name="gamesession.gameexit", methods="GET")
+     *
+     * @return Response
+     */
+    public function gameexit(GameSession $game, EntityManagerInterface $em, $id): Response
+    {
+
+        $users = $this->getDoctrine()->getRepository(User::class)->findBy(array( 'gameSession' => $id ));
+
+        if( $this->getUser() == $game->getUserCreator()){
+            return $this->redirectToRoute('gamesession.gameclose', ['id' => $game->getId()]);
+
+        }
+
+        for ($i = 0; $i <= \count($users) - 1; ++$i) {
+
+            if ($users[$i] == $this->getUser()){
+                $users[$i]->setGameSession(null);
+                $em->persist($users[$i]);
+            }
+
+        }
+
+        $em->flush();
+
+        return $this->redirectToRoute('questionary.list');
+
+    }
 
     /**
      * Return to a game
@@ -256,7 +319,7 @@ class GameSessionController extends AbstractController
             }
         }
 
-        return $this->redirectToRoute('gamesession.gamestarting', ['id' => $variable]);
+        return $this->redirectToRoute('questionary.list');
 
     }
 

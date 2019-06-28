@@ -37,14 +37,14 @@
                         <li><h2 class="media-heading"><strong> Numero de jugadores: {{ Val }}</strong> </h2></li>
                         </ul>
 
-                    <h3 class="media-heading"><strong> <font color=#008000>Usuario administrador</font> </strong> {{ users[0].username}}  </h3>
+                    <h3 class="media-heading"><strong> <font color=#008000>Usuario administrador</font> </strong> {{ game.userCreator }}  </h3>
                     </div>
 
                 {% set val = 0 %}
                 {% set Puntuation = 0 %}
 
                     {% for User in users %}
-                        
+
                             {% set Val = Val +1 %}
 
                         {# eliminate user creator#}
@@ -58,7 +58,7 @@
                             </ul>
                             {% endif %}
                     {% endfor %}
-                    
+
 
 
 
@@ -163,10 +163,13 @@
                     {% endfor %}
 
                     {% endif %}
-                    
+
                     {% if app.user == game.userCreator %}
                         <a class="btn btn-primary" href="{{ path('gamesession.gamestart', {id: game.id}) }}"> Comenzar juego </a>
+                        <a class="btn btn-danger" href="{{ path('gamesession.gameclose', {id: game.id}) }}"> Cerrar juego </a>
                     {% endif %}
+
+                    <a class="btn btn-warning" href="{{ path('gamesession.gameexit', {id: game.id}) }}"> Abandonar juego </a>
 
                 {% endblock %}
             </div>

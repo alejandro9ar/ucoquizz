@@ -59,6 +59,11 @@ class GameSession
      */
     private $activatedQuestion;
 
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $closed;
+
 
     public function __construct()
     {
@@ -161,6 +166,18 @@ class GameSession
     public function setActivatedQuestion(?Question $activatedQuestion): self
     {
         $this->activatedQuestion = $activatedQuestion;
+
+        return $this;
+    }
+
+    public function getClosed(): ?bool
+    {
+        return $this->closed;
+    }
+
+    public function setClosed(?bool $closed): self
+    {
+        $this->closed = $closed;
 
         return $this;
     }
