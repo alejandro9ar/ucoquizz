@@ -45,7 +45,6 @@ class GameSession
 
     /**
      * @ORM\OneToOne(targetEntity="App\Entity\User", cascade={"persist", "remove"})
-     * @ORM\JoinColumn(unique=true)
      */
     private $UserCreator;
 

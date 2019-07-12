@@ -56,6 +56,15 @@ class PlayerAnswer
      */
     private $question;
 
+    /**
+     * @ORM\Column(type="time", nullable=true)
+     */
+    private $startedAt;
+
+    /**
+     * @ORM\Column(type="time", nullable=true)
+     */
+    private $answeredAt;
     
 
     public function getPlayerAnswer(): ?string
@@ -142,7 +151,29 @@ class PlayerAnswer
         return $this;
     }
 
+    public function getStartedAt(): ?\DateTimeInterface
+    {
+        return $this->startedAt;
+    }
 
+    public function setStartedAt(?\DateTimeInterface $startedAt): self
+    {
+        $this->startedAt = $startedAt;
+
+        return $this;
+    }
+
+    public function getAnsweredAt(): ?\DateTimeInterface
+    {
+        return $this->answeredAt;
+    }
+
+    public function setAnsweredAt(?\DateTimeInterface $answeredAt): self
+    {
+        $this->answeredAt = $answeredAt;
+
+        return $this;
+    }
 
     
 

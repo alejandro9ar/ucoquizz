@@ -20,11 +20,14 @@ use App\Entity\Questionary;
 use App\Entity\User;
 use App\Form\PasswordGameType;
 use Doctrine\ORM\EntityManagerInterface;
+use PhpOffice\PhpSpreadsheet\Calculation\DateTime;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\Tests\Compiler\D;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\Constraints\Time;
 
 
 class GameSessionController extends AbstractController
@@ -57,7 +60,11 @@ class GameSessionController extends AbstractController
         $passwordform = $introducedpassword->getPasswordgame();
         $sessions = $this->getDoctrine()->getRepository(GameSession::class)->findAll();
 
-        $games= $this->getDoctrine()->getRepository(GameSession::class)->findAll();
+        $games= $this->getDoctrine()->getRepository(
+
+
+
+    GameSession::class)->findAll();
 
         $user = $this->getUser()->getId();
 
@@ -194,11 +201,13 @@ class GameSessionController extends AbstractController
         $answer = $this->getDoctrine()->getRepository(PlayerAnswer::class)->findall();
 
 
+
         return $this->render('game_session/gamedisponible.html.twig', [
             'users' => $users,
             'questionary' => $questionary,
             'game' => $game,
             'answered' => $answer,
+
         ]);
     }
 
@@ -227,6 +236,7 @@ class GameSessionController extends AbstractController
             'questionary' => $questionary,
             'game' => $game,
             'answered' => $answer,
+
         ]);
     }
 
@@ -247,7 +257,6 @@ class GameSessionController extends AbstractController
             $users[$i]->setGameSession(null);
             $em->persist($users[$i]);
 
-
         }
 
         $game->setClosed(1);
@@ -255,15 +264,19 @@ class GameSessionController extends AbstractController
 
         $em->flush();
 
+        return $this->render('game_session/statistics.html.twig', [
+            'users' => $users,
+            'game' => $game,
 
-        return $this->redirectToRoute('questionary.list');
 
+        ]);
     }
 
     /**
      * Screen to start a game
      *
-     * @Route("/gameexit/{id}", name="gamesession.gameexit", methods="GET")
+     * @Route("/gameexit/{
+id}", name="gamesession.gameexit", methods="GET")
      *
      * @return Response
      */
@@ -337,10 +350,14 @@ class GameSessionController extends AbstractController
         $answer = new PlayerAnswer();
         $questionary = new Questionary();
         $user = $this->getUser();
+        $date1 = new \DateTimeImmutable("now");
+        $answer->setStartedAt($date1);
 
         //question of logged user
         $questionsuser = $this->getDoctrine()->getRepository(PlayerAnswer::class)->findBy(array( 'user' => $this->getUser()->getId() ));
         $actualgamesession = $this->getDoctrine()->getRepository(GameSession::class)->findOneBy(array( 'id' => $idsession) );
+
+
 
         $variable=0;
         for ($i = 0; $i <= \count($questionsuser) - 1; ++$i) {
@@ -376,6 +393,7 @@ class GameSessionController extends AbstractController
             if($answerPlayer->getAnswer2() == 1){
                 $answer->setPlayerAnswer(2);
             }
+
             if($answerPlayer->getAnswer3() == 1){
                 $answer->setPlayerAnswer(3);
             }
@@ -384,17 +402,27 @@ class GameSessionController extends AbstractController
             }
 
 
+            $date2 = new \DateTime("now");
+            $answer->setAnsweredAt($date2);
+
+            $seconds = $date1->getTimestamp()-$date2->getTimestamp();
+
+
+            //$difference = date_diff($date1,$date2);
+            //$puntuation= (100/$answer->getQuestion()->getDuration()) * $seconds;
+            $puntuation = 100;
+           
             if($answer->getPlayerAnswer() == 1 and $answerofquestion[0]->getCorrect() == 1)
-            $answer->setPuntuation(100);
+            $answer->setPuntuation($puntuation);
 
             if($answer->getPlayerAnswer() == 2 and $answerofquestion[1]->getCorrect() == 1)
-                $answer->setPuntuation(100);
+                $answer->setPuntuation($puntuation);
 
             if($answer->getPlayerAnswer() == 3 and $answerofquestion[2]->getCorrect() == 1)
-                $answer->setPuntuation(100);
+                $answer->setPuntuation($puntuation);
 
             if($answer->getPlayerAnswer() == 4 and $answerofquestion[3]->getCorrect() == 1)
-                $answer->setPuntuation(100);
+                $answer->setPuntuation($puntuation);
 
 
                 $em->persist($answer);
