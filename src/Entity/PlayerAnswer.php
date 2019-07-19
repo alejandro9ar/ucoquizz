@@ -19,6 +19,7 @@ class PlayerAnswer
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @ORM\JoinColumn(nullable=true)
      */
     private $playerAnswer;
 
@@ -29,24 +30,26 @@ class PlayerAnswer
 
     /**
      * @ORM\Column(type="boolean")
+     * @ORM\JoinColumn(nullable=true)
      */
     private $answered;
 
     /**
+     * @ORM\JoinColumn(nullable=true)
      * @ORM\ManyToOne(targetEntity="App\Entity\GameSession")
-     * @ORM\JoinColumn(nullable=false)
+
      */
     private $gamesession;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User")
-     * @ORM\JoinColumn(nullable=false)
+
      */
     private $user;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Questionary")
-     * @ORM\JoinColumn(nullable=false)
+
      */
     private $questionary;
 

@@ -23,12 +23,16 @@ use Doctrine\ORM\EntityManagerInterface;
 use PhpOffice\PhpSpreadsheet\Calculation\DateTime;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Tests\Compiler\D;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Constraints\Time;
-
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Mukadi\Chart\Utils\RandomColorFactory;
+use Mukadi\Chart\Chart;
+use Mukadi\Chart\Builder;
 
 class GameSessionController extends AbstractController
 {
@@ -258,51 +262,38 @@ class GameSessionController extends AbstractController
             $em->persist($users[$i]);
 
         }
-
+        $game->setUserCreator(null);
         $game->setClosed(1);
         $em->persist($game);
 
         $em->flush();
 
-        return $this->render('game_session/statistics.html.twig', [
-            'users' => $users,
-            'game' => $game,
-
-
-        ]);
+        return $this->redirectToRoute('questionary.list');
     }
 
     /**
      * Screen to start a game
      *
-     * @Route("/gameexit/{
-id}", name="gamesession.gameexit", methods="GET")
+     * @Route("/gameexit/{id}", name="gamesession.gameexit", methods="GET")
      *
      * @return Response
      */
     public function gameexit(GameSession $game, EntityManagerInterface $em, $id): Response
     {
-
         $users = $this->getDoctrine()->getRepository(User::class)->findBy(array( 'gameSession' => $id ));
-
         if( $this->getUser() == $game->getUserCreator()){
             return $this->redirectToRoute('gamesession.gameclose', ['id' => $game->getId()]);
-
         }
 
         for ($i = 0; $i <= \count($users) - 1; ++$i) {
-
             if ($users[$i] == $this->getUser()){
                 $users[$i]->setGameSession(null);
                 $em->persist($users[$i]);
             }
-
         }
-
         $em->flush();
 
         return $this->redirectToRoute('questionary.list');
-
     }
 
     /**
@@ -347,25 +338,20 @@ id}", name="gamesession.gameexit", methods="GET")
     public function answergame (Request $request, EntityManagerInterface $em, $idsession, $idquestion): Response
     {
         $answerPlayer = new PlayerAnswerDTO();
-        $answer = new PlayerAnswer();
         $questionary = new Questionary();
-        $user = $this->getUser();
-        $date1 = new \DateTimeImmutable("now");
-        $answer->setStartedAt($date1);
-
         //question of logged user
         $questionsuser = $this->getDoctrine()->getRepository(PlayerAnswer::class)->findBy(array( 'user' => $this->getUser()->getId() ));
         $actualgamesession = $this->getDoctrine()->getRepository(GameSession::class)->findOneBy(array( 'id' => $idsession) );
 
 
 
-        $variable=0;
+        $answerQuestionFounded=0;
         for ($i = 0; $i <= \count($questionsuser) - 1; ++$i) {
-            if ($questionsuser[$i]->getQuestion()->getId() == $idquestion )
-                $variable =1;
+            if ($questionsuser[$i]->getQuestion()->getId() == $idquestion)
+                $answerQuestionFounded = 1 ;
         }
 
-        if($variable == 0) {
+        /*if($answerQuestionFounded == 1) {*/
         $gamesession = $this->getDoctrine()->getRepository(GameSession::class)->findAll();
         $question = $this->getDoctrine()->getRepository(Question::class)->findOneBy(array( 'id' => $idquestion  ));
         $answerofquestion = $question->getAnswer();
@@ -380,63 +366,85 @@ id}", name="gamesession.gameexit", methods="GET")
         $form = $this->createForm(PlayerAnswerType::class, $answerPlayer);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $answer->setUser($this->getUser());
-            $answer->setGamesession($actualgamesession);
-            $answer->setAnswered(true);
-            $answer->setQuestionary($questionary);
-            $answer->setQuestion($question);
 
-            if($answerPlayer->getAnswer1() == 1){
-                $answer->setPlayerAnswer(1);
-            }
-            if($answerPlayer->getAnswer2() == 1){
-                $answer->setPlayerAnswer(2);
-            }
+        // FIND OR CREATE
 
-            if($answerPlayer->getAnswer3() == 1){
-                $answer->setPlayerAnswer(3);
-            }
-            if($answerPlayer->getAnswer4() == 1){
-                $answer->setPlayerAnswer(4);
-            }
+            $answer = $this->getDoctrine()->getRepository(PlayerAnswer::class)->findOneBy(array( 'user' => $this->getUser()->getId(), 'question' => $question  ));
 
+            if($answer==false) {
+                $answer = new PlayerAnswer();
+                $answer->setPlayerAnswer('a');
+                $answer->setAnswered(0);
 
-            $date2 = new \DateTime("now");
-            $answer->setAnsweredAt($date2);
-
-            $seconds = $date1->getTimestamp()-$date2->getTimestamp();
-
-
-            //$difference = date_diff($date1,$date2);
-            //$puntuation= (100/$answer->getQuestion()->getDuration()) * $seconds;
-            $puntuation = 100;
-           
-            if($answer->getPlayerAnswer() == 1 and $answerofquestion[0]->getCorrect() == 1)
-            $answer->setPuntuation($puntuation);
-
-            if($answer->getPlayerAnswer() == 2 and $answerofquestion[1]->getCorrect() == 1)
-                $answer->setPuntuation($puntuation);
-
-            if($answer->getPlayerAnswer() == 3 and $answerofquestion[2]->getCorrect() == 1)
-                $answer->setPuntuation($puntuation);
-
-            if($answer->getPlayerAnswer() == 4 and $answerofquestion[3]->getCorrect() == 1)
-                $answer->setPuntuation($puntuation);
-
+                $questionWasStartedAt = new \DateTime("now");
+                $answer->setStartedAt($questionWasStartedAt);
+                $answer->setUser($this->getUser());
+                $answer->setGamesession($actualgamesession);
+                $answer->setQuestionary($questionary);
+                $answer->setQuestion($question);
 
                 $em->persist($answer);
                 $em->flush();
+            }
+        // save if found is false
+
+            if ($form->isSubmitted() && $form->isValid()) {
+                $answer->setAnswered(true);
+
+                if($answerPlayer->getAnswer1() == 1){
+                    $answer->setPlayerAnswer(1);
+                }
+                if($answerPlayer->getAnswer2() == 1){
+                    $answer->setPlayerAnswer(2);
+                }
+
+                if($answerPlayer->getAnswer3() == 1){
+                    $answer->setPlayerAnswer(3);
+                }
+                if($answerPlayer->getAnswer4() == 1){
+                    $answer->setPlayerAnswer(4);
+                }
+
+                //pass to second diference between $questionWasStartedAt and $questionWasAnsweredAt
+                $questionWasAnsweredAt = new \DateTime("now");
+                $answer->setAnsweredAt($questionWasAnsweredAt);
+
+                $seconds = $questionWasAnsweredAt->diff($answer->getStartedAt());
+
+                $seconds = $seconds->format('%s');
+
+                $puntuation = 100 / ( $seconds / 1.5);
 
 
-            return $this->redirectToRoute('gamesession.gamestarting', ['id' => $idsession]);
-        }
+                if ($seconds > $answer->getQuestion()->getDuration()){
+                    $puntuation =0;
+                }
 
-        }else{
+                if($answer->getPlayerAnswer() == 1 and $answerofquestion[0]->getCorrect() == 1)
+                $answer->setPuntuation($puntuation);
+
+                if($answer->getPlayerAnswer() == 2 and $answerofquestion[1]->getCorrect() == 1)
+                    $answer->setPuntuation($puntuation);
+
+                if($answer->getPlayerAnswer() == 3 and $answerofquestion[2]->getCorrect() == 1)
+                    $answer->setPuntuation($puntuation);
+
+                if($answer->getPlayerAnswer() == 4 and $answerofquestion[3]->getCorrect() == 1)
+                    $answer->setPuntuation($puntuation);
+
+
+                $answer->setAnswered(1);
+                    $em->persist($answer);
+                    $em->flush();
+
+
+                return $this->redirectToRoute('gamesession.gamestarting', ['id' => $idsession]);
+            }
+
+        /*}else{
             $this->addFlash('notice4', 'Ya has respondido la pregunta');
             return $this->redirectToRoute('gamesession.gamestarting', ['id' => $idsession]);
-        }
-
+        }*/
 
 
         return $this->render('game_session/answerplayer.html.twig', [
@@ -470,10 +478,6 @@ id}", name="gamesession.gameexit", methods="GET")
 
                 return $this->redirectToRoute('gamesession.gamestarting', ['id' => $idsession]);
     }
-
-
-
-
 
 
 

@@ -167,9 +167,11 @@
                     {% if app.user == game.userCreator %}
                         <a class="btn btn-primary" href="{{ path('gamesession.gamestart', {id: game.id}) }}"> Comenzar juego </a>
                         <a class="btn btn-danger" href="{{ path('gamesession.gameclose', {id: game.id}) }}"> Cerrar juego </a>
-                    {% endif %}
+                    {% else %}
 
                     <a class="btn btn-warning" href="{{ path('gamesession.gameexit', {id: game.id}) }}"> Abandonar juego </a>
+
+                    {% endif %}
 
                 {% endblock %}
             </div>

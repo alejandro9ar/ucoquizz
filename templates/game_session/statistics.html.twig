@@ -5,7 +5,11 @@
 
     <h1>Estadísticas </h1>
 
+    <script src="/bundles/mukadichartjs/jquery.js"></script>
+    <script src="/bundles/mukadichartjs/Chart.bundle.min.js"></script>
+    <script src="/bundles/mukadichartjs/mukadi.chart.min.js"></script>
 
+    {{ mukadi_chart(chart) }}
 
     <div>
         <a class="btn btn-default" href="{{ path('questionary.list') }}">
