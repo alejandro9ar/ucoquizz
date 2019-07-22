@@ -19,6 +19,7 @@ use App\Entity\GameSession;
 use App\Entity\Questionary;
 use App\Entity\User;
 use App\Form\PasswordGameType;
+use App\Repository\QuestionRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use PhpOffice\PhpSpreadsheet\Calculation\DateTime;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -28,6 +29,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Constraints\Time;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Mukadi\Chart\Utils\RandomColorFactory;
@@ -58,10 +61,10 @@ class GameSessionController extends AbstractController
 
     public function enterkey(Request $request, EntityManagerInterface $em): Response
     {
-        $introducedpassword = new IntroducePassword();
-        $form = $this->createForm(PasswordGameType::class, $introducedpassword);
+        $introducedPassword = new IntroducePassword();
+        $form = $this->createForm(PasswordGameType::class, $introducedPassword);
         $form->handleRequest($request);
-        $passwordform = $introducedpassword->getPasswordgame();
+        $passwordForm = $introducedPassword->getPasswordgame();
         $sessions = $this->getDoctrine()->getRepository(GameSession::class)->findAll();
 
         $games= $this->getDoctrine()->getRepository(
@@ -74,11 +77,11 @@ class GameSessionController extends AbstractController
 
         $variable = 0;
         for ($i = 0; $i <= \count($games) - 1; ++$i) {
-            $usersofgame = $games[$i]->getUser();
+            $usersOfGame = $games[$i]->getUser();
 
-            for ($a = 0; $a <= \count($usersofgame) - 1; ++$a) {
+            for ($a = 0; $a <= \count($usersOfGame) - 1; ++$a) {
 
-                if ($usersofgame[$a]->getId() == $user) {
+                if ($usersOfGame[$a]->getId() == $user) {
 
                     $variable = 1;
 
@@ -93,7 +96,7 @@ class GameSessionController extends AbstractController
 
             foreach ($sessions as $session) {
 
-                if ($passwordform === $session->getPassword()) {
+                if ($passwordForm === $session->getPassword()) {
 
                     if($variable ==0 ) {
                         if (($session->getStarted() != 1)|| ($session->getClosed() == 1)) {
@@ -163,11 +166,11 @@ class GameSessionController extends AbstractController
         $user = $this->getUser()->getId();
 
         for ($i = 0; $i <= \count($games) - 1; ++$i) {
-            $usersofgame = $games[$i]->getUser();
+            $usersOfGame = $games[$i]->getUser();
 
-            for ($a = 0; $a <= \count($usersofgame) - 1; ++$a) {
+            for ($a = 0; $a <= \count($usersOfGame) - 1; ++$a) {
 
-                if ($usersofgame[$a]->getId() == $user) {
+                if ($usersOfGame[$a]->getId() == $user) {
 
                     $variable = $games[$i]->getId();
                     return $this->redirectToRoute('gamesession.gamestarting', ['id' => $games[$i]->getId()]);
@@ -311,11 +314,11 @@ class GameSessionController extends AbstractController
         $user = $this->getUser()->getId();
 
         for ($i = 0; $i <= \count($games) - 1; ++$i) {
-            $usersofgame = $games[$i]->getUser();
+            $usersOfGame = $games[$i]->getUser();
 
-            for ($a = 0; $a <= \count($usersofgame) - 1; ++$a) {
+            for ($a = 0; $a <= \count($usersOfGame) - 1; ++$a) {
 
-                if ($usersofgame[$a]->getId() == $user) {
+                if ($usersOfGame[$a]->getId() == $user) {
 
                     $variable = $games[$i]->getId();
                     return $this->redirectToRoute('gamesession.gamestarting', ['id' => $games[$i]->getId()]);
@@ -340,21 +343,21 @@ class GameSessionController extends AbstractController
         $answerPlayer = new PlayerAnswerDTO();
         $questionary = new Questionary();
         //question of logged user
-        $questionsuser = $this->getDoctrine()->getRepository(PlayerAnswer::class)->findBy(array( 'user' => $this->getUser()->getId() ));
-        $actualgamesession = $this->getDoctrine()->getRepository(GameSession::class)->findOneBy(array( 'id' => $idsession) );
+        $questionUser = $this->getDoctrine()->getRepository(PlayerAnswer::class)->findBy(array( 'user' => $this->getUser()->getId() ));
+        $actualGameSession = $this->getDoctrine()->getRepository(GameSession::class)->findOneBy(array( 'id' => $idsession) );
 
 
 
         $answerQuestionFounded=0;
-        for ($i = 0; $i <= \count($questionsuser) - 1; ++$i) {
-            if ($questionsuser[$i]->getQuestion()->getId() == $idquestion)
+        for ($i = 0; $i <= \count($questionUser) - 1; ++$i) {
+            if ($questionUser[$i]->getQuestion()->getId() == $idquestion)
                 $answerQuestionFounded = 1 ;
         }
 
         /*if($answerQuestionFounded == 1) {*/
         $gamesession = $this->getDoctrine()->getRepository(GameSession::class)->findAll();
         $question = $this->getDoctrine()->getRepository(Question::class)->findOneBy(array( 'id' => $idquestion  ));
-        $answerofquestion = $question->getAnswer();
+        $answerOfQuestion = $question->getAnswer();
 
 
         for ($i = 0; $i <= \count($gamesession) - 1; ++$i) {
@@ -379,7 +382,7 @@ class GameSessionController extends AbstractController
                 $questionWasStartedAt = new \DateTime("now");
                 $answer->setStartedAt($questionWasStartedAt);
                 $answer->setUser($this->getUser());
-                $answer->setGamesession($actualgamesession);
+                $answer->setGamesession($actualGameSession);
                 $answer->setQuestionary($questionary);
                 $answer->setQuestion($question);
 
@@ -420,16 +423,16 @@ class GameSessionController extends AbstractController
                     $puntuation =0;
                 }
 
-                if($answer->getPlayerAnswer() == 1 and $answerofquestion[0]->getCorrect() == 1)
+                if($answer->getPlayerAnswer() == 1 and $answerOfQuestion[0]->getCorrect() == 1)
                 $answer->setPuntuation($puntuation);
 
-                if($answer->getPlayerAnswer() == 2 and $answerofquestion[1]->getCorrect() == 1)
+                if($answer->getPlayerAnswer() == 2 and $answerOfQuestion[1]->getCorrect() == 1)
                     $answer->setPuntuation($puntuation);
 
-                if($answer->getPlayerAnswer() == 3 and $answerofquestion[2]->getCorrect() == 1)
+                if($answer->getPlayerAnswer() == 3 and $answerOfQuestion[2]->getCorrect() == 1)
                     $answer->setPuntuation($puntuation);
 
-                if($answer->getPlayerAnswer() == 4 and $answerofquestion[3]->getCorrect() == 1)
+                if($answer->getPlayerAnswer() == 4 and $answerOfQuestion[3]->getCorrect() == 1)
                     $answer->setPuntuation($puntuation);
 
 
@@ -450,7 +453,7 @@ class GameSessionController extends AbstractController
         return $this->render('game_session/answerplayer.html.twig', [
             'form' => $form->createView(),
             'question' => $question,
-            'game' => $actualgamesession,
+            'game' => $actualGameSession,
 
         ]);
 
@@ -460,11 +463,11 @@ class GameSessionController extends AbstractController
     /**
      * Return to a game
      *
-     * @Route("/activate/{idsession}/{idquestion}", name="gamesession.activatequestion", methods={"GET", "POST"})
+     * @Route("/activate/{idsession}/{idquestion}", name="gamesession.activateQuestion", methods={"GET", "POST"})
      *
      * @return Response
      */
-    public function activatequestion (Request $request, EntityManagerInterface $em, $idsession, $idquestion): Response
+    public function activateQuestion (Request $request, EntityManagerInterface $em, $idsession, $idquestion): Response
     {
         $question = $this->getDoctrine()->getRepository(Question::class)->findOneBy(array( 'id' => $idquestion) );
         $gamesesion = $this->getDoctrine()->getRepository(GameSession::class)->findOneBy(array( 'id' => $idsession) );
@@ -480,7 +483,19 @@ class GameSessionController extends AbstractController
     }
 
 
-
+    /**
+     * @Route("/demo")
+     */
+    public function demoAPI(QuestionRepository $questionRepository, SerializerInterface $serializer)
+    {
+        $response = $serializer->serialize($questionRepository->findAll(), 'json', ['attributes' => ['title']]);
+        return new JsonResponse(
+            $response,
+            200,
+            [],
+            true
+       );
+    }
 
 
 
