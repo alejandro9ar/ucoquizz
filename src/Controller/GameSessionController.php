@@ -29,6 +29,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Constraints\Time;
@@ -350,11 +351,11 @@ class GameSessionController extends AbstractController
 
         $answerQuestionFounded=0;
         for ($i = 0; $i <= \count($questionUser) - 1; ++$i) {
-            if ($questionUser[$i]->getQuestion()->getId() == $idquestion)
+            if ($questionUser[$i]->getQuestion()->getId() == $idquestion and $questionUser[$i]->getAnsweredAt() == null )
                 $answerQuestionFounded = 1 ;
         }
 
-        /*if($answerQuestionFounded == 1) {*/
+        if($answerQuestionFounded == 1) {
         $gamesession = $this->getDoctrine()->getRepository(GameSession::class)->findAll();
         $question = $this->getDoctrine()->getRepository(Question::class)->findOneBy(array( 'id' => $idquestion  ));
         $answerOfQuestion = $question->getAnswer();
@@ -418,23 +419,27 @@ class GameSessionController extends AbstractController
 
                 $puntuation = 100 / ( $seconds / 1.5);
 
-
                 if ($seconds > $answer->getQuestion()->getDuration()){
                     $puntuation =0;
                 }
 
+                $answer->setDurationOfAnswer();
+
                 if($answer->getPlayerAnswer() == 1 and $answerOfQuestion[0]->getCorrect() == 1)
                 $answer->setPuntuation($puntuation);
+                $answer->setCorrect(true);
 
                 if($answer->getPlayerAnswer() == 2 and $answerOfQuestion[1]->getCorrect() == 1)
                     $answer->setPuntuation($puntuation);
+                    $answer->setCorrect(true);
 
                 if($answer->getPlayerAnswer() == 3 and $answerOfQuestion[2]->getCorrect() == 1)
                     $answer->setPuntuation($puntuation);
+                    $answer->setCorrect(true);
 
                 if($answer->getPlayerAnswer() == 4 and $answerOfQuestion[3]->getCorrect() == 1)
                     $answer->setPuntuation($puntuation);
-
+                    $answer->setCorrect(true);
 
                 $answer->setAnswered(1);
                     $em->persist($answer);
@@ -444,10 +449,10 @@ class GameSessionController extends AbstractController
                 return $this->redirectToRoute('gamesession.gamestarting', ['id' => $idsession]);
             }
 
-        /*}else{
+        }else{
             $this->addFlash('notice4', 'Ya has respondido la pregunta');
             return $this->redirectToRoute('gamesession.gamestarting', ['id' => $idsession]);
-        }*/
+        }
 
 
         return $this->render('game_session/answerplayer.html.twig', [
@@ -484,16 +489,37 @@ class GameSessionController extends AbstractController
 
 
     /**
-     * @Route("/demo")
+     * @Route("/stats")
      */
-    public function demoAPI(QuestionRepository $questionRepository, SerializerInterface $serializer)
+    public function demoGraph()
     {
-        $response = $serializer->serialize($questionRepository->findAll(), 'json', ['attributes' => ['title']]);
+        return $this->render("game_session/statistics.html.twig", [
+            'api_url' => $this->generateUrl('app_gamesession_demoapi', ['id' => 93])
+        ]);
+    }
+
+    /**
+     * @Route("/demo/{id}")
+     */
+    public function demoAPI(QuestionRepository $questionRepository, SerializerInterface $serializer, $id)
+    {
+        /*$data = [
+            ['Javier', 4],
+            ['Carlos', 2],
+            ['Ana', 4],
+            ['Carla', 3],
+        ];*/
+
+        $data = $this->getDoctrine()->getRepository(PlayerAnswer::class)->findByUser($id);
+        $data2 = $this->getDoctrine()->getRepository(PlayerAnswer::class)->findByQuestion($id);
+        $data3 = $this->getDoctrine()->getRepository(PlayerAnswer::class)->findByAverageDurationOfAnswer($id);
+
+
         return new JsonResponse(
-            $response,
+            $data,
             200,
             [],
-            true
+            false
        );
     }
 

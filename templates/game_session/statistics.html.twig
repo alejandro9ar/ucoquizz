@@ -1,15 +1,90 @@
 {% extends 'base.html.twig' %}
 
+{% block stylesheets %}
+{{ parent() }}
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.css">
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.js"></script>
+
+    <script>
+
+        $(document).ready(function() {
+            $.ajax({
+                url: "{{ api_url }}",
+                dataType: 'json',
+                contentType: "application/json; charset=utf-8",
+                method: "GET",
+                success: function (data) {
+                    var users = [];
+                    var points = [];
+                    var finalpoints = [];
+
+
+                    for (var i in data) {
+                        users.push(data[i].id);
+                        points.push(data[i][1]);
+
+                    }
+
+                    var ctx = document.getElementById('myChart');
+                    var myChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: users,
+                            datasets: [{
+                                label: '# of Points',
+                                data: points,
+                                backgroundColor: [
+                                    'rgba(255, 99, 132, 0.2)',
+                                    'rgba(54, 162, 235, 0.2)',
+                                    'rgba(255, 206, 86, 0.2)',
+                                    'rgba(75, 192, 192, 0.2)',
+                                    'rgba(153, 102, 255, 0.2)',
+                                    'rgba(255, 159, 64, 0.2)'
+                                ],
+                                borderColor: [
+                                    'rgba(255, 99, 132, 1)',
+                                    'rgba(54, 162, 235, 1)',
+                                    'rgba(255, 206, 86, 1)',
+                                    'rgba(75, 192, 192, 1)',
+                                    'rgba(153, 102, 255, 1)',
+                                    'rgba(255, 159, 64, 1)'
+                                ],
+                                borderWidth:6
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                yAxes: [{
+                                    ticks: {
+                                        beginAtZero: true
+                                    }
+                                }]
+                            }
+                        }
+                    });
+
+                }
+            })
+        })
+
+
+    </script>
+{% endblock %}
+
 
 {% block body %}
 
     <h1>Estadísticas </h1>
 
-    <script src="/bundles/mukadichartjs/jquery.js"></script>
-    <script src="/bundles/mukadichartjs/Chart.bundle.min.js"></script>
-    <script src="/bundles/mukadichartjs/mukadi.chart.min.js"></script>
+    <canvas id="myChart" width="400" height="400"></canvas>
 
-    {{ mukadi_chart(chart) }}
+
 
     <div>
         <a class="btn btn-default" href="{{ path('questionary.list') }}">

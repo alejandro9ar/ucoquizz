@@ -1,10 +1,12 @@
 <?php
 
+
 namespace App\Repository;
 
 use App\Entity\PlayerAnswer;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
+use function Matrix\identity;
 
 /**
  * @method PlayerAnswer|null find($id, $lockMode = null, $lockVersion = null)
@@ -22,19 +24,64 @@ class PlayerAnswerRepository extends ServiceEntityRepository
     // /**
     //  * @return PlayerAnswer[] Returns an array of PlayerAnswer objects
     //  */
-    /*
-    public function findByExampleField($value)
+
+    public function findByUser($value)
     {
-        return $this->createQueryBuilder('p')
-            ->andWhere('p.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('p.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
+         $gb = $this->createQueryBuilder('p') ;
+
+         $gb->select('count(p.correct)')
+             ->innerJoin('p.user','c')
+             ->innerJoin('p.gamesession','g')
+             ->addSelect('c.id')
+             ->andWhere('g.id = :val')
+             ->andWhere('p.correct = true')
+             ->setParameter('val', $value)
+             ->groupBy('c.id');
+
+
+         return $gb->getQuery()->getArrayResult();
     }
 
+    // /**
+    //  * @return PlayerAnswer[] Returns an array of PlayerAnswer objects
+    //  */
+
+    public function findByQuestion($value)
+    {
+        $gb = $this->createQueryBuilder('p') ;
+
+        $gb->select('count(p.correct)')
+            ->innerJoin('p.question','q')
+            ->innerJoin('p.gamesession','g')
+            ->addSelect('q.title')
+            ->andWhere('g.id = :val')
+            ->andWhere('p.correct = true')
+            ->setParameter('val', $value)
+            ->groupBy('q.title');
+
+
+        return $gb->getQuery()->getArrayResult();
+    }
+
+    // /**
+    //  * @return PlayerAnswer[] Returns an array of PlayerAnswer objects
+    //  */
+
+    public function findByAverageDurationOfAnswer($value)
+    {
+        $gb = $this->createQueryBuilder('p') ;
+
+        $gb->select('avg(p.DurationOfAnswer)')
+            ->innerJoin('p.user','c')
+            ->innerJoin('p.gamesession','g')
+            ->addSelect('c.id')
+            ->andWhere('g.id = :val')
+            ->setParameter('val', $value)
+            ->groupBy('c.id');
+
+
+        return $gb->getQuery()->getArrayResult();
+    }
 
     /*
     public function findOneBySomeField($value): ?PlayerAnswer

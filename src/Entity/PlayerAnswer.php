@@ -68,6 +68,16 @@ class PlayerAnswer
      * @ORM\Column(type="time", nullable=true)
      */
     private $answeredAt;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $correct;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $DurationOfAnswer;
     
 
     public function getPlayerAnswer(): ?string
@@ -174,6 +184,30 @@ class PlayerAnswer
     public function setAnsweredAt(?\DateTimeInterface $answeredAt): self
     {
         $this->answeredAt = $answeredAt;
+
+        return $this;
+    }
+
+    public function getCorrect(): ?bool
+    {
+        return $this->correct;
+    }
+
+    public function setCorrect(?bool $correct): self
+    {
+        $this->correct = $correct;
+
+        return $this;
+    }
+
+    public function getDurationOfAnswer(): ?int
+    {
+        return $this->DurationOfAnswer;
+    }
+
+    public function setDurationOfAnswer(?int $DurationOfAnswer): self
+    {
+        $this->DurationOfAnswer = $DurationOfAnswer;
 
         return $this;
     }
