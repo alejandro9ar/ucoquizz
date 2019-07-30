@@ -208,8 +208,6 @@ class GameSessionController extends AbstractController
 
         $answer = $this->getDoctrine()->getRepository(PlayerAnswer::class)->findall();
 
-
-
         return $this->render('game_session/gamedisponible.html.twig', [
             'users' => $users,
             'questionary' => $questionary,
@@ -262,6 +260,8 @@ class GameSessionController extends AbstractController
 
         for ($i = 0; $i <= \count($users) - 1; ++$i) {
 
+            $actualGamesession = $users[$i]->getGameSession();
+
             $users[$i]->setGameSession(null);
             $em->persist($users[$i]);
 
@@ -272,7 +272,8 @@ class GameSessionController extends AbstractController
 
         $em->flush();
 
-        return $this->redirectToRoute('questionary.list');
+
+        return $this->redirectToRoute('gamesession.stats', ['id' => $actualGamesession->getId()]);
     }
 
     /**
@@ -489,19 +490,29 @@ class GameSessionController extends AbstractController
 
 
     /**
-     * @Route("/stats")
+     * @Route("/stats/{id}" , name="gamesession.stats", methods={"GET", "POST"})
      */
-    public function demoGraph()
+    public function stats($id)
     {
+
+
+        $clasification = $this->getDoctrine()->getRepository(PlayerAnswer::class)->findByMorePutuation($id);
+        $questionOfUserData = $this->getDoctrine()->getRepository(PlayerAnswer::class)->findByQuestionData($id,$this->getUser()->getId());
+
         return $this->render("game_session/statistics.html.twig", [
-            'api_url' => $this->generateUrl('app_gamesession_demoapi', ['id' => 93])
+            'api_url' => $this->generateUrl('app_gamesession_data1', ['id' => $id]),
+            'api_url2' => $this->generateUrl('app_gamesession_data2', ['id' => $id]),
+            'api_url3' => $this->generateUrl('app_gamesession_data3', ['id' => $id]),
+            'clasification' => $clasification,
+            'idGameSession' => $id,
+            'questionOfUserData' =>$questionOfUserData
         ]);
     }
 
     /**
-     * @Route("/demo/{id}")
+     * @Route("/data1/{id},")
      */
-    public function demoAPI(QuestionRepository $questionRepository, SerializerInterface $serializer, $id)
+    public function data1(QuestionRepository $questionRepository, SerializerInterface $serializer, $id)
     {
         /*$data = [
             ['Javier', 4],
@@ -511,8 +522,7 @@ class GameSessionController extends AbstractController
         ];*/
 
         $data = $this->getDoctrine()->getRepository(PlayerAnswer::class)->findByUser($id);
-        $data2 = $this->getDoctrine()->getRepository(PlayerAnswer::class)->findByQuestion($id);
-        $data3 = $this->getDoctrine()->getRepository(PlayerAnswer::class)->findByAverageDurationOfAnswer($id);
+
 
 
         return new JsonResponse(
@@ -521,6 +531,50 @@ class GameSessionController extends AbstractController
             [],
             false
        );
+    }
+
+    /**
+     * @Route("/data2/{id}")
+     */
+    public function data2(QuestionRepository $questionRepository, SerializerInterface $serializer, $id)
+    {
+        /*$data = [
+            ['Javier', 4],
+            ['Carlos', 2],
+            ['Ana', 4],
+            ['Carla', 3],
+        ];*/
+
+        $data2 = $this->getDoctrine()->getRepository(PlayerAnswer::class)->findByQuestion($id);
+
+        return new JsonResponse(
+            $data2,
+            200,
+            [],
+            false
+        );
+    }
+
+    /**
+     * @Route("/data3/{id}")
+     */
+    public function data3(QuestionRepository $questionRepository, SerializerInterface $serializer, $id)
+    {
+        /*$data = [
+            ['Javier', 4],
+            ['Carlos', 2],
+            ['Ana', 4],
+            ['Carla', 3],
+        ];*/
+
+        $data3 = $this->getDoctrine()->getRepository(PlayerAnswer::class)->findByAverageDurationOfAnswer($id);
+
+        return new JsonResponse(
+            $data3,
+            200,
+            [],
+            false
+        );
     }
 
 

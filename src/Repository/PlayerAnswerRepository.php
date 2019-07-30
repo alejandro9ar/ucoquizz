@@ -3,6 +3,7 @@
 
 namespace App\Repository;
 
+use App\Entity\User;
 use App\Entity\PlayerAnswer;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
@@ -32,7 +33,7 @@ class PlayerAnswerRepository extends ServiceEntityRepository
          $gb->select('count(p.correct)')
              ->innerJoin('p.user','c')
              ->innerJoin('p.gamesession','g')
-             ->addSelect('c.id')
+             ->addSelect('c.username')
              ->andWhere('g.id = :val')
              ->andWhere('p.correct = true')
              ->setParameter('val', $value)
@@ -74,11 +75,61 @@ class PlayerAnswerRepository extends ServiceEntityRepository
         $gb->select('avg(p.DurationOfAnswer)')
             ->innerJoin('p.user','c')
             ->innerJoin('p.gamesession','g')
-            ->addSelect('c.id')
+            ->addSelect('c.username')
             ->andWhere('g.id = :val')
             ->setParameter('val', $value)
             ->groupBy('c.id');
 
+
+        return $gb->getQuery()->getArrayResult();
+    }
+
+    // /**
+    //  * @return PlayerAnswer[] Returns an array of PlayerAnswer objects
+    //  */
+
+    public function findByMorePutuation($value)
+    {
+        $gb = $this->createQueryBuilder('p') ;
+
+        $gb->select('sum(p.puntuation)')
+            ->innerJoin('p.user','c')
+            ->innerJoin('p.gamesession','g')
+            ->addSelect('c.username')
+            ->andWhere('g.id = :val')
+            ->setParameter('val', $value)
+            ->groupBy('c.id')
+            ->orderby('sum(p.puntuation)','DESC');
+
+        dump($gb->getQuery()->getArrayResult());
+
+        return $gb->getQuery()->getArrayResult();
+    }
+
+    // /**
+    //  * @return PlayerAnswer[] Returns an array of PlayerAnswer objects
+    //  */
+
+    public function findByQuestionData($id,$user )
+    {
+        $gb = $this->createQueryBuilder('p') ;
+
+        $gb->innerJoin('p.question','q')
+            ->select('q.title')
+            ->innerJoin('p.gamesession','g')
+            ->innerJoin('p.user','u')
+            ->addSelect('q.title')
+            ->addSelect('q.id')
+            ->addSelect('p.puntuation')
+            ->addSelect('p.correct')
+            ->addSelect('p.DurationOfAnswer')
+            ->andWhere('g.id = :id')
+            ->andWhere('u.id = :user')
+            ->setParameter('user', $user)
+            ->setParameter('id', $id);
+
+
+        dump($gb->getQuery()->getArrayResult());
 
         return $gb->getQuery()->getArrayResult();
     }

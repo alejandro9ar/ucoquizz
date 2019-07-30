@@ -169,9 +169,13 @@
                         <a class="btn btn-danger" href="{{ path('gamesession.gameclose', {id: game.id}) }}"> Cerrar juego </a>
                     {% else %}
 
+
                     <a class="btn btn-warning" href="{{ path('gamesession.gameexit', {id: game.id}) }}"> Abandonar juego </a>
 
                     {% endif %}
+
+                    <a class="btn btn-success" href="{{ path('gamesession.stats', {id: game.id}) }}"> Estadisticas </a>
+
 
                 {% endblock %}
             </div>

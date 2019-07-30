@@ -141,7 +141,8 @@ class QuestionController extends AbstractController
                 $em->persist($question);
                 $em->flush();
 
-                return $this->redirectToRoute('questionary.list');
+                return $this->redirectToRoute('questionary.show', ['id' => $question->getQuestionary()->getId()]);
+
             }else{
                 $this->addFlash('notice', 'Selecciona (solo) una correcta');
 

@@ -75,11 +75,11 @@ class QuestionaryController extends AbstractController
     /**
      * Lists all questionary entities.
      *
-     * @Route("/listcategory/{id}", name="questionary.listcategory", methods="GET", requirements={"id":"\d+"})
+     * @Route("/listCategory/{id}", name="questionary.listCategory", methods="GET", requirements={"id":"\d+"})
      *
      * @return Response
      */
-    public function listcategory(Request $request, PaginatorInterface $paginator,$id): Response
+    public function listCategory(Request $request, PaginatorInterface $paginator, $id): Response
     {
 
         $request->query->get('id');
@@ -135,13 +135,16 @@ class QuestionaryController extends AbstractController
      */
     public function close(Questionary $questionary, EntityManagerInterface $em): Response
     {
+
+        $this->denyAccessUnlessGranted('QUESTIONARY_OWNER', $questionary);
+
         $questionary->setState(0);
         $deleteForm = $this->createDeleteForm($questionary);
         $question = $questionary->getQuestion();
 
             $questionary->setState(0);
 
-        $this->addFlash('notice', '¡Cuestionario cerrado con éxito!');
+        $this->addFlash('notice2', '¡Cuestionario cerrado con éxito!');
 
 
         $em->persist($questionary);
@@ -165,6 +168,9 @@ class QuestionaryController extends AbstractController
      */
     public function open(Questionary $questionary, EntityManagerInterface $em): Response
     {
+
+        $this->denyAccessUnlessGranted('QUESTIONARY_OWNER', $questionary);
+
         $questionary->setState(0);
         $deleteForm = $this->createDeleteForm($questionary);
         $question = $questionary->getQuestion();

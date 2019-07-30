@@ -13,6 +13,9 @@
 
     <script>
 
+
+
+
         $(document).ready(function() {
             $.ajax({
                 url: "{{ api_url }}",
@@ -26,18 +29,21 @@
 
 
                     for (var i in data) {
-                        users.push(data[i].id);
+                        users.push(data[i].username);
                         points.push(data[i][1]);
 
                     }
 
                     var ctx = document.getElementById('myChart');
+
+                        ctx.weight = 100;
+                        ctx.height = 100;
                     var myChart = new Chart(ctx, {
                         type: 'bar',
                         data: {
                             labels: users,
                             datasets: [{
-                                label: '# of Points',
+                                label: '# de aciertos',
                                 data: points,
                                 backgroundColor: [
                                     'rgba(255, 99, 132, 0.2)',
@@ -45,7 +51,15 @@
                                     'rgba(255, 206, 86, 0.2)',
                                     'rgba(75, 192, 192, 0.2)',
                                     'rgba(153, 102, 255, 0.2)',
+                                    'rgba(255, 159, 64, 0.2)',
+                                    'rgba(255, 99, 132, 0.2)',
+                                    'rgba(54, 162, 235, 0.2)',
+                                    'rgba(255, 206, 86, 0.2)',
+                                    'rgba(75, 192, 192, 0.2)',
+                                    'rgba(153, 102, 255, 0.2)',
                                     'rgba(255, 159, 64, 0.2)'
+
+
                                 ],
                                 borderColor: [
                                     'rgba(255, 99, 132, 1)',
@@ -53,7 +67,14 @@
                                     'rgba(255, 206, 86, 1)',
                                     'rgba(75, 192, 192, 1)',
                                     'rgba(153, 102, 255, 1)',
+                                    'rgba(255, 159, 64, 1)',
+                                    'rgba(255, 99, 132, 1)',
+                                    'rgba(54, 162, 235, 1)',
+                                    'rgba(255, 206, 86, 1)',
+                                    'rgba(75, 192, 192, 1)',
+                                    'rgba(153, 102, 255, 1)',
                                     'rgba(255, 159, 64, 1)'
+
                                 ],
                                 borderWidth:6
                             }]
@@ -74,6 +95,165 @@
         })
 
 
+
+
+        $(document).ready(function() {
+            $.ajax({
+                url: "{{ api_url2 }}",
+                dataType: 'json',
+                contentType: "application/json; charset=utf-8",
+                method: "GET",
+                success: function (data2) {
+                    var users = [];
+                    var points = [];
+                    var finalpoints = [];
+
+
+                    for (var i in data2) {
+                        users.push(data2[i].title);
+                        points.push(data2[i][1]);
+
+                    }
+
+                    var ctx = document.getElementById('myChart2');
+
+                    ctx.weight = 100;
+                    ctx.height = 100;
+                    var myChart2 = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: users,
+                            datasets: [{
+                                label: '# de aciertos',
+                                data: points,
+                                backgroundColor: [
+                                    'rgba(255, 99, 132, 0.2)',
+                                    'rgba(54, 162, 235, 0.2)',
+                                    'rgba(255, 206, 86, 0.2)',
+                                    'rgba(75, 192, 192, 0.2)',
+                                    'rgba(153, 102, 255, 0.2)',
+                                    'rgba(255, 159, 64, 0.2)',
+                                    'rgba(255, 99, 132, 0.2)',
+                                    'rgba(54, 162, 235, 0.2)',
+                                    'rgba(255, 206, 86, 0.2)',
+                                    'rgba(75, 192, 192, 0.2)',
+                                    'rgba(153, 102, 255, 0.2)',
+                                    'rgba(255, 159, 64, 0.2)'
+
+
+                                ],
+                                borderColor: [
+                                    'rgba(255, 99, 132, 1)',
+                                    'rgba(54, 162, 235, 1)',
+                                    'rgba(255, 206, 86, 1)',
+                                    'rgba(75, 192, 192, 1)',
+                                    'rgba(153, 102, 255, 1)',
+                                    'rgba(255, 159, 64, 1)',
+                                    'rgba(255, 99, 132, 1)',
+                                    'rgba(54, 162, 235, 1)',
+                                    'rgba(255, 206, 86, 1)',
+                                    'rgba(75, 192, 192, 1)',
+                                    'rgba(153, 102, 255, 1)',
+                                    'rgba(255, 159, 64, 1)'
+
+                                ],
+                                borderWidth:6
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                yAxes: [{
+                                    ticks: {
+                                        beginAtZero: true
+                                    }
+                                }]
+                            }
+                        }
+                    });
+
+                }
+            })
+        })
+
+
+
+        $(document).ready(function() {
+            $.ajax({
+                url: "{{ api_url3 }}",
+                dataType: 'json',
+                contentType: "application/json; charset=utf-8",
+                method: "GET",
+                success: function (data3) {
+                    var users = [];
+                    var points = [];
+                    var finalpoints = [];
+
+
+                    for (var i in data3) {
+                        users.push(data3[i].username);
+                        points.push(data3[i][1]);
+
+                    }
+
+                    var ctx = document.getElementById('myChart3');
+
+                    ctx.weight = 100;
+                    ctx.height = 100;
+                    var myChart3 = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: users,
+                            datasets: [{
+                                label: 'segundos de media de respuesta',
+                                data: points,
+                                backgroundColor: [
+                                    'rgba(255, 99, 132, 0.2)',
+                                    'rgba(54, 162, 235, 0.2)',
+                                    'rgba(255, 206, 86, 0.2)',
+                                    'rgba(75, 192, 192, 0.2)',
+                                    'rgba(153, 102, 255, 0.2)',
+                                    'rgba(255, 159, 64, 0.2)',
+                                    'rgba(255, 99, 132, 0.2)',
+                                    'rgba(54, 162, 235, 0.2)',
+                                    'rgba(255, 206, 86, 0.2)',
+                                    'rgba(75, 192, 192, 0.2)',
+                                    'rgba(153, 102, 255, 0.2)',
+                                    'rgba(255, 159, 64, 0.2)'
+
+
+                                ],
+                                borderColor: [
+                                    'rgba(255, 99, 132, 1)',
+                                    'rgba(54, 162, 235, 1)',
+                                    'rgba(255, 206, 86, 1)',
+                                    'rgba(75, 192, 192, 1)',
+                                    'rgba(153, 102, 255, 1)',
+                                    'rgba(255, 159, 64, 1)',
+                                    'rgba(255, 99, 132, 1)',
+                                    'rgba(54, 162, 235, 1)',
+                                    'rgba(255, 206, 86, 1)',
+                                    'rgba(75, 192, 192, 1)',
+                                    'rgba(153, 102, 255, 1)',
+                                    'rgba(255, 159, 64, 1)'
+
+                                ],
+                                borderWidth:6
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                yAxes: [{
+                                    ticks: {
+                                        beginAtZero: true
+                                    }
+                                }]
+                            }
+                        }
+                    });
+
+                }
+            })
+        })
     </script>
 {% endblock %}
 
@@ -82,14 +262,80 @@
 
     <h1>Estadísticas </h1>
 
+
+    <h2>Clasificacion </h2>
+    {% set position = 0 %}
+    <table class="table text-center">
+        <tr>
+            <th class="active text-center">Puesto</th>
+            <th class="active text-center">Nombre</th>
+            <th class="active text-center">Puntuacion</th>
+
+        </tr>
+        {% for clasification in clasification%}
+
+            {% set position = position +1 %}
+
+            <tr>
+                <td> {{position}} </td>
+
+                <td> {{clasification.username}} </td>
+
+                <td> {{ clasification.1}} </td>
+
+            </tr>
+
+        {% endfor %}
+
+    </table>
+
+
+    <h2>Datos de preguntas </h2>
+    {% set position = 0 %}
+    <table class="table text-center">
+        <tr>
+            <th class="active text-center">ID</th>
+            <th class="active text-center">Nombre</th>
+            <th class="active text-center">Acierto</th>
+            <th class="active text-center">Puntuacion</th>
+            <th class="active text-center">Duracion</th>
+
+        </tr>
+        {% for questionData in questionOfUserData%}
+
+        <tr>
+            <td>{{ questionData.id }}</td>
+            <td> {{questionData.title}} </td>
+
+            {% if questionData.correct == true %}
+            <td><b><font color=#008000>Correcta </font></b></td>
+        {% else %}
+            <td><b><font color=#FF0000>Fallada</font></b> </td>
+            {% endif %}
+
+            <td> {{questionData.puntuation}} </td>
+            <td> {{questionData.DurationOfAnswer}} </td>
+        </tr>
+
+        {% endfor %}
+
+    </table>
+
+
+
+    <h2>Numero de ciertos de usuario. </h2>
     <canvas id="myChart" width="400" height="400"></canvas>
 
+    <h2>Numero de aciertos en cada pregunta.</h2>
+    <canvas id="myChart2" width="400" height="400"></canvas>
 
+    <h2>Tiempo medio de respuesta de cada usuario. </h2>
+    <canvas id="myChart3" width="400" height="400"></canvas>
 
     <div>
-        <a class="btn btn-default" href="{{ path('questionary.list') }}">
+        <a class="btn btn-default" href="{{ path('gamesession.gamestarting', {id: idGameSession}) }}">
             <span class="glyphicon glyphicon-menu-left"aria-hidden="true"></span>
-            Volver al menú
+            Volver al menú de partida
         </a>
     </div>
 

@@ -39,7 +39,7 @@
                 <h5 class="media-heading"><strong>Tiempo: </strong> {{ question.duration}}</h5>
 
                 <a class="btn btn-primary" href="{{ path('question.edit', {id: question.id}) }}"> Editar </a>
-                
+
                 {{ form_start(deleteForm, {'attr': {'class': 'navbar-form navbar-left'}}) }}
                 {{ form_widget(deleteForm) }}
 

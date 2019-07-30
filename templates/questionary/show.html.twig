@@ -87,9 +87,9 @@
 
 
                     {% if questionary.state == '1' %}
-                        <a class="btn btn-danger" href="{{ path('questionary.close', {id: questionary.id}) }}"> Cerrar juego </a>
+                        <a class="btn btn-danger" href="{{ path('questionary.close', {id: questionary.id}) }}"> Cerrar cuestionario </a>
                     {% else %}
-                        <a class="btn btn-info" href="{{ path('questionary.open', {id: questionary.id}) }}"> Abrir juego </a>
+                        <a class="btn btn-info" href="{{ path('questionary.open', {id: questionary.id}) }}"> Abrir cuestionario </a>
                     {% endif %}
                 </div>
 
