@@ -84,7 +84,7 @@ class QuestionController extends AbstractController
             $answer2->setQuestion($question);
             $answer3->setQuestion($question);
             $answer4->setQuestion($question);
-
+            $question->setActivated(1);
 
             if(($answer1->getCorrect() == 1 && $answer2->getCorrect()== 0 && $answer3->getCorrect() == 0 && $answer4->getCorrect() ==0)
                 || ($answer1->getCorrect() == 0 && $answer2->getCorrect()== 1 && $answer3->getCorrect() == 0 && $answer4->getCorrect() ==0)
@@ -181,23 +181,14 @@ class QuestionController extends AbstractController
      */
     public function delete(Request $request, Question $question, EntityManagerInterface $em): Response
     {
-        $form = $this->createDeleteForm($question);
-        $form->handleRequest($request);
-
         $questionary = $question->getQuestionary();
 
         $answer = $question->getAnswer();
 
 
-        for ($i = 0; $i <= 3; $i++){
-            $em->remove($answer[$i]);
-        }
-            $em->flush();
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em->remove($question);
-            $em->flush();
-        }
+        $question->setActivated(0);
+        $em->persist($question);
+        $em->flush();
 
         return $this->redirectToRoute('questionary.show', ['id' => $questionary->getId()]);
     }

@@ -41,11 +41,17 @@ class User extends BaseUser
      */
     private $gameSession;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\GameSession", mappedBy="UserCreator")
+     */
+    private $gameSessions;
+
 
     public function __construct()
     {
         parent::__construct();
         $this->questionary = new ArrayCollection();
+        $this->gameSessions = new ArrayCollection();
     }
 
     /**
@@ -92,6 +98,37 @@ class User extends BaseUser
     public function setGameSession(?GameSession $gameSession): self
     {
         $this->gameSession = $gameSession;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|GameSession[]
+     */
+    public function getGameSessions(): Collection
+    {
+        return $this->gameSessions;
+    }
+
+    public function addGameSession(GameSession $gameSession): self
+    {
+        if (!$this->gameSessions->contains($gameSession)) {
+            $this->gameSessions[] = $gameSession;
+            $gameSession->setUserCreator($this);
+        }
+
+        return $this;
+    }
+
+    public function removeGameSession(GameSession $gameSession): self
+    {
+        if ($this->gameSessions->contains($gameSession)) {
+            $this->gameSessions->removeElement($gameSession);
+            // set the owning side to null (unless already changed)
+            if ($gameSession->getUserCreator() === $this) {
+                $gameSession->setUserCreator(null);
+            }
+        }
 
         return $this;
     }

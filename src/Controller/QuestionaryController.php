@@ -332,29 +332,38 @@ class QuestionaryController extends AbstractController
         $activeSheet->setCellValue('F1', 'Correcta');
         $activeSheet->setCellValue('G1', 'Duración');
 
+        $questionDeleted = 0;
         for ($i = 0; $i <= $nquestion; ++$i) {
             $var = $i + 2;
-            $activeSheet->setCellValue("A$var", $question[$i]->getTitle());
+            $position = $var;
+            if ($question[$i]->getActivated() == 1) {
+                $position = $position - $questionDeleted;
 
-            $answer = $question[$i]->getAnswer();
+                $activeSheet->setCellValue("A$position", $question[$i]->getTitle());
 
-            $activeSheet->setCellValue("B$var", $answer[0]->getAnswertitle());
-            if($answer[0]->getCorrect()=="1"){
-                $activeSheet->setCellValue("F$var", 1);
+                $answer = $question[$i]->getAnswer();
+
+                $activeSheet->setCellValue("B$position", $answer[0]->getAnswertitle());
+                if ($answer[0]->getCorrect() == "1") {
+                    $activeSheet->setCellValue("F$position", 1);
+                }
+                $activeSheet->setCellValue("C$position", $answer[1]->getAnswertitle());
+                if ($answer[1]->getCorrect() == "1") {
+                    $activeSheet->setCellValue("F$position", 2);
+                }
+                $activeSheet->setCellValue("D$position", $answer[2]->getAnswertitle());
+                if ($answer[2]->getCorrect() == "1") {
+                    $activeSheet->setCellValue("F$position", 3);
+                }
+                $activeSheet->setCellValue("E$position", $answer[3]->getAnswertitle());
+                if ($answer[3]->getCorrect() == "1") {
+                    $activeSheet->setCellValue("F$position", 4);
+                }
+                $activeSheet->setCellValue("G$position", $question[$i]->getDuration());
+            } else{
+                $questionDeleted = $questionDeleted +1;
+
             }
-            $activeSheet->setCellValue("C$var", $answer[1]->getAnswertitle());
-            if($answer[1]->getCorrect()=="1"){
-                $activeSheet->setCellValue("F$var", 2);
-            }
-            $activeSheet->setCellValue("D$var", $answer[2]->getAnswertitle());
-            if($answer[2]->getCorrect()=="1"){
-                $activeSheet->setCellValue("F$var", 3);
-            }
-            $activeSheet->setCellValue("E$var", $answer[3]->getAnswertitle());
-            if($answer[3]->getCorrect()=="1"){
-                $activeSheet->setCellValue("F$var", 4);
-            }
-            $activeSheet->setCellValue("G$var", $question[$i]->getDuration());
         }
         $documentname = "cuestionario_$iddocument"."_$namedocument".'.xlsx';
         /*
@@ -421,6 +430,7 @@ class QuestionaryController extends AbstractController
                 $answer[2] = new Answer();
                 $answer[3] = new Answer();
 
+                $question->setActivated(1);
                 $rowIndex = $location->getRowIndex();
 
                 $question->setTitle($locations->getCellByColumnAndRow(1, $rowIndex));
@@ -457,6 +467,7 @@ class QuestionaryController extends AbstractController
                 }else{
                     $answer[3]->setCorrect(0);
                 }
+
 
 
                 $question->addAnswer($answer[3]);

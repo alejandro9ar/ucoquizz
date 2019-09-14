@@ -43,10 +43,6 @@ class GameSession
      */
     private $password;
 
-    /**
-     * @ORM\OneToOne(targetEntity="App\Entity\User", cascade={"persist", "remove"})
-     */
-    private $UserCreator;
 
     /**
      * @ORM\Column(type="boolean", nullable=true)
@@ -62,6 +58,11 @@ class GameSession
      * @ORM\Column(type="boolean", nullable=true)
      */
     private $closed;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="gameSessions")
+     */
+    private $UserCreator;
 
 
     public function __construct()
@@ -133,17 +134,6 @@ class GameSession
         return $this->getPassword();
     }
 
-    public function getUserCreator(): ?User
-    {
-        return $this->UserCreator;
-    }
-
-    public function setUserCreator(?User $UserCreator): self
-    {
-        $this->UserCreator = $UserCreator;
-
-        return $this;
-    }
 
     public function getStarted(): ?bool
     {
@@ -177,6 +167,18 @@ class GameSession
     public function setClosed(?bool $closed): self
     {
         $this->closed = $closed;
+
+        return $this;
+    }
+
+    public function getUserCreator(): ?User
+    {
+        return $this->UserCreator;
+    }
+
+    public function setUserCreator(?User $UserCreator): self
+    {
+        $this->UserCreator = $UserCreator;
 
         return $this;
     }

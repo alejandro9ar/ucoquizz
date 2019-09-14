@@ -50,6 +50,11 @@ class Question
      */
     private $answer;
 
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $activated;
+
     public function __construct()
     {
         $this->answer = new ArrayCollection();
@@ -132,5 +137,17 @@ class Question
     public function __toString()
     {
         return $this->getTitle();
+    }
+
+    public function getActivated(): ?bool
+    {
+        return $this->activated;
+    }
+
+    public function setActivated(?bool $activated): self
+    {
+        $this->activated = $activated;
+
+        return $this;
     }
 }

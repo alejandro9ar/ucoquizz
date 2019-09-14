@@ -352,31 +352,31 @@ class GameSessionController extends AbstractController
 
         $answerQuestionFounded=0;
         for ($i = 0; $i <= \count($questionUser) - 1; ++$i) {
-            if ($questionUser[$i]->getQuestion()->getId() == $idquestion and $questionUser[$i]->getAnsweredAt() == null )
+            if ($questionUser[$i]->getQuestion()->getId() == $idquestion and $questionUser[$i]->getAnsweredAt() != null and $questionUser[$i]->getGameSession()->getId() == $actualGameSession->getId() )
                 $answerQuestionFounded = 1 ;
         }
 
-        if($answerQuestionFounded == 1) {
-        $gamesession = $this->getDoctrine()->getRepository(GameSession::class)->findAll();
-        $question = $this->getDoctrine()->getRepository(Question::class)->findOneBy(array( 'id' => $idquestion  ));
-        $answerOfQuestion = $question->getAnswer();
+        if($answerQuestionFounded == 0) {
+            $gamesession = $this->getDoctrine()->getRepository(GameSession::class)->findAll();
+            $question = $this->getDoctrine()->getRepository(Question::class)->findOneBy(array('id' => $idquestion));
+            $answerOfQuestion = $question->getAnswer();
 
 
-        for ($i = 0; $i <= \count($gamesession) - 1; ++$i) {
-            if ($gamesession[$i]->getId() == $idsession ) {
-                $questionary = $gamesession[$i]->getQuestionary();
+            for ($i = 0; $i <= \count($gamesession) - 1; ++$i) {
+                if ($gamesession[$i]->getId() == $idsession) {
+                    $questionary = $gamesession[$i]->getQuestionary();
+                }
             }
-        }
 
-        $form = $this->createForm(PlayerAnswerType::class, $answerPlayer);
-        $form->handleRequest($request);
+            $form = $this->createForm(PlayerAnswerType::class, $answerPlayer);
+            $form->handleRequest($request);
 
 
-        // FIND OR CREATE
+            // FIND OR CREATE
 
-            $answer = $this->getDoctrine()->getRepository(PlayerAnswer::class)->findOneBy(array( 'user' => $this->getUser()->getId(), 'question' => $question  ));
+            $answer = $this->getDoctrine()->getRepository(PlayerAnswer::class)->findOneBy(array('user' => $this->getUser()->getId(), 'question' => $question, 'gamesession' => $actualGameSession));
 
-            if($answer==false) {
+            if ($answer == false) {
                 $answer = new PlayerAnswer();
                 $answer->setPlayerAnswer('a');
                 $answer->setAnswered(0);
@@ -391,22 +391,22 @@ class GameSessionController extends AbstractController
                 $em->persist($answer);
                 $em->flush();
             }
-        // save if found is false
+            // save if found is false
 
             if ($form->isSubmitted() && $form->isValid()) {
                 $answer->setAnswered(true);
 
-                if($answerPlayer->getAnswer1() == 1){
+                if ($answerPlayer->getAnswer1() == 1) {
                     $answer->setPlayerAnswer(1);
                 }
-                if($answerPlayer->getAnswer2() == 1){
+                if ($answerPlayer->getAnswer2() == 1) {
                     $answer->setPlayerAnswer(2);
                 }
 
-                if($answerPlayer->getAnswer3() == 1){
+                if ($answerPlayer->getAnswer3() == 1) {
                     $answer->setPlayerAnswer(3);
                 }
-                if($answerPlayer->getAnswer4() == 1){
+                if ($answerPlayer->getAnswer4() == 1) {
                     $answer->setPlayerAnswer(4);
                 }
 
@@ -418,30 +418,32 @@ class GameSessionController extends AbstractController
 
                 $seconds = $seconds->format('%s');
 
-                $puntuation = 100 / ( $seconds / 1.5);
+                $puntuation = 100 / 0.25 * $seconds;
 
-                if ($seconds > $answer->getQuestion()->getDuration()){
-                    $puntuation =0;
+                if ($seconds > $answer->getQuestion()->getDuration()) {
+                    $puntuation = 0;
                 }
 
-                $answer->setDurationOfAnswer();
+                $answer->setDurationOfAnswer($seconds);
 
-                if($answer->getPlayerAnswer() == 1 and $answerOfQuestion[0]->getCorrect() == 1)
+                if ($answer->getPlayerAnswer() == 1 and $answerOfQuestion[0]->getCorrect() == 1) {
+
                 $answer->setPuntuation($puntuation);
                 $answer->setCorrect(true);
-
-                if($answer->getPlayerAnswer() == 2 and $answerOfQuestion[1]->getCorrect() == 1)
+                }
+                if ($answer->getPlayerAnswer() == 2 and $answerOfQuestion[1]->getCorrect() == 1) {
                     $answer->setPuntuation($puntuation);
                     $answer->setCorrect(true);
-
-                if($answer->getPlayerAnswer() == 3 and $answerOfQuestion[2]->getCorrect() == 1)
+                }
+                if ($answer->getPlayerAnswer() == 3 and $answerOfQuestion[2]->getCorrect() == 1) {
                     $answer->setPuntuation($puntuation);
                     $answer->setCorrect(true);
+                }
+                if ($answer->getPlayerAnswer() == 4 and $answerOfQuestion[3]->getCorrect() == 1) {
 
-                if($answer->getPlayerAnswer() == 4 and $answerOfQuestion[3]->getCorrect() == 1)
                     $answer->setPuntuation($puntuation);
                     $answer->setCorrect(true);
-
+                }
                 $answer->setAnswered(1);
                     $em->persist($answer);
                     $em->flush();
@@ -460,6 +462,7 @@ class GameSessionController extends AbstractController
             'form' => $form->createView(),
             'question' => $question,
             'game' => $actualGameSession,
+
 
         ]);
 
