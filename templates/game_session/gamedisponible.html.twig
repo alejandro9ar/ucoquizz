@@ -2,6 +2,19 @@
 
 {% block body %}
 
+    {% for message in app.flashes('notice7') %}
+        <div class="alert alert-danger" role="alert">
+            {{ message }}
+        </div>
+    {% endfor %}
+
+
+    {% for message in app.flashes('notice8') %}
+        <div class="alert alert-success" role="alert">
+            {{ message }}
+        </div>
+    {% endfor %}
+
     {% for message in app.flashes('notice3') %}
         <div class="alert alert-success" role="alert">
             {{ message }}

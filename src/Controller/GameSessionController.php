@@ -393,63 +393,89 @@ class GameSessionController extends AbstractController
             }
             // save if found is false
 
+
+
+
             if ($form->isSubmitted() && $form->isValid()) {
-                $answer->setAnswered(true);
+                if(($answerPlayer->getAnswer1() == 1 && $answerPlayer->getAnswer2()== 0 && $answerPlayer->getAnswer3() == 0 && $answerPlayer->getAnswer4() ==0)
+                    || ($answerPlayer->getAnswer1() == 0 && $answerPlayer->getAnswer2()== 1 && $answerPlayer->getAnswer3() == 0 && $answerPlayer->getAnswer4() ==0)
+                    || ($answerPlayer->getAnswer1() == 0 && $answerPlayer->getAnswer2()== 0 && $answerPlayer->getAnswer3() == 2 && $answerPlayer->getAnswer4() ==0)
+                    || ($answerPlayer->getAnswer1() == 0 && $answerPlayer->getAnswer2()== 0 && $answerPlayer->getAnswer3() == 0 && $answerPlayer->getAnswer4() ==3)) {
 
-                if ($answerPlayer->getAnswer1() == 1) {
-                    $answer->setPlayerAnswer(1);
-                }
-                if ($answerPlayer->getAnswer2() == 1) {
-                    $answer->setPlayerAnswer(2);
-                }
 
-                if ($answerPlayer->getAnswer3() == 1) {
-                    $answer->setPlayerAnswer(3);
-                }
-                if ($answerPlayer->getAnswer4() == 1) {
-                    $answer->setPlayerAnswer(4);
-                }
+                    $answer->setAnswered(true);
 
-                //pass to second diference between $questionWasStartedAt and $questionWasAnsweredAt
-                $questionWasAnsweredAt = new \DateTime("now");
-                $answer->setAnsweredAt($questionWasAnsweredAt);
+                    if ($answerPlayer->getAnswer1() == 1) {
+                        $answer->setPlayerAnswer(1);
+                    }
+                    if ($answerPlayer->getAnswer2() == 1) {
+                        $answer->setPlayerAnswer(2);
+                    }
 
-                $seconds = $questionWasAnsweredAt->diff($answer->getStartedAt());
+                    if ($answerPlayer->getAnswer3() == 1) {
+                        $answer->setPlayerAnswer(3);
+                    }
+                    if ($answerPlayer->getAnswer4() == 1) {
+                        $answer->setPlayerAnswer(4);
+                    }
 
-                $seconds = $seconds->format('%s');
+                    //pass to second diference between $questionWasStartedAt and $questionWasAnsweredAt
+                    $questionWasAnsweredAt = new \DateTime("now");
+                    $answer->setAnsweredAt($questionWasAnsweredAt);
 
-                $puntuation = 100 / 0.25 * $seconds;
+                    $seconds = $questionWasAnsweredAt->diff($answer->getStartedAt());
 
-                if ($seconds > $answer->getQuestion()->getDuration()) {
-                    $puntuation = 0;
-                }
+                    $seconds = $seconds->format('%s');
 
-                $answer->setDurationOfAnswer($seconds);
+                    $puntuation = 100 / (0.25 * $seconds);
 
-                if ($answer->getPlayerAnswer() == 1 and $answerOfQuestion[0]->getCorrect() == 1) {
 
-                $answer->setPuntuation($puntuation);
-                $answer->setCorrect(true);
-                }
-                if ($answer->getPlayerAnswer() == 2 and $answerOfQuestion[1]->getCorrect() == 1) {
-                    $answer->setPuntuation($puntuation);
-                    $answer->setCorrect(true);
-                }
-                if ($answer->getPlayerAnswer() == 3 and $answerOfQuestion[2]->getCorrect() == 1) {
-                    $answer->setPuntuation($puntuation);
-                    $answer->setCorrect(true);
-                }
-                if ($answer->getPlayerAnswer() == 4 and $answerOfQuestion[3]->getCorrect() == 1) {
+                    $answer->setDurationOfAnswer($seconds);
 
-                    $answer->setPuntuation($puntuation);
-                    $answer->setCorrect(true);
-                }
-                $answer->setAnswered(1);
+                    if ($seconds > $answer->getQuestion()->getDuration()) {
+                        $this->addFlash('notice7', 'Pregunta fallida. Has superado el tiempo de respuesta');
+                        $answer->setPuntuation(0);
+                        $answer->setCorrect(false);
+                    } elseif ($answer->getPlayerAnswer() == 1 and $answerOfQuestion[0]->getCorrect() == 1) {
+                        $this->addFlash('notice8', '¡Respuesta correcta!');
+                        $answer->setPuntuation($puntuation);
+                        $answer->setCorrect(true);
+                    } elseif ($answer->getPlayerAnswer() == 2 and $answerOfQuestion[1]->getCorrect() == 1) {
+                        $this->addFlash('notice8', '¡Respuesta correcta!');
+                        $answer->setPuntuation($puntuation);
+                        $answer->setCorrect(true);
+                    } elseif ($answer->getPlayerAnswer() == 3 and $answerOfQuestion[2]->getCorrect() == 1) {
+                        $this->addFlash('notice8', '¡Respuesta correcta!');
+                        $answer->setPuntuation($puntuation);
+                        $answer->setCorrect(true);
+                    } elseif ($answer->getPlayerAnswer() == 4 and $answerOfQuestion[3]->getCorrect() == 1) {
+                        $this->addFlash('notice8', '¡Respuesta correcta!');
+                        $answer->setPuntuation($puntuation);
+                        $answer->setCorrect(true);
+                    } else {
+                        $this->addFlash('notice7', '¡Respuesta fallida!');
+                        $answer->setPuntuation(0);
+                        $answer->setCorrect(false);
+
+                    }
+
+                    $answer->setAnswered(1);
                     $em->persist($answer);
                     $em->flush();
 
+                    return $this->redirectToRoute('gamesession.gamestarting', ['id' => $idsession]);
+                }
+                else{
+                    $this->addFlash('notice', 'Solo puede seleccionar una respuesta correcta');
 
-                return $this->redirectToRoute('gamesession.gamestarting', ['id' => $idsession]);
+                    return $this->render('game_session/answerplayer.html.twig', [
+                        'form' => $form->createView(),
+                        'question' => $question,
+                        'game' => $actualGameSession,
+
+                    ]);
+
+                }
             }
 
         }else{
@@ -465,6 +491,7 @@ class GameSessionController extends AbstractController
 
 
         ]);
+
 
     }
 
