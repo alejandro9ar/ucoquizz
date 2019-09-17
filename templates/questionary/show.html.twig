@@ -3,11 +3,71 @@
 
 {% block body %}
 
-    {% if hasControlAccess is defined and hasControlAccess %}
-        {% include 'questionary/control_panel.html.twig' with {'questionary': questionary, 'deleteForm': deleteForm} %}
-    {% endif %}
+
+    <div class="container">
+        <div class="row justify-content-center">
 
 
+            <div class="col-3">
+
+                <h3>Opciones de juego:</h3>
+                {% if questionary.type == "público" %}
+                    <div class="col px-md-5"><div class="p-3 border bg-light">
+                            <a href="{{ path('gamesession.play', {id: questionary.id}) }}"> Crear juego </a>
+                        </div></div>
+                    <div class="col px-md-5"><div class="p-3 border bg-light">
+                            <a  href="{{ path('gamesession.returntogame', {id: questionary.id}) }}"> Volver al juego </a>
+                        </div></div>
+                {% endif %}
+                <div class="col px-md-5"><div class="p-3 border bg-light">
+                        <a href="{{ path('gamesession.enterkey', {id: questionary.id}) }}"> Unirse a un juego </a>
+                    </div></div>
+
+
+
+
+
+
+                {% if is_granted('QUESTIONARY_OWNER', questionary) %}
+
+                {% if questionary.type == "privado" %}
+                    <div class="col px-md-5"><div class="p-3 border bg-light">
+                            <a  href="{{ path('gamesession.play', {id: questionary.id}) }}"> Crear juego </a>
+                        </div></div>
+                    <div class="col px-md-5"><div class="p-3 border bg-light">
+                            <a  href="{{ path('gamesession.returntogame', {id: questionary.id}) }}"> Volver al juego </a>
+                        </div></div>
+                {% endif %}
+
+                    <h3>Opciones de cuestionario:</h3>
+                {% if questionary.state == '1' %}
+                    <div class="col px-md-5"><div class="p-3 border bg-light">
+                            <a  href="{{ path('questionary.close', {id: questionary.id}) }}"> Cerrar cuestionario </a>
+                        </div></div>
+                {% else %}
+                    <div class="col px-md-5"><div class="p-3 border bg-light">
+                            <a  href="{{ path('questionary.open', {id: questionary.id}) }}"> Abrir cuestionario </a>
+                        </div></div>
+                {% endif %}
+
+
+                <div class="col px-md-5"><div class="p-3 border bg-light">
+                        <a href="{{ path('questionary.edit', {id: questionary.id}) }}"> Editar </a>
+                    </div></div>
+                <div class="col px-md-5"><div class="p-3 border bg-light">
+                        <a  href="{{ path('question.create', {id: questionary.id}) }}"> Añadir question </a>
+                    </div></div>
+                <div class="col px-md-5"><div class="p-3 border bg-light">
+                        <a href="{{ path('questionary.export', {id: questionary.id}) }}"> Exportar Cuestionario </a>
+                    </div></div>
+                <div class="col px-md-5"><div class="p-3 border bg-light">
+                        <a  href="{{ path('questionary.import', {id: questionary.id}) }}"> Importar Cuestionario </a>
+                    </div></div>
+                {% endif %}
+
+            </div>
+
+            <div class="col-9">
     <h1>Cuestionario</h1>
 
     {% for message in app.flashes('notice') %}
@@ -28,106 +88,76 @@
         </div>
     {% endfor %}
 
-<div class="media" style="margin-top: 60px;">
-    <div class="media-body">
-        <div class="row">
-            <div class="col-sm-10">
+                <div class="jumbotron">
+
                 <h3 class="media-heading"><strong>Nombre:</strong>  {{ questionary.name}} </h3>
-            </div>
 
 
+                    <hr class="my-4">
             <div class="col-sm-10">
                 <h3 class="media-heading"><strong>ID:</strong>  {{ questionary.id}} </h3>
 
+                <hr class="my-4">
                 <h5 class="media-heading"><strong>Descripción: </strong> {{ questionary.description}}</h5>
 
+                <hr class="my-4">
                 <h5 class="media-heading"><strong>Categoría: </strong>{{ questionary.category.name}}</h5>
 
+                <hr class="my-4">
                 <h5 class="media-heading"><strong>Tipo: </strong>{{ questionary.type}}</h5>
 
-
+                <hr class="my-4">
             {% if questionary.state == '1' %}
                 <h5 class="media-heading"><strong>Estado: </strong><b><font color=#008000>Abierto</font></b></h5>
             {% else %}
                 <h5 class="media-heading"><strong>Estado: </strong><b><font color=#FF0000>Cerrado</font></b></h5>
             {% endif %}
             </div>
-            <div class="col-sm-10">
+
                     {% set myVal = 0 %}
                     {% for questionary in questionary.question %}
-                        {% set myVal = myVal +1 %}
-
+                        {% if questionary.activated == 1 %}
+                            {% set myVal = myVal +1 %}
+                        {% endif %}
                     {% endfor %}
-
+                    <hr class="my-4">
                 <h5 class="media-heading"><strong>Numero de preguntas: </strong>{{ myVal }}</h5>
 
-
-            <div class="row">
-            <div class="col-sm-10">
-                {% if questionary.type == "público" %}
-
-                    <a class="btn btn-success" href="{{ path('gamesession.play', {id: questionary.id}) }}"> Crear juego </a>
-                    <a class="btn btn-warning" href="{{ path('gamesession.returntogame', {id: questionary.id}) }}"> Volver al juego </a>
-                {% endif %}
-
-                 <a class="btn btn-success" href="{{ path('gamesession.enterkey', {id: questionary.id}) }}"> Unirse a un juego </a>
-
-            </div>
-
-
-
-
-                <div class="col-sm-10">
-                {% if is_granted('QUESTIONARY_OWNER', questionary) %}
-
-                    {% if questionary.type == "privado" %}
-                        <a class="btn btn-success" href="{{ path('gamesession.play', {id: questionary.id}) }}"> Crear juego </a>
-                        <a class="btn btn-warning" href="{{ path('gamesession.returntogame', {id: questionary.id}) }}"> Volver al juego </a>
-                    {% endif %}
-
-
-                    {% if questionary.state == '1' %}
-                        <a class="btn btn-danger" href="{{ path('questionary.close', {id: questionary.id}) }}"> Cerrar cuestionario </a>
-                    {% else %}
-                        <a class="btn btn-info" href="{{ path('questionary.open', {id: questionary.id}) }}"> Abrir cuestionario </a>
-                    {% endif %}
                 </div>
 
-                <div class="col-sm-10">
-                <a class="btn btn-primary" href="{{ path('questionary.edit', {id: questionary.id}) }}"> Editar </a>
-                <a class="btn btn-primary" href="{{ path('question.create', {id: questionary.id}) }}"> Añadir question </a>
-                <a class="btn btn-primary" href="{{ path('questionary.export', {id: questionary.id}) }}"> Exportar Cuestionario </a>
-                <a class="btn btn-primary" href="{{ path('questionary.import', {id: questionary.id}) }}"> Importar Cuestionario </a>
-
-
-
-            </div>
-            </div>
-
+                <div class="jumbotron">
                 <h5 class="media-heading"><strong>Preguntas: </strong></h5>
 
                     {% set Val = 0 %}
                     {% for question in question %}
+                        {% if question.activated == 1 %}
                         {% set Val = Val +1 %}
+                            <ul>
 
-                            <h5 class="media-heading"><strong>Pregunta {{ Val }}: </strong> <a href="{{ path('question.show', {id: question.id}) }}">
+                            <h5 class="media-heading"><strong><li>Pregunta {{ Val }}: </strong> <a href="{{ path('question.show', {id: question.id}) }}">
 
                                     {{ question.title}} </a>
 
                             </h5>
-
+                            </ul>
+                        {% endif %}
                     {% endfor %}
-        {% endif %}
-            </div>
-        </div>
 
-                <div class="col-sm-10 text-right">
-                <a class="btn btn-default" href="{{ path('questionary.list') }}">
+
+                </div>
+                <a class="btn btn-light" href="{{ path('questionary.list') }}">
                     <span class="glyphicon glyphicon-menu-left"aria-hidden="true"></span>
                     Volver al menú
                 </a>
             </div>
+        </div>
+    </div>
+    </div>
+    </div>
+    </div>
 
 
 </div>
+
+    {% include 'footer.html.twig' %}
 {% endblock %}

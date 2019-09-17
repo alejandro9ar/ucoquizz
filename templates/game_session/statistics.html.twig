@@ -289,7 +289,6 @@
 
     </table>
 
-
     <h2>Datos de preguntas </h2>
     {% set position = 0 %}
     <table class="table text-center">
@@ -332,11 +331,24 @@
     <h2>Tiempo medio de respuesta de cada usuario. </h2>
     <canvas id="myChart3" width="400" height="400"></canvas>
 
+
+    {% if app.user.gamesession != null %}
     <div>
         <a class="btn btn-default" href="{{ path('gamesession.gamestarting', {id: idGameSession}) }}">
             <span class="glyphicon glyphicon-menu-left"aria-hidden="true"></span>
             Volver al menú de partida
         </a>
     </div>
+
+    {% else %}
+    <div>
+        <a class="btn btn-default" href="{{ path('questionary.list') }}">
+            <span class="glyphicon glyphicon-menu-left"aria-hidden="true"></span>
+            Volver al menú principal
+        </a>
+    </div>
+    {% endif %}
+
+    {% include 'footer.html.twig' %}
 
 {% endblock %}

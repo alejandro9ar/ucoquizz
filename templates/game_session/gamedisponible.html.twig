@@ -2,6 +2,13 @@
 
 {% block body %}
 
+    {% for message in app.flashes('notice3') %}
+        <div class="alert alert-success" role="alert">
+            {{ message }}
+        </div>
+    {% endfor %}
+
+
     {% for message in app.flashes('notice4') %}
         <div class="alert alert-danger" role="alert">
             {{ message }}
@@ -18,7 +25,34 @@
 
     <div class="container">
         <div class="row">
-            <div class="col-xs-12">
+            <div class="col-3">
+
+                {% if app.user == game.userCreator and game.started == 1 and game.closed == 0 %}
+                <div class="col px-md-5"><div class="p-3 border bg-light">
+                    <a  href="{{ path('gamesession.gameclose', {id: game.id}) }}"> Cerrar juego </a>
+                    </div></div>
+                {% endif %}
+
+                {% if app.user == game.userCreator and game.started == 0 %}
+                <div class="col px-md-5"><div class="p-3 border bg-light">
+                    <a  href="{{ path('gamesession.gamestart', {id: game.id}) }}"> Comenzar juego </a>
+                    </div></div>
+                {% endif %}
+
+                {% if app.user != game.userCreator  %}
+                <div class="col px-md-5"><div class="p-3 border bg-light">
+                    <a  href="{{ path('gamesession.gameexit', {id: game.id}) }}"> Abandonar juego </a>
+                    </div></div>
+                {% endif %}
+                <div class="col px-md-5"><div class="p-3 border bg-light">
+                    <a  href="{{ path('gamesession.stats', {id: game.id}) }}"> Estadisticas </a>
+                </div></div>
+
+            </div>
+
+
+            <div class="col-9">
+
                 {% block fos_user_content %}
 
 
@@ -30,15 +64,16 @@
 
                     {% endfor %}
 
-                    <div class="col-sm-10">
-                        <h2 class="media-heading"><strong>  ¡Puede jugar el cuestionario "{{ game.questionary.name }}", sesion de juego: {{ game.id }} !</strong> </h2>
-                        <ul>
-                        <li><h2 class="media-heading"><strong> Contraseña para acceder: {{ game.password }}</strong> </h2></li>
-                        <li><h2 class="media-heading"><strong> Numero de jugadores: {{ Val }}</strong> </h2></li>
-                        </ul>
+                    <div class="jumbotron">
+                        <h2 class="media-heading"> ¡Puede jugar el cuestionario <strong> "{{ game.questionary.name }}"</strong>, sesion de juego: <strong> {{ game.id }} !</strong> </h2>
+                        <hr class="my-4">
 
+                        <ul>
+                        <li><h2 class="media-heading">Contraseña para acceder: <strong> {{ game.password }}</strong> </h2></li>
+                        <li><h2 class="media-heading">Numero de jugadores: <strong> {{ Val -1 }}</strong> </h2></li>
+                        </ul>
+                        <hr class="my-4">
                     <h3 class="media-heading"><strong> <font color=#008000>Usuario administrador</font> </strong> {{ game.userCreator }}  </h3>
-                    </div>
 
                 {% set val = 0 %}
                 {% set Puntuation = 0 %}
@@ -58,18 +93,19 @@
                             </ul>
                             {% endif %}
                     {% endfor %}
-
+                    </div>
+            </div>
+        </div>
 
 
 
 
                     <div class="col-xs-12">
-                <button value="Refresh Page" onClick="window.location.reload();"> Refrescar </button>
 
 
                 {%  if game.started == 1 %}
 
-                    <h4 class="media-heading"><strong>  <li> Preguntas: </li> </strong> </h4>
+                    <h4 class="media-heading"><strong>   Preguntas: </strong> </h4>
                     </div>
 
                     {# for user creator#}
@@ -78,16 +114,18 @@
                         {% if app.user == game.userCreator %}
 
 
-                                <ul>
+                            <ul>
                                     <div class="col-sm-10">
-                                        <li>{{ question.id}} - {{ question.title }} - <a href="{{ path('gamesession.activateQuestion', {idsession: game.id, idquestion: question.id}) }}">
-                                                Activar pregunta
+
+                                        {% if question.activated == 1 %}
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">{{ question.id}} - {{ question.title }} - <a href="{{ path('gamesession.activateQuestion', {idsession: game.id, idquestion: question.id}) }}">
+                                            <button class="btn-primary"> Activar pregunta</button> </a>
 
 
                                                 {% set Val = 0 %}
                                                 {% for answer in answered %}
 
-                                                    {% if answer.question.id == question.id %}
+                                                    {% if answer.question.id == question.id and answer.gamesession == game %}
                                                         {% set Val = Val +1 %}
 
                                                     {% endif %}
@@ -95,19 +133,16 @@
                                                 {% endfor %}
 
 
-
-                                            </a>
-
                                             {% if app.user == game.userCreator %}
                                             -Veces respondida: {{ Val }}</li>
                                         {% endif %}
 
                                         {% if question == game.activatedQuestion %}
 
-                                            - ACTIVADA
+                                            <div class="p-3 mb-2 bg-success text-white"> ACTIVADA </div>
 
                                             {% endif %}
-
+                                        {% endif %}
                                     </div>
                                 </ul>
 
@@ -123,8 +158,9 @@
                         {% if game.activatedQuestion == question %}
 
                         <ul>
-                            <div class="col-sm-10">
-                                <li><a href="{{ path('gamesession.answergame', {idsession: game.id, idquestion: question.id}) }}">
+
+
+                                <a href="{{ path('gamesession.answergame', {idsession: game.id, idquestion: question.id}) }}">
                                     {{ question.id}} - {{ question.title }}
 
 
@@ -147,10 +183,9 @@
 
                                     {% for users in answered %}
 
-                                    {% if app.user.id == users.user.id and question.id == users.question.id %}
+                                    {% if app.user.id == users.user.id and question.id == users.question.id and users.gamesession == game %}
 
                                         - RESPONDIDA </li>
-
 
                                     {% endif %}
                                     {% endfor %}
@@ -164,21 +199,24 @@
 
                     {% endif %}
 
-                    {% if app.user == game.userCreator %}
-                        <a class="btn btn-primary" href="{{ path('gamesession.gamestart', {id: game.id}) }}"> Comenzar juego </a>
-                        <a class="btn btn-danger" href="{{ path('gamesession.gameclose', {id: game.id}) }}"> Cerrar juego </a>
-                    {% else %}
+                    <button value="Refresh Page" onClick="window.location.reload();"> Refrescar </button>
 
 
-                    <a class="btn btn-warning" href="{{ path('gamesession.gameexit', {id: game.id}) }}"> Abandonar juego </a>
+                    {% if app.user == game.userCreator and game.closed == 1 %}
 
+                        <a class="btn btn-default" href="{{ path('questionary.show', {id: questionary.id}) }}">
+                            <span class="glyphicon glyphicon-menu-left"aria-hidden="true"></span>
+                            Volver al cuestionario
+                        </a>
                     {% endif %}
 
-                    <a class="btn btn-success" href="{{ path('gamesession.stats', {id: game.id}) }}"> Estadisticas </a>
+
 
 
                 {% endblock %}
             </div>
         </div>
     </div>
+
+    {% include 'footer.html.twig' %}
 {% endblock %}

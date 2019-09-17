@@ -9,26 +9,28 @@
         </div>
     {% endfor %}
 
-    <h4 class="media-heading"><strong> Título: </strong>  {{ question.title }}</li>  </h4>
+
+<p class="text-primary text-primary">TIEMPO DE RESPUESTA: {{ question.duration }}segundos</p>
+    <div class="card text-white bg-light mb-5">     <h2 class="media-heading"><strong>  </strong>  <p class="text-primary"> Título</p> </h2> <p class="text-primary text-center text">{{ question.title }}</li></p>   </div>
+
 
 
     {% if game.activatedQuestion == question %}
 
 
-    <ol>
-    {% for answer in question.answer %}
-    <h4 class="media-heading"><strong> </strong><li> {{ answer.answertitle }}</li>  </h4>
-    {% endfor %}
-    </ol>
+        {{ form_start(form) }}
+        <div class="card text-white bg-info mb-1">     <h4 class="media-heading"><strong>  </strong>    <p class="text-primary text-center"> {{ form_widget(form.answer1) }} </h4> <p class="text-primary text-center text">{{ question.answer[0].answertitle }}</li></p>   </div>
+        <div class="card text-white bg-warning mb-1">     <h4 class="media-heading"><strong>  </strong>    <p class="text-primary text-center"> {{ form_widget(form.answer2) }} </h4> <p class="text-primary text-center text">{{ question.answer[1].answertitle }}</li></p>   </div>
+        <div class="card text-white bg-success mb-1">     <h4 class="media-heading"><strong>  </strong>    <p class="text-primary text-center"> {{ form_widget(form.answer3) }} </h4> <p class="text-primary text-center text">{{ question.answer[2].answertitle }}</li></p>   </div>
+        <div class="card text-white bg-danger mb-1">     <h4 class="media-heading"><strong>  </strong>    <p class="text-primary text-center"> {{ form_widget(form.answer4) }} </h4> <p class="text-primary text-center text">{{ question.answer[3].answertitle }}</li></p>   </div>
 
-    {{ form_start(form) }}
-    {{ form_widget(form) }}
 
+        {{ form_end(form) }}
 
 
     <div class="form-group">
         <div class="col-sm-offset-2 col-sm-10">
-            <button type="submit" class="btn btn-primary">Create</button>
+            <button type="submit" class="btn btn-primary">Enviar respuesta</button>
 
             <a class="btn btn-default" href="{{ path('gamesession.gamestart', {id: game.id}) }}">
                 <span class="glyphicon glyphicon-menu-left"aria-hidden="true"></span>
@@ -36,11 +38,13 @@
             </a>
         </div>
     </div>
-    {{ form_end(form) }}
+
 
     {% else %}
 
         <h4 class="media-heading"><strong> </strong><li> Esta pregunta no esta activada.</li>  </h4>
 
     {% endif %}
+
+    {% include 'footer.html.twig' %}
 {% endblock %}

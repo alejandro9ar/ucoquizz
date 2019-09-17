@@ -1,65 +1,113 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <h1>Menú Principal</h1>
 
-    <h3>Categorias:</h3>
-    {% for category in categories %}
 
-        <a href="{{ path('questionary.listCategory', {id: category.id}) }}">
-            {{ category.name}}
-        </a>
+    {% for message in app.flashes('notice3') %}
+        <div class="alert alert-danger" role="alert">
+            {{ message }}
+        </div>
     {% endfor %}
 
-    <h3>Cuestionarios:</h3>
-    <table class="table text-center">
-        <tr>
-            <th class="active text-center">ID</th>
-            <th class="active text-center">Nombre</th>
-            <th class="active text-center">Descripción</th>
-            <th class="active text-center">Usuario</th>
-            <th class="active text-center">Preguntas</th>
-            <th class="active text-center">Estado</th>
-        </tr>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-11">
 
-        {% for questionary in questionarys %}
+                {% if app.user.gamesession != null %}
+                {% if app.user.gamesession.id != null %}
+                    <div class="card text-white bg-success mb-3">
+                        <p class="text-primary">El usuario se encuentra jugando en una sesión de juego.</p>
+                        <div class="col px-md-5"><div class="p-2 border bg-light">
+                                <a  href="{{ path('gamesession.returntogame', {id: app.user.gamesession.id}) }}"> Volver al juego </a>
+                            </div></div>
 
-            <tr>
-                <td> {{ questionary.id}} </td>
-                <td>
-                    <a href="{{ path('questionary.show', {id: questionary.id}) }}">
-                        {{ questionary.name}}
-                    </a>
-                </td>
-                <td> {{ questionary.description}} </td>
-
-                {% if questionary.User == app.user.username %}
-                    <td><b><font color=#008000>{{ questionary.User }}</font></b></td>
-                {% else %}
-                    <td>{{ questionary.User }}</td>
-                    {% endif %}
-
-                {% set myVal = 0 %}
-                {% for question in questionary.question %}
-                    {% set myVal = myVal +1 %}
-                {% endfor %}
-                <td>{{ myVal }}</td>
-
-                {% if questionary.state == '1' %}
-                    <td><b><font color=#008000>Abierto</font></b></td>
-                {% else %}
-                   <td><b><font color=#FF0000>Cerrado</font></b></td></td>
+                </div>
                 {% endif %}
+                {% endif %}
+                <h1 class="text-center">Menú Principal</h1>
+                <h3 class="text-center">Cuestionarios:</h3>
 
 
-            </tr>
 
-        {% endfor %}
-    </table>
 
-    <div class="navigation">
-        {{ knp_pagination_render(questionarys) }}
+            </div>
+            <div class="row justify-content-center">
+
+                <div class="col-3">
+
+
+                    <h3>Categorias:</h3>
+                    {% for category in categories %}
+                        <div class="row mx-md-n5">
+                            <div class="col px-md-5"><div class="p-3 border bg-light">
+                                    <a class="text-center" href="{{ path('questionary.listCategory', {id: category.id}) }}">
+                                        {{ category.name}}
+                                    </a>
+                                </div></div>
+                        </div>
+                    {% endfor %}
+
+                </div>
+
+                <div class="col-9">
+                    <table class="table text-center">
+                        <thead class="thead-light">
+                        <tr>
+                            <th class="active text-center">ID</th>
+                            <th class="active text-center">Nombre</th>
+                            <th class="active text-center">Descripción</th>
+                            <th class="active text-center">Usuario</th>
+                            <th class="active text-center">Preguntas</th>
+                            <th class="active text-center">Estado</th>
+                        </tr>
+                        </thead>
+                        {% for questionary in questionarys %}
+
+                            <tr>
+                                <td> {{ questionary.id}} </td>
+                                <td>
+                                    <a href="{{ path('questionary.show', {id: questionary.id}) }}">
+                                        {{ questionary.name}}
+                                    </a>
+                                </td>
+                                <td> {{ questionary.description}} </td>
+
+                                {% if questionary.User == app.user.username %}
+                                    <td><b><font color=#008000>{{ questionary.User }}</font></b></td>
+                                {% else %}
+                                    <td>{{ questionary.User }}</td>
+                                {% endif %}
+
+                                {% set myVal = 0 %}
+                                {% for question in questionary.question %}
+                                    {% if question.activated == 1 %}
+                                        {% set myVal = myVal +1 %}
+                                    {% endif %}
+                                {% endfor %}
+                                <td>{{ myVal }}</td>
+
+                                {% if questionary.state == '1' %}
+                                    <td><b><font color=#008000>Abierto</font></b></td>
+                                {% else %}
+                                    <td><b><font color=#FF0000>Cerrado</font></b></td></td>
+                                {% endif %}
+
+
+                            </tr>
+
+                        {% endfor %}
+                    </table>
+
+                    <div class="navigation">
+                        {{ knp_pagination_render(questionarys) }}
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-
+    {% include 'footer.html.twig' %}
 {% endblock %}
+
+
+
