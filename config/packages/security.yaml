@@ -9,12 +9,16 @@ security:
         fos_userbundle:
             id: fos_user.user_provider.username
 
+
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
         main:
             pattern: ^/
+            guard:
+                authenticators:
+                    - 'App\Security\Guard\UcoAuthenticator'
             form_login:
                 provider: fos_userbundle
                 csrf_token_generator: security.csrf.token_manager
@@ -26,4 +30,4 @@ security:
         - { path: ^/admin/, role: ROLE_ADMIN }
         - { path: ^/login , role: IS_AUTHENTICATED_ANONYMOUSLY  }
         - { path: ^/register/ , role: IS_AUTHENTICATED_ANONYMOUSLY  }
-        - { path: ^/ , role: ROLE_USER  }
+        - { path: ^/ , role: IS_AUTHENTICATED_ANONYMOUSLY  }
