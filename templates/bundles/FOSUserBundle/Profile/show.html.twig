@@ -46,7 +46,6 @@
                     <thead class="thead-light">
                     <tr>
                         <th class="active text-center">Nombre</th>
-                        <th class="active text-center">Descripción</th>
                         <th class="active text-center">Preguntas</th>
                         <th class="active text-center">Estado</th>
                     </tr>
@@ -60,7 +59,7 @@
                                     {{ questionary.name}}
                                 </a>
                             </td>
-                            <td> {{ questionary.description}} </td>
+
                             {% set myVal = 0 %}
                             {% for question in questionary.question %}
                                 {% if question.activated == 1 %}

@@ -334,7 +334,7 @@
 
     {% if app.user.gamesession != null %}
     <div>
-        <a class="btn btn-default" href="{{ path('gamesession.gamestarting', {id: idGameSession}) }}">
+        <a class="btn btn-secondary" href="{{ path('gamesession.gamestarting', {id: idGameSession}) }}">
             <span class="glyphicon glyphicon-menu-left"aria-hidden="true"></span>
             Volver al menú de partida
         </a>
@@ -342,7 +342,7 @@
 
     {% else %}
     <div>
-        <a class="btn btn-default" href="{{ path('questionary.list') }}">
+        <a class="btn btn-secondary" href="{{ path('questionary.list') }}">
             <span class="glyphicon glyphicon-menu-left"aria-hidden="true"></span>
             Volver al menú principal
         </a>

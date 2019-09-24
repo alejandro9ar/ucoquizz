@@ -8,13 +8,15 @@
 
     <div class="form-group">
         <div class="col-sm-offset-2 col-sm-10">
-            <button type="submit" class="btn btn-primary">Crear</button>
+            <button type="submit" class="btn btn-success">Crear</button>
 
-        <a class="btn btn-light" href="{{ path('questionary.list') }}">
+        <a class="btn btn-secondary" href="{{ path('questionary.list') }}">
             <span class="glyphicon glyphicon-menu-left"aria-hidden="true"></span>
             Volver al menú
         </a>
     </div>
     </div>
     {{ form_end(form) }}
+
+    {% include 'footer.html.twig' %}
 {% endblock %}

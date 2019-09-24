@@ -1,6 +1,7 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
+
     <h1>Pregunta</h1>
 
     {% for message in app.flashes('notice') %}
@@ -15,7 +16,39 @@
         </div>
     {% endfor %}
 
-    <p class="text-primary text-primary">TIEMPO DE RESPUESTA: {{ question.duration }}segundos</p>
+
+    <script type="text/javascript">
+        var contar = 11 //valor inicial.
+        window.onload = function() {
+            document.getElementById("imagen").style.display = "none"; //ocultar imagen
+            cuenta = document.getElementById("cuenta"); //elemento donde escribimos la cuenta atrás
+        }
+        function despegar() {
+            function cuentaAtras() {
+                document.getElementById("imagen").style.display = "block"
+                contar -=1; //variar el número de la cuenta
+                cuenta.innerHTML = contar; //escribir el número
+                if (contar <= 0) { //cuando llegamos a 0...
+                    clearInterval(ignicion) //parar la cuenta atrás.
+                    //visualizar la imagen.
+
+                }
+            }
+            cuentaAtras() //llamada a la función de cuenta atrás
+            //repetir la función cuenta atrás cada segundo
+            ignicion = setInterval(cuentaAtras,1000);
+        }
+    </script>
+
+    <h1 align="center">Pulsa para iniciar la cuenta atrás.</h1>
+    <p><form action="#" name="laCuenta">
+    <p align="center"><input type="button" name="comenzar"
+                             value="Empezar la cuenta atrás." onclick="contar={{ question.duration }},despegar()" />
+    </p>
+    </form>
+    <h1 align="center" id="cuenta"></h1>
+
+    <div id="imagen" align="center">
     <div class="card text-white bg-light mb-5">     <h2 class="media-heading"><strong>  </strong>  <p class="text-primary"> Título</p> </h2> <p class="text-primary text-center text">{{ question.title }}</li></p>   </div>
 
 
@@ -39,11 +72,14 @@
 
         <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
-                <button type="submit" class="btn btn-primary">Enviar respuesta</button>
+                <button type="submit" class="btn btn-success">Enviar respuesta</button>
 
                 {{ form_end(form) }}
 
-                <a class="btn btn-default" href="{{ path('gamesession.gamestart', {id: game.id}) }}">
+            </div>
+
+
+            <a class="btn btn-secondary" href="{{ path('gamesession.gamestart', {id: game.id}) }}">
                     <span class="glyphicon glyphicon-menu-left"aria-hidden="true"></span>
                     Volver al menú
                 </a>

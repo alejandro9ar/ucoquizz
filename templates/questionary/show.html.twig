@@ -55,11 +55,14 @@
                         <a href="{{ path('questionary.edit', {id: questionary.id}) }}"> Editar </a>
                     </div></div>
                 <div class="col px-md-5"><div class="p-3 border bg-light">
-                        <a  href="{{ path('question.create', {id: questionary.id}) }}"> Añadir question </a>
+                        <a  href="{{ path('question.create', {id: questionary.id}) }}"> Añadir pregunta </a>
                     </div></div>
                 <div class="col px-md-5"><div class="p-3 border bg-light">
                         <a href="{{ path('questionary.export', {id: questionary.id}) }}"> Exportar Cuestionario </a>
                     </div></div>
+                    <div class="col px-md-5"><div class="p-3 border bg-light">
+                            <a href="{{ path('questionary.exportkahoot', {id: questionary.id}) }}"> Exportar Cuestionario Kahoot </a>
+                        </div></div>
                 <div class="col px-md-5"><div class="p-3 border bg-light">
                         <a  href="{{ path('questionary.import', {id: questionary.id}) }}"> Importar Cuestionario </a>
                     </div></div>

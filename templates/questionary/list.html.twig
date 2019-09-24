@@ -13,6 +13,7 @@
         <div class="row justify-content-center">
             <div class="col-11">
 
+                {% if app.user != null %}
                 {% if app.user.gamesession != null %}
                 {% if app.user.gamesession.id != null %}
                     <div class="card text-white bg-success mb-3">
@@ -23,6 +24,7 @@
 
                 </div>
                 {% endif %}
+
                 {% endif %}
                 <h1 class="text-center">Menú Principal</h1>
                 <h3 class="text-center">Cuestionarios:</h3>
@@ -55,7 +57,6 @@
                         <tr>
                             <th class="active text-center">ID</th>
                             <th class="active text-center">Nombre</th>
-                            <th class="active text-center">Descripción</th>
                             <th class="active text-center">Usuario</th>
                             <th class="active text-center">Preguntas</th>
                             <th class="active text-center">Estado</th>
@@ -70,7 +71,7 @@
                                         {{ questionary.name}}
                                     </a>
                                 </td>
-                                <td> {{ questionary.description}} </td>
+
 
                                 {% if questionary.User == app.user.username %}
                                     <td><b><font color=#008000>{{ questionary.User }}</font></b></td>
@@ -101,6 +102,7 @@
                     <div class="navigation">
                         {{ knp_pagination_render(questionarys) }}
                     </div>
+                    {% endif %}
                 </div>
             </div>
         </div>

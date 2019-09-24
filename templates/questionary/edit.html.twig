@@ -8,9 +8,9 @@
 
     <div class="form-group">
         <div class="col-sm-offset-2 col-sm-10">
-            <button type="submit" class="btn btn-default">Editar</button>
+            <button type="submit" class="btn btn-success">Editar</button>
 
-            <a class="btn btn-default" href="{{ path('questionary.show', {id: questionary.id}) }}">
+            <a class="btn btn-secondary" href="{{ path('questionary.show', {id: questionary.id}) }}">
                 <span class="glyphicon glyphicon-menu-left"aria-hidden="true"></span>
                 Volver al cuestionario
             </a>
@@ -18,4 +18,6 @@
     </div>
 
     {{ form_end(form) }}
+
+    {% include 'footer.html.twig' %}
 {% endblock %}

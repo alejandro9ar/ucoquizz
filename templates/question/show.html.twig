@@ -3,10 +3,6 @@
 
 {% block body %}
 
-    {% if hasControlAccess is defined and hasControlAccess %}
-        {% include 'question/control_panel.html.twig' with {'question': question, 'deleteForm': deleteForm} %}
-    {% endif %}
-
     <h1>Preguntas</h1>
 
 <div class="media" style="margin-top: 60px;">
@@ -23,13 +19,13 @@
             {% for answer in answer %}
 
 
-                <div class="col-sm-10">
+
                     <h5 class="media-heading"><strong>
 
                             {% set Val = Val +1 %}
                             <hr class="my-4">
                             {% if answer.correct == "1" %}
-                            <div class="card border-success mb-3" style="max-width: 20rem;">
+                            <div class="card border-success">
                                 Respuesta {{ Val }}:  {{ answer.answertitle}} ✔
                              </div>
                             {% else %}
@@ -37,7 +33,7 @@
                             Respuesta {{ Val }}: </strong> {{ answer.answertitle}}
                             {% endif %}
                     </h5>
-                </div>
+
 
             {% endfor %}
                 <hr class="my-4">
@@ -45,12 +41,12 @@
                 <h5 class="media-heading"><strong>Tiempo: </strong> {{ question.duration}}</h5>
 
             </div>
-                <a class="btn btn-primary" href="{{ path('question.edit', {id: question.id}) }}"> Editar </a>
+                <a class="btn btn-success" href="{{ path('question.edit', {id: question.id}) }}"> Editar </a>
 
                 {{ form_start(deleteForm, {'attr': {'class': 'navbar-form navbar-left'}}) }}
                 {{ form_widget(deleteForm) }}
 
-                <button type="submit" class="btn btn-default" onclick="return confirm('Are you sure?')">
+                <button type="submit" class="btn btn-secondary" onclick="return confirm('Are you sure?')">
                     <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
                     Delete
                 </button>
@@ -64,4 +60,6 @@
         </div>
     </div>
 </div>
+
+    {% include 'footer.html.twig' %}
 {% endblock %}

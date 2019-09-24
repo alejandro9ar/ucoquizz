@@ -3,6 +3,7 @@
 {% trans_default_domain 'FOSUserBundle' %}
 
 {% block body %}
+
     {% if error %}
         <div>{{ error.messageKey|trans(error.messageData, 'security') }}</div>
     {% endif %}
@@ -42,19 +43,17 @@
 
         <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
-                <input type="submit" class="btn btn-light" id="_submit" name="_submit" value="Identificarse"/>
+                <input type="submit" class="btn btn-success" id="_submit" name="_submit" value="Identificarse"/>
 
             <a class="btn btn-primary" href="{{ path('fos_user_registration_register') }}">
                 Registrar
             </a>
+
+                <a class="btn btn-primary" href="{{ path('connect_uco_start') }}">
+                    LoginUco
+                </a>
             </div>
 
-
-
-            <a class="btn btn-light" href="{{ path('fos_user_registration_register') }}">
-                <span class="glyphicon glyphicon-menu-left"aria-hidden="true"></span>
-                Volver al menú
-            </a>
 
         </div>
     </form>
