@@ -342,6 +342,8 @@ class GameSessionController extends AbstractController
      */
     public function answergame (Request $request, EntityManagerInterface $em, $idsession, $idquestion): Response
     {
+
+
         $answerPlayer = new PlayerAnswerDTO();
         $questionary = new Questionary();
         //question of logged user
@@ -349,6 +351,7 @@ class GameSessionController extends AbstractController
         $actualGameSession = $this->getDoctrine()->getRepository(GameSession::class)->findOneBy(array( 'id' => $idsession) );
 
 
+        //$this->denyAccessUnlessGranted('GAME_DISPONIBLE', $actualGameSession);
 
         $answerQuestionFounded=0;
         for ($i = 0; $i <= \count($questionUser) - 1; ++$i) {
@@ -400,7 +403,8 @@ class GameSessionController extends AbstractController
                 if(($answerPlayer->getAnswer1() == 1 && $answerPlayer->getAnswer2()== 0 && $answerPlayer->getAnswer3() == 0 && $answerPlayer->getAnswer4() ==0)
                     || ($answerPlayer->getAnswer1() == 0 && $answerPlayer->getAnswer2()== 1 && $answerPlayer->getAnswer3() == 0 && $answerPlayer->getAnswer4() ==0)
                     || ($answerPlayer->getAnswer1() == 0 && $answerPlayer->getAnswer2()== 0 && $answerPlayer->getAnswer3() == 2 && $answerPlayer->getAnswer4() ==0)
-                    || ($answerPlayer->getAnswer1() == 0 && $answerPlayer->getAnswer2()== 0 && $answerPlayer->getAnswer3() == 0 && $answerPlayer->getAnswer4() ==3)) {
+                    || ($answerPlayer->getAnswer1() == 0 && $answerPlayer->getAnswer2()== 0 && $answerPlayer->getAnswer3() == 0 && $answerPlayer->getAnswer4() ==3)
+                    || ($answerPlayer->getAnswer1() == 0 && $answerPlayer->getAnswer2()== 0 && $answerPlayer->getAnswer3() == 0 && $answerPlayer->getAnswer4() ==0)) {
 
 
                     $answer->setAnswered(true);
@@ -408,15 +412,17 @@ class GameSessionController extends AbstractController
                     if ($answerPlayer->getAnswer1() == 1) {
                         $answer->setPlayerAnswer(1);
                     }
-                    if ($answerPlayer->getAnswer2() == 1) {
+                    elseif ($answerPlayer->getAnswer2() == 1) {
                         $answer->setPlayerAnswer(2);
                     }
 
-                    if ($answerPlayer->getAnswer3() == 1) {
+                    elseif ($answerPlayer->getAnswer3() == 1) {
                         $answer->setPlayerAnswer(3);
                     }
-                    if ($answerPlayer->getAnswer4() == 1) {
+                    elseif ($answerPlayer->getAnswer4() == 1) {
                         $answer->setPlayerAnswer(4);
+                    }else{
+                        $answer->setPlayerAnswer(0);
                     }
 
                     //pass to second diference between $questionWasStartedAt and $questionWasAnsweredAt
@@ -425,7 +431,7 @@ class GameSessionController extends AbstractController
 
                     $seconds = $questionWasAnsweredAt->diff($answer->getStartedAt());
 
-                    $seconds = $seconds->format('%s');
+                    $seconds = $seconds->format('%s')+($seconds->format('%i')*60) ;
 
                     $puntuation = 100 / (0.25 * $seconds);
 

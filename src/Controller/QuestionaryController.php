@@ -390,6 +390,101 @@ class QuestionaryController extends AbstractController
     /**
      * Finds and displays a questionary entity.
      *
+     * @Route("/exportkahoot/{id}", name="questionary.exportkahoot", requirements={"id":"\d+"})
+     *
+     * @param Questionary $questionary
+     *
+     * @return Response
+     */
+    public function exportkahoot(Questionary $questionary): Response
+    {
+        $this->denyAccessUnlessGranted('QUESTIONARY_OWNER', $questionary);
+
+        $spreadsheet = new Spreadsheet();
+
+        $iddocument = $questionary->getId();
+        $namedocument = $questionary->getName();
+
+        $spreadsheet
+            ->getProperties()
+            ->setCreator('UCOQUIZZ')
+            ->setTitle('Preguntas exportadas por UCOQUIZZ')
+            ->setDescription('Este documento fue generado por la aplicacion UCOQUIZZ')
+            ->setKeywords('preguntas questionary exportar UCOQUIZZ');
+
+        $question = $questionary->getQuestion();
+
+        $activeSheet = $spreadsheet->getActiveSheet();
+        $activeSheet->setTitle('CUESTIONARIO UCOQUIZZ');
+
+        $nquestion = \count($question) - 1;
+
+        $activeSheet->setCellValue('B8', 'Título');
+        $activeSheet->setCellValue('C8', 'Respuesta 1');
+        $activeSheet->setCellValue('D8', 'Respuesta 2');
+        $activeSheet->setCellValue('E8', 'Respuesta 3');
+        $activeSheet->setCellValue('F8', 'Respuesta 4');
+        $activeSheet->setCellValue('G8', 'Correcta');
+        $activeSheet->setCellValue('H8', 'Duración');
+
+        $questionDeleted = 0;
+        for ($i = 0; $i <= $nquestion; ++$i) {
+            $var = $i + 9;
+            $position = $var;
+            if ($question[$i]->getActivated() == 1) {
+                $position = $position - $questionDeleted;
+
+                $activeSheet->setCellValue("B$position", $question[$i]->getTitle());
+
+                $answer = $question[$i]->getAnswer();
+
+                $activeSheet->setCellValue("C$position", $answer[0]->getAnswertitle());
+                if ($answer[0]->getCorrect() == "1") {
+                    $activeSheet->setCellValue("H$position", 1);
+                }
+                $activeSheet->setCellValue("D$position", $answer[1]->getAnswertitle());
+                if ($answer[1]->getCorrect() == "1") {
+                    $activeSheet->setCellValue("H$position", 2);
+                }
+                $activeSheet->setCellValue("E$position", $answer[2]->getAnswertitle());
+                if ($answer[2]->getCorrect() == "1") {
+                    $activeSheet->setCellValue("H$position", 3);
+                }
+                $activeSheet->setCellValue("F$position", $answer[3]->getAnswertitle());
+                if ($answer[3]->getCorrect() == "1") {
+                    $activeSheet->setCellValue("H$position", 4);
+                }
+                $activeSheet->setCellValue("G$position", $question[$i]->getDuration());
+            } else{
+                $questionDeleted = $questionDeleted +1;
+
+            }
+        }
+        $documentname = "cuestionario_$iddocument"."_$namedocument".'.xlsx';
+        /*
+         * Los siguientes encabezados son necesarios para que
+         * el navegador entienda que no le estamos mandando
+         * simple HTML
+         * Por cierto: no hagas ningún echo ni cosas de esas; es decir, no imprimas nada
+         */
+
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="'.$documentname.'"');
+        header('Cache-Control: max-age=0');
+
+
+        $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+        $writer->save('php://output');
+
+        return $this->redirectToRoute('questionary.show', ['id' => $questionary->getId()]);
+
+        exit;
+    }
+
+    /**
+     * Finds and displays a questionary entity.
+     *
      * @Route("/import/{id}", name="questionary.import", requirements={"id":"\d+"})
      *
      * @param Request                $request
