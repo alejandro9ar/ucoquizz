@@ -55,9 +55,15 @@ class Question
      */
     private $activated;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\User", mappedBy="activeQuestion")
+     */
+    private $users;
+
     public function __construct()
     {
         $this->answer = new ArrayCollection();
+        $this->users = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -147,6 +153,37 @@ class Question
     public function setActivated(?bool $activated): self
     {
         $this->activated = $activated;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|User[]
+     */
+    public function getUsers(): Collection
+    {
+        return $this->users;
+    }
+
+    public function addUser(User $user): self
+    {
+        if (!$this->users->contains($user)) {
+            $this->users[] = $user;
+            $user->setActiveQuestion($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUser(User $user): self
+    {
+        if ($this->users->contains($user)) {
+            $this->users->removeElement($user);
+            // set the owning side to null (unless already changed)
+            if ($user->getActiveQuestion() === $this) {
+                $user->setActiveQuestion(null);
+            }
+        }
 
         return $this;
     }

@@ -18,7 +18,7 @@
 
 
     <script type="text/javascript">
-        var contar = 11 //valor inicial.
+        var contar = {{ question.duration }} //valor inicial.
         window.onload = function() {
             document.getElementById("imagen").style.display = "none"; //ocultar imagen
             cuenta = document.getElementById("cuenta"); //elemento donde escribimos la cuenta atrás
@@ -37,15 +37,11 @@
             cuentaAtras() //llamada a la función de cuenta atrás
             //repetir la función cuenta atrás cada segundo
             ignicion = setInterval(cuentaAtras,1000);
+
         }
+        window.onload = function() { despegar(); };
     </script>
 
-    <h1 align="center">Pulsa para iniciar la cuenta atrás.</h1>
-    <p><form action="#" name="laCuenta">
-    <p align="center"><input type="button" name="comenzar"
-                             value="Empezar la cuenta atrás." onclick="contar={{ question.duration }},despegar()" />
-    </p>
-    </form>
     <h1 align="center" id="cuenta"></h1>
 
     <div id="imagen" align="center">
@@ -53,7 +49,7 @@
 
 
 
-    {% if game.activatedQuestion == question %}
+        {#{% if game.activatedQuestion == question %}#}
 
         <div class="form-check">
 
@@ -87,11 +83,11 @@
         </div>
 
 
-    {% else %}
+    {#{% else %}
 
         <h4 class="media-heading"><strong> </strong><li> Esta pregunta no esta activada.</li>  </h4>
 
-    {% endif %}
+    {% endif %}#}
 
     {% include 'footer.html.twig' %}
 {% endblock %}

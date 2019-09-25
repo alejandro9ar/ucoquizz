@@ -46,6 +46,11 @@ class User extends BaseUser
      */
     private $gameSessions;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Question", inversedBy="users")
+     */
+    private $activeQuestion;
+
 
     public function __construct()
     {
@@ -129,6 +134,18 @@ class User extends BaseUser
                 $gameSession->setUserCreator(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getActiveQuestion(): ?Question
+    {
+        return $this->activeQuestion;
+    }
+
+    public function setActiveQuestion(?Question $activeQuestion): self
+    {
+        $this->activeQuestion = $activeQuestion;
 
         return $this;
     }

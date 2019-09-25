@@ -48,10 +48,13 @@
 
                 {% if app.user == game.userCreator and game.started == 0 %}
                 <div class="col px-md-5"><div class="p-3 border bg-light">
-                    <a  href="{{ path('gamesession.gamestart', {id: game.id}) }}"> Comenzar juego </a>
+                    <a  href="{{ path('gamesession.gamestart', {id: game.id}) }}"> Comenzar juego manual</a>
+                    </div></div>
+
+                <div class="col px-md-5"><div class="p-3 border bg-light">
+                        <a  href="{{ path('gamesession.gamestartauto', {id: game.id}) }}"> Comenzar juego automatico </a>
                     </div></div>
                 {% endif %}
-
                 {% if app.user != game.userCreator  %}
                 <div class="col px-md-5"><div class="p-3 border bg-light">
                     <a  href="{{ path('gamesession.gameexit', {id: game.id}) }}"> Abandonar juego </a>
@@ -118,6 +121,7 @@
 
                 {%  if game.started == 1 %}
 
+                    <a href="{{ path('gamesession.answergameauto', {idsession: game.id, idquestion: app.user.activeQuestion.id}) }}">EL JUEGO HA COMENZADO</a>
                     <h4 class="media-heading"><strong>   Preguntas: </strong> </h4>
                     </div>
 
