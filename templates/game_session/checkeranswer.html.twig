@@ -1,0 +1,70 @@
+{% extends 'base.html.twig' %}
+
+
+{% block body %}
+
+
+    <script type="text/javascript">
+        var contar = 5 //valor inicial.
+            window.onload = function() {
+
+                cuenta = document.getElementById("cuenta"); //elemento donde escribimos la cuenta atrás
+            }
+        function despegar() {
+            function cuentaAtras() {
+
+                contar -=1; //variar el número de la cuenta
+                cuenta.innerHTML = contar; //escribir el número
+                if (contar <= 0) { //cuando llegamos a 0...
+                    clearInterval(ignicion) //parar la cuenta atrás.
+                    //visualizar la imagen.
+                    document.getElementById("next").click();
+                }
+            }
+            cuentaAtras() //llamada a la función de cuenta atrás
+            //repetir la función cuenta atrás cada segundo
+            ignicion = setInterval(cuentaAtras,1000);
+
+        }
+        window.onload = function() { despegar(); };
+    </script>
+
+    <div class="container table-responsive">
+
+    <div class="my-3 p-3 bg-white rounded shadow-sm table-responsive">
+
+
+    <div class="my-4">
+
+
+
+        {% if checker == 2 %}
+            <h1 class="text-center bg-success">¡RESPUESTA CORRECTA!</h1>
+            <h1 class="text-center">Puntuación: {{ answer.puntuation }}</h1>
+        {% endif %}
+
+        {% if checker == 1 %}
+            <h1 class="text-center bg-danger">¡RESPUESTA FALLIDA!</h1>
+            <h4 class="text-center">Puntuación: 0 </h4>
+        {% endif %}
+
+    <h1 class="text-center" id="cuenta"></h1>
+
+        {% if game.gameMode =="manual" %}
+
+        <a class="btn btn-secondary text-center" id="next" href="{{ path('gamesession.answergame', {idsession: game.id , idquestion: question.id }) }}">
+            <span class="glyphicon glyphicon-menu-left"aria-hidden="true"></span>
+            Siguiente
+        </a>
+
+        {% else %}
+
+            <a class="btn btn-secondary text-center" id="next" href="{{ path('gamesession.answergameauto', {idsession: game.id , idquestion: app.user.activeQuestion.id}) }}">
+                <span class="glyphicon glyphicon-menu-left"aria-hidden="true"></span>
+                Siguiente
+            </a>
+
+        {% endif %}
+    </div>
+    {% include 'footer.html.twig' %}
+{% endblock %}

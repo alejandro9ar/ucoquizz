@@ -302,6 +302,8 @@ class GameSessionController extends AbstractController
         }
     }
 
+
+
     /**
      * Lists all questionary entities.
      *
@@ -309,16 +311,25 @@ class GameSessionController extends AbstractController
      *
      * @return Response
      */
-    public function lastGames(Request $request, PaginatorInterface $paginator, $id): Response
+    public function correctAnswer(Request $request, PaginatorInterface $paginator, $id): Response
     {
 
+        $allSessions= $this->getDoctrine()->getRepository(PlayerAnswer::class)->findAll();
 
-        $sessions= $this->getDoctrine()->getRepository(PlayerAnswer::class)->findAll();
+        //to eliminate repeat
+        $cont=0;
+        for ($i = 0; $i <= \count($allSessions) - 1; ++$i) {
 
+            if ($allSessions[$i]->getUser() == $this->getUser()) {
+                $cont = $cont + 1;
+                $sessionId[$cont] = $allSessions[$i]->getGamesession()->getId();
+            }
+        }
 
+        $sessionsWithoutRepetition= array_unique($sessionId);
 
         return $this->render('bundles/FOSUserBundle/Profile/showlastgames.html.twig', [
-            'sessions' => $sessions
+            'sessions' => $sessionsWithoutRepetition
 
 
         ]);
@@ -596,28 +607,29 @@ class GameSessionController extends AbstractController
 
                         $answer->setDurationOfAnswer($seconds);
 
+                        $checkerAnswer=0;
                         if ($seconds > $answer->getQuestion()->getDuration()) {
-                            $this->addFlash('notice7', 'Pregunta fallida. Has superado el tiempo de respuesta');
+                            $checkerAnswer=1;
                             $answer->setPuntuation(0);
                             $answer->setCorrect(false);
                         } elseif ($answer->getPlayerAnswer() == 1 and $answerOfQuestion[0]->getCorrect() == 1) {
-                            $this->addFlash('notice8', '¡Respuesta correcta!');
+                            $checkerAnswer=2;
                             $answer->setPuntuation($puntuation);
                             $answer->setCorrect(true);
                         } elseif ($answer->getPlayerAnswer() == 2 and $answerOfQuestion[1]->getCorrect() == 1) {
-                            $this->addFlash('notice8', '¡Respuesta correcta!');
+                            $checkerAnswer=2;
                             $answer->setPuntuation($puntuation);
                             $answer->setCorrect(true);
                         } elseif ($answer->getPlayerAnswer() == 3 and $answerOfQuestion[2]->getCorrect() == 1) {
-                            $this->addFlash('notice8', '¡Respuesta correcta!');
+                            $checkerAnswer=2;
                             $answer->setPuntuation($puntuation);
                             $answer->setCorrect(true);
                         } elseif ($answer->getPlayerAnswer() == 4 and $answerOfQuestion[3]->getCorrect() == 1) {
-                            $this->addFlash('notice8', '¡Respuesta correcta!');
+                            $checkerAnswer=2;
                             $answer->setPuntuation($puntuation);
                             $answer->setCorrect(true);
                         } else {
-                            $this->addFlash('notice7', '¡Respuesta fallida!');
+                            $checkerAnswer=1;
                             $answer->setPuntuation(0);
                             $answer->setCorrect(false);
 
@@ -627,7 +639,15 @@ class GameSessionController extends AbstractController
                         $em->persist($answer);
                         $em->flush();
 
-                        return $this->redirectToRoute('gamesession.gamestarting', ['id' => $idsession]);
+
+
+                        return $this->render('game_session/checkeranswer.html.twig', [
+
+                            'question' => $question,
+                            'game' => $actualGameSession,
+                            'answer' =>$answer,
+                            'checker' =>$checkerAnswer,
+                        ]);
                     }
                     else{
                         $this->addFlash('notice', 'Solo puede seleccionar una respuesta correcta');
@@ -643,7 +663,7 @@ class GameSessionController extends AbstractController
                 }
 
             }else{
-                $this->addFlash('notice3', 'Ya has respondido la pregunta');
+                $this->addFlash('notice', 'Ya has respondido la pregunta');
                 return $this->redirectToRoute('gamesession.gamestarting', ['id' => $idsession]);
             }
 
@@ -769,32 +789,34 @@ class GameSessionController extends AbstractController
 
                     $answer->setDurationOfAnswer($seconds);
 
+                    $checkerAnswer=0;
                     if ($seconds > $answer->getQuestion()->getDuration()) {
-                        $this->addFlash('notice7', 'Pregunta fallida. Has superado el tiempo de respuesta');
+                        $checkerAnswer=1;
                         $answer->setPuntuation(0);
                         $answer->setCorrect(false);
                     } elseif ($answer->getPlayerAnswer() == 1 and $answerOfQuestion[0]->getCorrect() == 1) {
-                        $this->addFlash('notice8', '¡Respuesta correcta!');
+                        $checkerAnswer=2;
                         $answer->setPuntuation($puntuation);
                         $answer->setCorrect(true);
                     } elseif ($answer->getPlayerAnswer() == 2 and $answerOfQuestion[1]->getCorrect() == 1) {
-                        $this->addFlash('notice8', '¡Respuesta correcta!');
+                        $checkerAnswer=2;
                         $answer->setPuntuation($puntuation);
                         $answer->setCorrect(true);
                     } elseif ($answer->getPlayerAnswer() == 3 and $answerOfQuestion[2]->getCorrect() == 1) {
-                        $this->addFlash('notice8', '¡Respuesta correcta!');
+                        $checkerAnswer=2;
                         $answer->setPuntuation($puntuation);
                         $answer->setCorrect(true);
                     } elseif ($answer->getPlayerAnswer() == 4 and $answerOfQuestion[3]->getCorrect() == 1) {
-                        $this->addFlash('notice8', '¡Respuesta correcta!');
+                        $checkerAnswer=2;
                         $answer->setPuntuation($puntuation);
                         $answer->setCorrect(true);
                     } else {
-                        $this->addFlash('notice7', '¡Respuesta fallida!');
+                        $checkerAnswer=1;
                         $answer->setPuntuation(0);
                         $answer->setCorrect(false);
 
                     }
+
 
                     $answer->setAnswered(1);
                     $em->persist($answer);
@@ -813,14 +835,23 @@ class GameSessionController extends AbstractController
                                 $em->persist($user);
                                 $em->flush();
 
-                                return $this->redirectToRoute('gamesession.answergameauto', ['idsession'=>$actualGameSession->getId(),'idquestion' => $questionGameSession[$i]->getId()]);
+                                return $this->render('game_session/checkeranswer.html.twig', [
 
+                                    'question' => $question,
+                                    'game' => $actualGameSession,
+                                    'checker' =>$checkerAnswer,
+                                    'answer' =>$answer,
+                                ]);
                             }
                      }
 
+                    return $this->render('game_session/checkeranswer.html.twig', [
 
-
-                        return $this->redirectToRoute('gamesession.gamestarting', ['id' => $idsession]);
+                        'question' => $question,
+                        'game' => $actualGameSession,
+                        'answer' =>$checkerAnswer,
+                        'checker' =>$answer,
+                    ]);
 
                 }
                 else{
