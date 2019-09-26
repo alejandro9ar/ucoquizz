@@ -21,9 +21,11 @@ use App\Entity\User;
 use App\Form\PasswordGameType;
 use App\Repository\QuestionRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use PhpOffice\PhpSpreadsheet\Calculation\DateTime;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Tests\Compiler\D;
+use Symfony\Component\DependencyInjection\Tests\Compiler\G;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -298,6 +300,28 @@ class GameSessionController extends AbstractController
 
 
         }
+    }
+
+    /**
+     * Lists all questionary entities.
+     *
+     * @Route("/lastgames/{id}", name="questionary.lastgames", methods="GET", requirements={"id":"\d+"})
+     *
+     * @return Response
+     */
+    public function lastGames(Request $request, PaginatorInterface $paginator, $id): Response
+    {
+
+
+        $sessions= $this->getDoctrine()->getRepository(PlayerAnswer::class)->findAll();
+
+
+
+        return $this->render('bundles/FOSUserBundle/Profile/showlastgames.html.twig', [
+            'sessions' => $sessions
+
+
+        ]);
     }
 
     /**

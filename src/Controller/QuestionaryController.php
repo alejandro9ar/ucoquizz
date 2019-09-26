@@ -14,11 +14,13 @@ namespace App\Controller;
 use App\DTO\FileUpdated;
 use App\Entity\Answer;
 use App\Entity\Category;
+use App\Entity\PlayerAnswer;
 use App\Entity\Question;
 use App\Entity\Questionary;
 use App\Form\FileImpType;
 use App\Form\QuestionaryType;
 use App\Message\AddGameSessionMessage;
+use App\Repository\PlayerAnswerRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -71,6 +73,9 @@ class QuestionaryController extends AbstractController
 
         ]);
     }
+
+
+
 
     /**
      * Lists all questionary entities.
