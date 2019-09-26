@@ -4,55 +4,65 @@
 
 
     {% for message in app.flashes('notice3') %}
-        <div class="alert alert-danger" role="alert">
+        <div class="alert alert-danger text-center" role="alert">
             {{ message }}
         </div>
     {% endfor %}
 
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-11">
 
-                {% if app.user != null %}
-                {% if app.user.gamesession != null %}
+    <div class="row justify-content-center">
+
+
+        <div class="col-md-10 ">
+
+            {% if app.user != null %}
+            {% if app.user.gamesession != null %}
                 {% if app.user.gamesession.id != null %}
-                    <div class="card text-white bg-success mb-3">
-                        <p class="text-primary">El usuario se encuentra jugando en una sesión de juego.</p>
-                        <div class="col px-md-5"><div class="p-2 border bg-light">
+                    <div class="card text-white bg-primary mb-3">
+                        <p class="text-dark text-center"><strong>El usuario se encuentra jugando en una sesión de juego.</strong></p>
+                        <div class="col px-md-5 text-center"><div class="p-2 border bg-light">
                                 <a  href="{{ path('gamesession.returntogame', {id: app.user.gamesession.id}) }}"> Volver al juego </a>
                             </div></div>
 
-                </div>
+                    </div>
                 {% endif %}
 
-                {% endif %}
-                <h1 class="text-center">Menú Principal</h1>
-                <h3 class="text-center">Cuestionarios:</h3>
+            {% endif %}
 
-
-
+            <div class="my-3 p-3 bg-white rounded shadow-sm">
+                <h1 class=" border-gray pb-2 mb-0 text-center">Menú principal</h1>
 
             </div>
+
+
             <div class="row justify-content-center">
 
-                <div class="col-3">
+                <div class="col-md-3">
+
+                    <div class="my-3 p-3 bg-white rounded shadow-sm">
+                    <h3 class="border-bottom border-gray pb-2 mb-0 text-center">Categorías</h3>
+
+                        {% for category in categories %}
 
 
-                    <h3>Categorias:</h3>
-                    {% for category in categories %}
-                        <div class="row mx-md-n5">
-                            <div class="col px-md-5"><div class="p-3 border bg-light">
-                                    <a class="text-center" href="{{ path('questionary.listCategory', {id: category.id}) }}">
-                                        {{ category.name}}
-                                    </a>
-                                </div></div>
-                        </div>
-                    {% endfor %}
+                            <div class="media text-muted pt-3">
+                                <p class="media-body pb-3 mb-0  lh-125 border-bottom border-gray">
+                                    <strong class="d-block text-gray-dark text-center"><a class="text-center" href="{{ path('questionary.listCategory', {id: category.id}) }}">
+                                            {{ category.name}}
+                                        </a></strong>
+                                    </p>
+                            </div>
 
+
+
+                        {% endfor %}
+
+                    </div>
                 </div>
 
-                <div class="col-9">
-                    <table class="table text-center">
+                <div class="col-md-8">
+                    <div class="table-responsive">
+                    <table class="table text-center ">
                         <thead class="thead-light">
                         <tr>
                             <th class="active text-center">ID</th>
@@ -64,7 +74,7 @@
                         </thead>
                         {% for questionary in questionarys %}
 
-                            <tr>
+                            <tr bgcolor="white">
                                 <td> {{ questionary.id}} </td>
                                 <td>
                                     <a href="{{ path('questionary.show', {id: questionary.id}) }}">
@@ -102,6 +112,10 @@
                     <div class="navigation">
                         {{ knp_pagination_render(questionarys) }}
                     </div>
+                    </div>
+                    {% else %}
+                    Registrate primo
+
                     {% endif %}
                 </div>
             </div>
@@ -110,6 +124,7 @@
 
     {% include 'footer.html.twig' %}
 {% endblock %}
+
 
 
 

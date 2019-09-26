@@ -2,14 +2,25 @@
 
 {% trans_default_domain 'FOSUserBundle' %}
 
+
 {% block body %}
+
+
+    <div class="container">
+
+        <div class="my-3 p-3 bg-white rounded shadow-sm">
+            <h1 class=" border-bottom border-gray pb-2 mb-0 text-center">Registro</h1>
+
+<div class="my-4">
 
     {{ form_start(form, {'method': 'post', 'action': path('fos_user_registration_register'), 'attr': {'class': 'fos_user_registration_register'}}) }}
     {{ form_widget(form) }}
     <div>
-        <input type="submit" class="btn-success" value="Registrar" />
+        <input type="submit" class="btn btn-success" value="Registrar" />
     </div>
     {{ form_end(form) }}
+    </div>
+
 
     {% include 'footer.html.twig' %}
 {% endblock %}

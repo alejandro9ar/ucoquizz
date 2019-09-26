@@ -21,12 +21,12 @@
                 <h1 class="border-bottom border-gray pb-2 mb-0 text-center">Perfil de usuario</h1>
 
 
-                    <h4 class="text-center"><strong>Nombre de usuario: </strong>  {{ user.username }} </h4>
+                <h4 class="text-center"><strong>Nombre de usuario: </strong>  {{ user.username }} </h4>
 
 
-                    <h4 class="text-center"><strong>Correo electrónico: </strong>  {{ user.email }} </h4>
+                <h4 class="text-center"><strong>Correo electrónico: </strong>  {{ user.email }} </h4>
 
-                </div>
+            </div>
 
 
 
@@ -37,14 +37,6 @@
 
                     <div class="my-3 p-3 bg-white rounded shadow-sm">
                         <h3 class="border-bottom border-gray pb-2 mb-0 text-center">Opciones</h3>
-
-                            <div class="media text-muted pt-3">
-                                <p class="media-body pb-3 mb-0  lh-125 border-bottom border-gray">
-                                    <strong class="d-block text-gray-dark text-center">
-                                        <a class="text-center" href="{{ path('fos_user_change_password') }}" class="btn btn-primary">Cambiar contraseña</a>
-                                    </strong>
-                                </p>
-                            </div>
 
                         <div class="media text-muted pt-3">
                             <p class="media-body pb-3 mb-0  lh-125 border-bottom border-gray">
@@ -108,44 +100,44 @@
                             {% endfor %}
                         </table>
 
-                            <div class="my-3 p-3 bg-white rounded shadow-sm">
-                                <h3 class=" border-gray pb-2 mb-0 text-center">Cuestionarios cerrados</h3>
-                            </div>
+                        <div class="my-3 p-3 bg-white rounded shadow-sm">
+                            <h3 class=" border-gray pb-2 mb-0 text-center">Cuestionarios cerrados</h3>
+                        </div>
 
-                                <table class="table text-center">
-                                    <thead class="thead-light">
-                                    <tr>
-                                        <th class="active text-center">Nombre</th>
-                                        <th class="active text-center">Descripción</th>
-                                        <th class="active text-center">Preguntas</th>
-                                        <th class="active text-center">Estado</th>
-                                    </tr>
-                                    </thead>
-                                    {% for questionary in user.questionary %}
-                                        {% if questionary.state == 0 %}
-                                            <tr bgcolor="white">
-                                            <td>
-                                                <a href="{{ path('questionary.show', {id: questionary.id}) }}">
-                                                    {{ questionary.name}}
-                                                </a>
-                                            </td>
-                                            <td> {{ questionary.description}} </td>
-                                            {% set myVal = 0 %}
-                                            {% for question in questionary.question %}
-                                                {% set myVal = myVal +1 %}
-                                            {% endfor %}
-                                            <td>{{ myVal }}</td>
-
-                                            {% if questionary.state == '1' %}
-                                                <td><b><font color=#008000>Abierto</font></b></td>
-                                            {% else %}
-                                                <td><b><font color=#FF0000>Cerrado</font></b></td></td>
-                                            {% endif %}
-                                        {%  endif %}
-                                        </tr>
-
+                        <table class="table text-center">
+                            <thead class="thead-light">
+                            <tr>
+                                <th class="active text-center">Nombre</th>
+                                <th class="active text-center">Descripción</th>
+                                <th class="active text-center">Preguntas</th>
+                                <th class="active text-center">Estado</th>
+                            </tr>
+                            </thead>
+                            {% for questionary in user.questionary %}
+                                {% if questionary.state == 0 %}
+                                    <tr bgcolor="white">
+                                    <td>
+                                        <a href="{{ path('questionary.show', {id: questionary.id}) }}">
+                                            {{ questionary.name}}
+                                        </a>
+                                    </td>
+                                    <td> {{ questionary.description}} </td>
+                                    {% set myVal = 0 %}
+                                    {% for question in questionary.question %}
+                                        {% set myVal = myVal +1 %}
                                     {% endfor %}
-                                </table>
+                                    <td>{{ myVal }}</td>
+
+                                    {% if questionary.state == '1' %}
+                                        <td><b><font color=#008000>Abierto</font></b></td>
+                                    {% else %}
+                                        <td><b><font color=#FF0000>Cerrado</font></b></td></td>
+                                    {% endif %}
+                                {%  endif %}
+                                </tr>
+
+                            {% endfor %}
+                        </table>
 
 
 
@@ -160,5 +152,4 @@
 
     {% include 'footer.html.twig' %}
 {% endblock %}
-
 

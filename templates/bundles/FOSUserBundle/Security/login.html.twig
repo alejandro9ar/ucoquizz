@@ -13,7 +13,15 @@
 
     </div>
 
-    <form class="form-horizontal col-sm-offset-2 col-sm-8" action="{{ path("fos_user_security_check") }}" method="post">
+    <div class="container">
+
+    <div class="my-3 p-3 bg-white rounded shadow-sm">
+        <h1 class=" border-bottom border-gray pb-2 mb-0 text-center">Identificación</h1>
+
+    <div class="my-4 my">
+
+
+    <form  action="{{ path("fos_user_security_check") }}" method="post">
 
         <input type="hidden" name="_csrf_token" value="{{ csrf_token }}"/>
 
@@ -58,5 +66,7 @@
         </div>
     </form>
 
+
+    </div>
     {% include 'footer.html.twig' %}
 {% endblock %}

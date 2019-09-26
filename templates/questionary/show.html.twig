@@ -4,163 +4,241 @@
 {% block body %}
 
 
-    <div class="container">
-        <div class="row justify-content-center">
-
-
-            <div class="col-3">
-
-                <h3>Opciones de juego:</h3>
-                {% if questionary.type == "público" %}
-                    <div class="col px-md-5"><div class="p-3 border bg-light">
-                            <a href="{{ path('gamesession.play', {id: questionary.id}) }}"> Crear juego </a>
-                        </div></div>
-                    <div class="col px-md-5"><div class="p-3 border bg-light">
-                            <a  href="{{ path('gamesession.returntogame', {id: questionary.id}) }}"> Volver al juego </a>
-                        </div></div>
-                {% endif %}
-                <div class="col px-md-5"><div class="p-3 border bg-light">
-                        <a href="{{ path('gamesession.enterkey', {id: questionary.id}) }}"> Unirse a un juego </a>
-                    </div></div>
-
-
-
-
-
-
-                {% if is_granted('QUESTIONARY_OWNER', questionary) %}
-
-                {% if questionary.type == "privado" %}
-                    <div class="col px-md-5"><div class="p-3 border bg-light">
-                            <a  href="{{ path('gamesession.play', {id: questionary.id}) }}"> Crear juego </a>
-                        </div></div>
-                    <div class="col px-md-5"><div class="p-3 border bg-light">
-                            <a  href="{{ path('gamesession.returntogame', {id: questionary.id}) }}"> Volver al juego </a>
-                        </div></div>
-                {% endif %}
-
-                    <h3>Opciones de cuestionario:</h3>
-                {% if questionary.state == '1' %}
-                    <div class="col px-md-5"><div class="p-3 border bg-light">
-                            <a  href="{{ path('questionary.close', {id: questionary.id}) }}"> Cerrar cuestionario </a>
-                        </div></div>
-                {% else %}
-                    <div class="col px-md-5"><div class="p-3 border bg-light">
-                            <a  href="{{ path('questionary.open', {id: questionary.id}) }}"> Abrir cuestionario </a>
-                        </div></div>
-                {% endif %}
-
-
-                <div class="col px-md-5"><div class="p-3 border bg-light">
-                        <a href="{{ path('questionary.edit', {id: questionary.id}) }}"> Editar </a>
-                    </div></div>
-                <div class="col px-md-5"><div class="p-3 border bg-light">
-                        <a  href="{{ path('question.create', {id: questionary.id}) }}"> Añadir pregunta </a>
-                    </div></div>
-                <div class="col px-md-5"><div class="p-3 border bg-light">
-                        <a href="{{ path('questionary.export', {id: questionary.id}) }}"> Exportar Cuestionario </a>
-                    </div></div>
-                    <div class="col px-md-5"><div class="p-3 border bg-light">
-                            <a href="{{ path('questionary.exportkahoot', {id: questionary.id}) }}"> Exportar Cuestionario Kahoot </a>
-                        </div></div>
-                <div class="col px-md-5"><div class="p-3 border bg-light">
-                        <a  href="{{ path('questionary.import', {id: questionary.id}) }}"> Importar Cuestionario </a>
-                    </div></div>
-                {% endif %}
-
-            </div>
-
-            <div class="col-9">
-    <h1>Cuestionario</h1>
-
-    {% for message in app.flashes('notice') %}
-        <div class="alert alert-success" role="alert">
-            {{ message }}
-        </div>
-    {% endfor %}
-
-    {% for message in app.flashes('notice2') %}
-        <div class="alert alert-danger" role="alert">
-            {{ message }}
-        </div>
-    {% endfor %}
-
     {% for message in app.flashes('notice3') %}
-        <div class="alert alert-danger" role="alert">
+        <div class="alert alert-danger text-center" role="alert">
             {{ message }}
         </div>
     {% endfor %}
 
-                <div class="jumbotron">
 
-                <h3 class="media-heading"><strong>Nombre:</strong>  {{ questionary.name}} </h3>
+    <div class="row justify-content-center">
 
 
-                    <hr class="my-4">
-            <div class="col-sm-10">
-                <h3 class="media-heading"><strong>ID:</strong>  {{ questionary.id}} </h3>
+        <div class="col-md-10 ">
 
-                <hr class="my-4">
-                <h5 class="media-heading"><strong>Descripción: </strong> {{ questionary.description}}</h5>
 
-                <hr class="my-4">
-                <h5 class="media-heading"><strong>Categoría: </strong>{{ questionary.category.name}}</h5>
+            <div class="row justify-content-center">
 
-                <hr class="my-4">
-                <h5 class="media-heading"><strong>Tipo: </strong>{{ questionary.type}}</h5>
+                <div class="col-md-3">
 
-                <hr class="my-4">
-            {% if questionary.state == '1' %}
-                <h5 class="media-heading"><strong>Estado: </strong><b><font color=#008000>Abierto</font></b></h5>
-            {% else %}
-                <h5 class="media-heading"><strong>Estado: </strong><b><font color=#FF0000>Cerrado</font></b></h5>
-            {% endif %}
-            </div>
 
-                    {% set myVal = 0 %}
-                    {% for questionary in questionary.question %}
-                        {% if questionary.activated == 1 %}
-                            {% set myVal = myVal +1 %}
+                    <div class="my-3 p-3 bg-white rounded shadow-sm">
+                        <h3 class="border-bottom border-gray pb-2 mb-0 text-center">Opciones</h3>
+
+
+
+                        {% if questionary.type == "público" %}
+
+                            <div class="media text-muted pt-3">
+                                <p class="media-body pb-3 mb-0  lh-125 border-bottom border-gray">
+                                    <strong class="d-block text-gray-dark text-center">
+                                        <a href="{{ path('gamesession.play', {id: questionary.id}) }}"> Crear juego </a>
+                                    </strong>
+                                </p>
+                            </div>
+
+                            <div class="media text-muted pt-3">
+                                <p class="media-body pb-3 mb-0  lh-125 border-bottom border-gray">
+                                    <strong class="d-block text-gray-dark text-center">
+                                        <a  href="{{ path('gamesession.returntogame', {id: questionary.id}) }}"> Volver al juego </a>
+                                    </strong>
+                                </p>
+                            </div>
+
                         {% endif %}
-                    {% endfor %}
-                    <hr class="my-4">
-                <h5 class="media-heading"><strong>Numero de preguntas: </strong>{{ myVal }}</h5>
+
+                        <div class="media text-muted pt-3">
+                            <p class="media-body pb-3 mb-0  lh-125 border-bottom border-gray">
+                                <strong class="d-block text-gray-dark text-center">
+                                    <a href="{{ path('gamesession.enterkey', {id: questionary.id}) }}"> Unirse a un juego </a>
+                                </strong>
+                            </p>
+                        </div>
+
+                        {% if is_granted('QUESTIONARY_OWNER', questionary) %}
+
+                            {% if questionary.type == "privado" %}
+                                <div class="media text-muted pt-3">
+                                    <p class="media-body pb-3 mb-0  lh-125 border-bottom border-gray">
+                                        <strong class="d-block text-gray-dark text-center">
+                                            <a  href="{{ path('gamesession.play', {id: questionary.id}) }}"> Crear juego </a>
+                                        </strong>
+                                    </p>
+                                </div>
+
+                                <div class="media text-muted pt-3">
+                                    <p class="media-body pb-3 mb-0  lh-125 border-bottom border-gray">
+                                        <strong class="d-block text-gray-dark text-center">
+                                            <a  href="{{ path('gamesession.returntogame', {id: questionary.id}) }}"> Volver al juego </a>
+                                        </strong>
+                                    </p>
+                                </div>
+
+                            {% endif %}
+
+                    </div>
+
+
+                        <div class="my-3 p-3 bg-white rounded shadow-sm">
+                            <h3 class="border-bottom border-gray pb-2 mb-0 text-center">Administrar</h3>
+
+                            <div class="media text-muted pt-3">
+                                <p class="media-body pb-3 mb-0  lh-125 border-bottom border-gray">
+                                    <strong class="d-block text-gray-dark text-center">
+                                        <a href="{{ path('questionary.edit', {id: questionary.id}) }}"> Editar </a>
+                                    </strong>
+                                </p>
+                            </div>
+                            <div class="media text-muted pt-3">
+                                <p class="media-body pb-3 mb-0  lh-125 border-bottom border-gray">
+                                    <strong class="d-block text-gray-dark text-center">
+                                        <a  href="{{ path('question.create', {id: questionary.id}) }}"> Añadir pregunta </a>
+                                    </strong>
+                                </p>
+                            </div>
+
+
+
+                            <div class="dropdown dropright">
+                                <a type="button" class="media text-muted pt-3" data-toggle="dropdown">
+                                <p class="media-body pb-3 mb-0  lh-125 border-bottom border-gray">
+                                    <strong class="d-block text-dark text-center">
+                                        Exportar cuestionario
+                                    </strong>
+                                </p>
+                                </a>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item" href="{{ path('questionary.export', {id: questionary.id}) }}"> Exportar Cuestionario Ucoquizz </a>
+                                    <a class="dropdown-item" href="{{ path('questionary.exportkahoot', {id: questionary.id}) }}"> Exportar Cuestionario Kahoot </a>
+                                </div>
+                            </div>
+
+                            <div class="dropdown dropright">
+                                <a type="button" class="media text-muted pt-3" data-toggle="dropdown">
+                                    <p class="media-body pb-3 mb-0  lh-125 border-bottom border-gray">
+                                        <strong class="d-block text-dark text-center">
+                                            Importar cuestionario
+                                        </strong>
+                                    </p>
+                                </a>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item" href="{{ path('questionary.import', {id: questionary.id}) }}"> Importar Cuestionario Ucoquizz</a>
+                                    <a class="dropdown-item" href="{{ path('questionary.importkahoot', {id: questionary.id}) }}"> Importar Cuestionario Kahoot </a>
+                                </div>
+                            </div>
+
+                            {% if questionary.state == '1' %}
+
+                                <div class="media text-muted pt-3">
+                                    <p class="media-body pb-3 mb-0  lh-125 border-bottom border-gray">
+                                        <strong class="d-block text-gray-dark text-center">
+                                            <a  href="{{ path('questionary.close', {id: questionary.id}) }}"> Cerrar cuestionario </a>
+                                        </strong>
+                                    </p>
+                                </div>
+                            {% else %}
+                                <div class="media text-muted pt-3">
+                                    <p class="media-body pb-3 mb-0  lh-125 border-bottom border-gray">
+                                        <strong class="d-block text-gray-dark text-center">
+                                            <a  href="{{ path('questionary.open', {id: questionary.id}) }}"> Abrir cuestionario </a>
+                                        </strong>
+                                    </p>
+                                </div>
+                            {% endif %}
+                        {% endif %}
+
+                    </div>
+
+                    </div>
+
+
+                <div class="col-md-8">
+
+
+
+                        <div class="my-3 p-3 bg-white rounded shadow-sm">
+                            <h1 class=" border-gray pb-2 mb-0 text-center">Datos del cuestionario:</h1>
+
+                        </div>
+
+                    <div class="jumbotron bg-white text-center">
+                        <h3 class="media-heading font-weight-normal"><strong>Nombre:</strong>  {{ questionary.name}} </h3>
+
+
+                        <hr class="my-4">
+
+                            <h3 class="media-heading font-weight-normal"><strong>ID:</strong>  {{ questionary.id}} </h3>
+
+                            <hr class="my-4">
+                            <h5 class="media-heading font-weight-normal"><strong>Descripción: </strong> {{ questionary.description}}</h5>
+
+                            <hr class="my-4">
+                            <h5 class="media-heading font-weight-normal"><strong>Categoría: </strong>{{ questionary.category.name}}</h5>
+
+
+                            <hr class="my-4">
+                            <h5 class="media-heading font-weight-normal"><strong>Usuario creador: </strong> {{ questionary.user}}</h5>
+
+                            <hr class="my-4">
+                            <h5 class="media-heading font-weight-normal"><strong>Tipo: </strong>{{ questionary.type}}</h5>
+
+                            <hr class="my-4">
+                            {% if questionary.state == '1' %}
+                                <h5 class="media-heading font-weight-normal"><strong>Estado: </strong><font color=#008000>Abierto</font></h5>
+                            {% else %}
+                                <h5 class="media-heading font-weight-normal"><strong>Estado: </strong><font color=#FF0000>Cerrado</font></h5>
+                            {% endif %}
+
+
+                        {% set myVal = 0 %}
+                        {% for questionary in questionary.question %}
+                            {% if questionary.activated == 1 %}
+                                {% set myVal = myVal +1 %}
+                            {% endif %}
+                        {% endfor %}
+                        <hr class="my-4">
+                        <h5 class="media-heading font-weight-normal"><strong>Numero de preguntas: </strong>{{ myVal }}</h5>
+
+                    </div>
+
+                    <div class="my-3 p-3 bg-white rounded shadow-sm">
+                        <h1 class=" border-gray pb-2 mb-0 text-center">Preguntas</h1>
+
+                    </div>
+
+                    <div class="jumbotron bg-white text-center">
+
+                        {% set Val = 0 %}
+                        {% for question in question %}
+                            {% if question.activated == 1 %}
+                                {% set Val = Val +1 %}
+                                <ul>
+
+                                    <h5 class="media-heading font-weight-normal"><strong><li>Pregunta {{ Val }}: </strong> <a href="{{ path('question.show', {id: question.id}) }}">
+
+                                            {{ question.title}} </a>
+
+                                    </h5>
+                                </ul>
+                            {% endif %}
+                        {% endfor %}
+
+
+                    </div>
+                    <a class="btn btn-primary" href="{{ path('questionary.list') }}">
+                        <span class="glyphicon glyphicon-menu-left"aria-hidden="true"></span>
+                        Volver al menú
+                    </a>
 
                 </div>
-
-                <div class="jumbotron">
-                <h5 class="media-heading"><strong>Preguntas: </strong></h5>
-
-                    {% set Val = 0 %}
-                    {% for question in question %}
-                        {% if question.activated == 1 %}
-                        {% set Val = Val +1 %}
-                            <ul>
-
-                            <h5 class="media-heading"><strong><li>Pregunta {{ Val }}: </strong> <a href="{{ path('question.show', {id: question.id}) }}">
-
-                                    {{ question.title}} </a>
-
-                            </h5>
-                            </ul>
-                        {% endif %}
-                    {% endfor %}
-
-
-                </div>
-                <a class="btn btn-light" href="{{ path('questionary.list') }}">
-                    <span class="glyphicon glyphicon-menu-left"aria-hidden="true"></span>
-                    Volver al menú
-                </a>
             </div>
         </div>
     </div>
-    </div>
-    </div>
-    </div>
-
-
-</div>
 
     {% include 'footer.html.twig' %}
 {% endblock %}
+
+
+
+
+

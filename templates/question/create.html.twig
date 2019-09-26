@@ -1,7 +1,13 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <h1>Pregunta creation</h1>
+
+<div class="container">
+    <div class="my-3 p-3 bg-white rounded shadow-sm">
+        <h1 class=" border-bottom border-gray pb-2 mb-0 text-center">Añadir pregunta</h1>
+
+<div class="my-4">
+
 
     {% for message in app.flashes('notice') %}
         <div class="alert alert-danger" role="alert">
@@ -26,5 +32,6 @@
     </div>
     {{ form_end(form) }}
 
+</div>
     {% include 'footer.html.twig' %}
 {% endblock %}

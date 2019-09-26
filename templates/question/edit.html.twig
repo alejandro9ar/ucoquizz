@@ -1,7 +1,11 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <h1>Editar pregunta:</h1>
+<div class="container">
+    <div class="my-3 p-3 bg-white rounded shadow-sm">
+        <h1 class="border-bottom border-gray pb-2 mb-0 text-center">Editar pregunta</h1>
+
+        <div class="my-4">
 
 
 
@@ -26,5 +30,6 @@
 
     {{ form_end(form) }}
 
+</div>
     {% include 'footer.html.twig' %}
 {% endblock %}

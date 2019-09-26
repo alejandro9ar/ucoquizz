@@ -2,7 +2,7 @@
 
 {% block body %}
 
-    <h1>Pregunta</h1>
+
 
     {% for message in app.flashes('notice') %}
         <div class="alert alert-danger" role="alert">
@@ -42,10 +42,15 @@
         window.onload = function() { despegar(); };
     </script>
 
+    <div class="container">
+        <div class="my-3 p-3 bg-light rounded shadow-sm">
+            <h3 class=" border-gray pb-2 mb-0 text-center">ID Pregunta: {{ question.id }}</h3>
+
+        </div>
     <h1 align="center" id="cuenta"></h1>
 
     <div id="imagen" align="center">
-    <div class="card text-white bg-light mb-5">     <h2 class="media-heading"><strong>  </strong>  <p class="text-primary"> Título</p> </h2> <p class="text-primary text-center text">{{ question.title }}</li></p>   </div>
+        <div class="card text-white bg-white mb-5">     <h2 class="media-heading"><strong>  </strong>  <p class="text-primary"> Título</p> </h2> <p class="text-dark text-center text"><strong>{{ question.title }}</strong></li></p>   </div>
 
 
 
@@ -55,13 +60,13 @@
 
         {{ form_start(form) }}
 
-        <div class="card text-white bg-info mb-1">     <h4 class="media-heading"><strong>  </strong>    <p class="text-primary text-center"> {{ form_widget(form.answer1) }} </h4> <p class="text-primary text-center text">{{ question.answer[0].answertitle }}</li></p>   </div>
+            <div class="card text-white bg-info mb-1">     <h4 class="media-heading"><strong>  </strong>    <p class="text-primary text-center"> {{ form_widget(form.answer1) }} </h4> <p class="text-dark text-center "><strong>{{ question.answer[0].answertitle }}</strong</li></p>   </div>
 
-        <div class="card text-white bg-warning mb-1">     <h4 class="media-heading"><strong>  </strong>    <p class="text-primary text-center"> {{ form_widget(form.answer2) }} </h4> <p class="text-primary text-center text">{{ question.answer[1].answertitle }}</li></p>   </div>
+            <div class="card text-white bg-warning mb-1">     <h4 class="media-heading"><strong>  </strong>    <p class="text-primary text-center"> {{ form_widget(form.answer2) }} </h4> <p class="text-dark text-center text"><strong>{{ question.answer[1].answertitle }}</strong></li></p>   </div>
 
-        <div class="card text-white bg-success mb-1">     <h4 class="media-heading"><strong>  </strong>    <p class="text-primary text-center"> {{ form_widget(form.answer3) }} </h4> <p class="text-primary text-center text">{{ question.answer[2].answertitle }}</li></p>   </div>
+            <div class="card text-white bg-success mb-1">     <h4 class="media-heading"><strong>  </strong>    <p class="text-primary text-center"> {{ form_widget(form.answer3) }} </h4> <p class="text-dark text-center text"><strong>{{ question.answer[2].answertitle }}</strong></li></p>   </div>
 
-        <div class="card text-white bg-danger mb-1">     <h4 class="media-heading"><strong>  </strong>    <p class="text-primary text-center"> {{ form_widget(form.answer4) }} </h4> <p class="text-primary text-center text">{{ question.answer[3].answertitle }}</li></p>   </div>
+            <div class="card text-white bg-danger mb-1">     <h4 class="media-heading"><strong>  </strong>    <p class="text-primary text-center"> {{ form_widget(form.answer4) }} </h4> <p class="text-dark text-center text"><strong>{{ question.answer[3].answertitle }}</strong></li></p>   </div>
 
 
 
@@ -82,7 +87,7 @@
             </div>
         </div>
 
-
+    </div>
     {#{% else %}
 
         <h4 class="media-heading"><strong> </strong><li> Esta pregunta no esta activada.</li>  </h4>

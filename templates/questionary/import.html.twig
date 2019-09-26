@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+
+{% block body %}
+
+    <div class="container">
+    <div class="my-3 p-3 bg-white rounded shadow-sm">
+    <h1 class=" border-gray pb-2 mb-0 text-center">Importar cuestionario</h1>
+
+    {{ form_start(form) }}
+
+        {{ form_row(form.fileupdate) }}
+
+    <button type="submit" class="btn btn-primary">Importar cuestionario</button>
+    {{ form_end(form) }}
+
+        <script>
+            // Add the following code if you want the name of the file appear on select
+            $(".custom-file-input").on("change", function() {
+                var fileName = $(this).val().split("\\").pop();
+                $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+            });
+        </script>
+
+    </div>
+    {% include 'footer.html.twig' %}
+{% endblock %}

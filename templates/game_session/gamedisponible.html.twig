@@ -2,76 +2,107 @@
 
 {% block body %}
 
-    {% for message in app.flashes('notice7') %}
-        <div class="alert alert-danger" role="alert">
-            {{ message }}
-        </div>
-    {% endfor %}
-
-
-    {% for message in app.flashes('notice8') %}
-        <div class="alert alert-success" role="alert">
-            {{ message }}
-        </div>
-    {% endfor %}
 
     {% for message in app.flashes('notice3') %}
-        <div class="alert alert-success" role="alert">
+        <div class="alert alert-danger text-center" role="alert">
             {{ message }}
         </div>
     {% endfor %}
 
-
-    {% for message in app.flashes('notice4') %}
-        <div class="alert alert-danger" role="alert">
+    {% for message in app.flashes('notice7') %}
+        <div class="alert alert-danger text-center" role="alert">
             {{ message }}
         </div>
     {% endfor %}
 
-    {% for message in app.flashes('notice5') %}
-        <div class="alert alert-danger" role="alert">
+    {% for message in app.flashes('notice8') %}
+        <div class="alert alert-success text-center" role="alert">
             {{ message }}
         </div>
     {% endfor %}
 
+    <div class="row justify-content-center">
 
 
-    <div class="container">
-        <div class="row">
-            <div class="col-3">
+        <div class="col-md-10 ">
 
-                {% if app.user == game.userCreator and game.started == 1 and game.closed == 0 %}
-                <div class="col px-md-5"><div class="p-3 border bg-light">
-                    <a  href="{{ path('gamesession.gameclose', {id: game.id}) }}"> Cerrar juego </a>
-                    </div></div>
-                {% endif %}
 
-                {% if app.user == game.userCreator and game.started == 0 %}
-                <div class="col px-md-5"><div class="p-3 border bg-light">
-                    <a  href="{{ path('gamesession.gamestart', {id: game.id}) }}"> Comenzar juego manual</a>
-                    </div></div>
-
-                <div class="col px-md-5"><div class="p-3 border bg-light">
-                        <a  href="{{ path('gamesession.gamestartauto', {id: game.id}) }}"> Comenzar juego automatico </a>
-                    </div></div>
-                {% endif %}
-                {% if app.user != game.userCreator  %}
-                <div class="col px-md-5"><div class="p-3 border bg-light">
-                    <a  href="{{ path('gamesession.gameexit', {id: game.id}) }}"> Abandonar juego </a>
-                    </div></div>
-                {% endif %}
-                <div class="col px-md-5"><div class="p-3 border bg-light">
-                    <a  href="{{ path('gamesession.stats', {id: game.id}) }}"> Estadisticas </a>
-                </div></div>
+            <div class="my-3 p-3 bg-white rounded shadow-sm">
+                <h1 class=" border-gray pb-2 mb-0 text-center">Sesión de juego</h1>
 
             </div>
 
 
-            <div class="col-9">
+            <div class="row justify-content-center">
 
-                {% block fos_user_content %}
+                <div class="col-md-3">
+
+                    <div class="my-3 p-3 bg-white rounded shadow-sm">
+                        <h3 class="border-bottom border-gray pb-2 mb-0 text-center">Opciones</h3>
 
 
+                        {% if app.user == game.userCreator and game.started == 1 and game.closed == 0 %}
+
+                            <div class="media text-muted pt-3">
+                                <p class="media-body pb-3 mb-0  lh-125 border-bottom border-gray">
+                                    <strong class="d-block text-gray-dark text-center">
+                                        <a  href="{{ path('gamesession.gameclose', {id: game.id}) }}"> Cerrar juego </a>
+                                    </strong>
+                                </p>
+                            </div>
+                        {% endif %}
+
+                        {% if app.user == game.userCreator and game.started == 0 %}
+
+                            <div class="dropdown dropright">
+                                <a type="button" class="media text-muted pt-3" data-toggle="dropdown">
+                                    <p class="media-body pb-3 mb-0  lh-125 border-bottom border-gray">
+                                        <strong class="d-block text-dark text-center">
+                                           Comenzar juego
+                                        </strong>
+                                    </p>
+                                </a>
+                                <div class="dropdown-menu">
+                                    <a  class="dropdown-item" href="{{ path('gamesession.gamestart', {id: game.id}) }}"> Juego manual</a>
+                                    <a class="dropdown-item"  href="{{ path('gamesession.gamestartauto', {id: game.id}) }}"> Juego automatico </a>
+                                </div>
+                            </div>
+
+                            <div class="media text-muted pt-3">
+                                <p class="media-body pb-3 mb-0  lh-125 border-bottom border-gray">
+                                    <strong class="d-block text-gray-dark text-center">
+                                        <a  href="{{ path('gamesession.gameexit', {id: game.id}) }}"> Abandonar juego </a>
+                                    </strong>
+                                </p>
+                            </div>
+
+                        {% endif %}
+                        {% if app.user != game.userCreator  %}
+
+                            <div class="media text-muted pt-3">
+                                <p class="media-body pb-3 mb-0  lh-125 border-bottom border-gray">
+                                    <strong class="d-block text-gray-dark text-center">
+                                        <a  href="{{ path('gamesession.gameexit', {id: game.id}) }}"> Abandonar juego </a>
+                                    </strong>
+                                </p>
+                            </div>
+                        {% endif %}
+
+                        <div class="media text-muted pt-3">
+                            <p class="media-body pb-3 mb-0  lh-125 border-bottom border-gray">
+                                <strong class="d-block text-gray-dark text-center">
+                                    <a  href="{{ path('gamesession.stats', {id: game.id}) }}"> Estadísticas </a>
+                                </strong>
+                            </p>
+                        </div>
+
+
+                    </div>
+
+                    </div>
+
+
+                <div class="col-md-8">
 
                     {% set Val = 0 %}
                     {% for User in users %}
@@ -80,160 +111,240 @@
 
                     {% endfor %}
 
-                    <div class="jumbotron">
-                        <h2 class="media-heading"> ¡Puede jugar el cuestionario <strong> "{{ game.questionary.name }}"</strong>, sesion de juego: <strong> {{ game.id }} !</strong> </h2>
+                    <div class="jumbotron bg-white">
+                        <h2 class="media-heading font-weight-normal"> ¡Puede jugar el cuestionario <strong> "{{ game.questionary.name }}"</strong>, sesión de juego: <strong> {{ game.id }} !</strong> </h2>
                         <hr class="my-4">
 
+                        {% if game.started == 1 %}
+                            <h2 class="media-heading font-weight-normal"> Estado de la sesión: <strong> <font color=#008000>Comenzado </font></strong> </h2>
+
+                            {% if game.gameMode == "auto" %}
+                                <h2 class="media-heading font-weight-normal"> Modo de juego: <strong> Automático </strong> </h2>
+                            {% else %}
+                                <h2 class="media-heading font-weight-normal"> Modo de juego: <strong> Manual </strong> </h2>
+                            {% endif %}
+
+                        {% else %}
+                             <h2 class="media-heading font-weight-normal"> Estado de la sesión: <strong> <font color=#FF0000>No comenzado</font></strong> </h2>
+                        {% endif %}
+                        <hr class="my-4">
                         <ul>
-                        <li><h2 class="media-heading">Contraseña para acceder: <strong> {{ game.password }}</strong> </h2></li>
-                        <li><h2 class="media-heading">Numero de jugadores: <strong> {{ Val -1 }}</strong> </h2></li>
+                            <li><h2 class="media-heading font-weight-normal">Contraseña para acceder: <strong> {{ game.password }}</strong> </h2></li>
+                            <li><h2 class="media-heading font-weight-normal">Número de jugadores: <strong> {{ Val -1 }}</strong> </h2></li>
                         </ul>
                         <hr class="my-4">
-                    <h3 class="media-heading"><strong> <font color=#008000>Usuario administrador</font> </strong> {{ game.userCreator }}  </h3>
+                        <h3 class="media-heading font-weight-normal"> Usuario administrador:  <strong> {{ game.userCreator }} </strong> </h3>
 
-                {% set val = 0 %}
-                {% set Puntuation = 0 %}
+                        <hr class="my-4">
+                        <h3 class="media-heading font-weight-normal"> Usuarios participantes:  </h3>
+                        {% set val = 0 %}
+                        {% set Puntuation = 0 %}
 
-                    {% for User in users %}
+                        {% for User in users %}
 
                             {% set Val = Val +1 %}
 
-                        {# eliminate user creator#}
+                            {# eliminate user creator#}
                             {% if User != game.userCreator %}
 
 
-                            <ul>
-                                <div class="col-sm-10">
-                                    <h4 class="media-heading"><strong>  <li> {{ User.username}} </li> </strong> </h4>
-                                </div>
-                            </ul>
+                                <ul>
+                                    <div class="col-sm-10">
+                                        <h4 class="media-heading"><strong>  <li> {{ User.username}} </li> </strong> </h4>
+                                    </div>
+                                </ul>
                             {% endif %}
-                    {% endfor %}
+                        {% endfor %}
+
+
                     </div>
-            </div>
-        </div>
 
 
-
-
-                    <div class="col-xs-12">
-
-
-                {%  if game.started == 1 %}
-
-                    <a href="{{ path('gamesession.answergameauto', {idsession: game.id, idquestion: app.user.activeQuestion.id}) }}">EL JUEGO HA COMENZADO</a>
-                    <h4 class="media-heading"><strong>   Preguntas: </strong> </h4>
-                    </div>
 
                     {# for user creator#}
+
+                        {%  if game.started == 1 %}
+                    <div class="my-3 p-3 bg-white rounded shadow-sm">
+                            <h1 class=" border-gray pb-2 mb-0 text-center">Preguntas</h1>
+                    <div class="my-4">
+
+
                     {% for question in game.questionary.question %}
 
                         {% if app.user == game.userCreator %}
 
 
+
                             <ul>
-                                    <div class="col-sm-10">
-
-                                        {% if question.activated == 1 %}
-                                            <li class="list-group-item d-flex justify-content-between align-items-center">{{ question.id}} - {{ question.title }} - <a href="{{ path('gamesession.activateQuestion', {idsession: game.id, idquestion: question.id}) }}">
-                                            <button class="btn-primary"> Activar pregunta</button> </a>
 
 
-                                                {% set Val = 0 %}
-                                                {% for answer in answered %}
-
-                                                    {% if answer.question.id == question.id and answer.gamesession == game %}
-                                                        {% set Val = Val +1 %}
-
-                                                    {% endif %}
-
-                                                {% endfor %}
+                                    {% if question.activated == 1 %}
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">{{ question.id}} - {{ question.title }}
 
 
-                                            {% if app.user == game.userCreator %}
-                                            -Veces respondida: {{ Val }}</li>
+                                        <a href="{{ path('gamesession.activateQuestion', {idsession: game.id, idquestion: question.id}) }}">
+
+                                        {% if game.gameMode == "manual" %}
+                                        <button class="btn btn-outline-info"> Activar pregunta</button> </a>
                                         {% endif %}
 
-                                        {% if question == game.activatedQuestion %}
+                                        {% set Val = 0 %}
+                                        {% for answer in answered %}
 
-                                            <div class="p-3 mb-2 bg-success text-white"> ACTIVADA </div>
+                                            {% if answer.question.id == question.id and answer.gamesession == game %}
+                                                {% set Val = Val +1 %}
 
                                             {% endif %}
+
+                                        {% endfor %}
+
+
+                                        {% if app.user == game.userCreator %}
+                                            Veces respondida: {{ Val }}
                                         {% endif %}
-                                    </div>
-                                </ul>
+                                        </li>
+                                        {% if question == game.activatedQuestion %}
+                                            {% if game.gameMode == "manual" %}
+                                                 <div class="p-3 mb-2 bg-success text-white"> ACTIVADA </div>
+                                            {% endif %}
+                                        {% endif %}
+                                    {% endif %}
+
+                            </ul>
 
 
                         {% endif %}
 
                     {% endfor %}
 
+
                     {# for user#}
+
+
+                    {% endif %}
+
+                        {% set Val_game_auto = 0 %}
+
                     {% for question in game.questionary.question %}
 
-                        {% if app.user != game.userCreator %}
-                        {% if game.activatedQuestion == question %}
+                    {% if app.user != game.userCreator %}
+                        {% if game.gameMode == "auto" %}
 
-                        <ul>
+                        {% set Val_game_auto = 1 %}
 
+                        {% endif %}
 
-                                <a href="{{ path('gamesession.answergame', {idsession: game.id, idquestion: question.id}) }}">
-                                    {{ question.id}} - {{ question.title }}
-
-
-                                        {% set Val = 0 %}
-                                     {% for answer in answered %}
-
-                                        {% if answer.question.id == question.id %}
-                                         {% set Val = Val +1 %}
-                                         {% endif %}
-
-                                      {% endfor %}
+                    {% if game.activatedQuestion == question %}
 
 
 
-                                    </a>
+                        {% if game.gameMode == "manual" %}
 
-                                    {% if app.user == game.userCreator %}
-                                        -Veces respondida: {{ Val }}</li>
-                                    {% endif %}
 
-                                    {% for users in answered %}
+                        {% set Val_answer_founded = 0 %}
 
-                                    {% if app.user.id == users.user.id and question.id == users.question.id and users.gamesession == game %}
 
-                                        - RESPONDIDA </li>
+                        {% for users in answered %}
 
-                                    {% endif %}
-                                    {% endfor %}
+                            {% if app.user.id == users.user.id and question.id == users.question.id and users.gamesession == game %}
+
+                                <div class="my-3 p-3 bg-warning rounded shadow-sm text-center">
+                                <h5><a class="text-light" href="{{ path('gamesession.answergame', {idsession: game.id, idquestion: question.id}) }}">
+                                Ya has respondido la pregunta: {{ question.id}}
+                                        {% set Val_answer_founded = 1 %}
+                            {% endif %}
+                        {% endfor %}
+
+                             {% if Val_answer_founded == 0 %}
+                                  <div class="my-3 p-3 bg-success rounded shadow-sm text-center">
+                                     <h5><a href="{{ path('gamesession.answergame', {idsession: game.id, idquestion: question.id}) }}">
+                                  Contestar pregunta: {{ question.id}}
+
+                            {% endif %}
+
+
+                            </a>
+                            </h5>
                             </div>
-                        </ul>
-
-                     {% endif %}
-                     {% endif %}
-
-                    {% endfor %}
 
                     {% endif %}
 
+                </h5>
+                </ul>
+
+                {% endif %}
+                {% endif %}
+
+                {% endfor %}
+
+                 {% set Val_answer_in_db = 0 %}
+
+                   {% for users in answered %}
+
+                    {% if app.user.id == users.user.id  and users.gamesession == game %}
+
+                        {% set Val_answer_in_db = 1 %}
+
+                    {% endif %}
+                 {% endfor %}
+
+                    {% if Val_game_auto == 1 %}
+                        {% if Val_answer_in_db == 0%}
+                           <div class="my-3 p-3 bg-success rounded shadow-sm">
+                               <h2 class=" border-gray pb-2 mb-0 text-center"><a href="{{ path('gamesession.answergameauto', {idsession: game.id, idquestion: app.user.activeQuestion.id}) }}">
+                                Comenzar juego automatico</a></h2>
+                            </div>
+
+                        {% else %}
+
+                           <div class="my-3 p-3 bg-warning rounded shadow-sm">
+                               <h2 class=" border-gray pb-2 mb-0 text-center">
+                               Cuestionario ya contestado</a></h2>
+                           </div>
+
+                        {% endif %}
+
+                    {% endif %}
+
+
+                    <div class="text-center">
                     <button class="btn btn-info" value="Refresh Page" onClick="window.location.reload();"> Refrescar </button>
-
-
-                    {% if app.user == game.userCreator and game.closed == 1 %}
-
-                        <a class="btn btn-default" href="{{ path('questionary.show', {id: questionary.id}) }}">
-                            <span class="glyphicon glyphicon-menu-left"aria-hidden="true"></span>
-                            Volver al cuestionario
-                        </a>
-                    {% endif %}
+                    <a class="btn btn-primary" href="{{ path('questionary.list') }}">
+                        <span class="glyphicon glyphicon-menu-left"aria-hidden="true"></span>
+                        Volver al menú principal
+                    </a>
 
 
 
+                {% if app.user == game.userCreator and game.closed == 1 %}
 
-                {% endblock %}
+                    <a class="btn btn-default" href="{{ path('questionary.show', {id: questionary.id}) }}">
+                        <span class="glyphicon glyphicon-menu-left"aria-hidden="true"></span>
+                        Volver al cuestionario
+                    </a>
+                {% endif %}
+
+                </div>
             </div>
         </div>
+    </div>
     </div>
 
     {% include 'footer.html.twig' %}
 {% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

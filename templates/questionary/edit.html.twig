@@ -1,7 +1,13 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <h1>Cuestionario edit</h1>
+
+    <div class="container">
+    <div class="my-3 p-3 bg-white rounded shadow-sm">
+        <h1 class="border-bottom border-gray pb-2 mb-0 text-center">Editar cuestionario</h1>
+
+        <div class="my-4">
+
 
     {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
     {{ form_widget(form) }}
@@ -18,6 +24,7 @@
     </div>
 
     {{ form_end(form) }}
+    </div>
 
     {% include 'footer.html.twig' %}
 {% endblock %}

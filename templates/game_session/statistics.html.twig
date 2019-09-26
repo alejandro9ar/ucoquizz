@@ -260,23 +260,33 @@
 
 {% block body %}
 
-    <h1>Estadísticas </h1>
+    <div class="container">
+        <div class="my-3 p-3 bg-white rounded shadow-sm">
+            <h1 class=" border-gray pb-2 mb-0 text-center">Estadísticas</h1>
+
+        </div>
 
 
-    <h2>Clasificacion </h2>
+        <div class="my-3 p-3 bg-white rounded shadow-sm">
+            <h3 class=" border-gray pb-2 mb-0 text-center">Clasificación</h3>
+
+        </div>
     {% set position = 0 %}
+    <div class="table-responsive">
     <table class="table text-center">
+        <thead class="thead-light">
         <tr>
             <th class="active text-center">Puesto</th>
             <th class="active text-center">Nombre</th>
             <th class="active text-center">Puntuacion</th>
 
         </tr>
+        </thead>
         {% for clasification in clasification%}
 
             {% set position = position +1 %}
 
-            <tr>
+            <tr bgcolor="white">
                 <td> {{position}} </td>
 
                 <td> {{clasification.username}} </td>
@@ -288,10 +298,16 @@
         {% endfor %}
 
     </table>
+    </div>
 
-    <h2>Datos de preguntas </h2>
+        <div class="my-3 p-3 bg-white rounded shadow-sm">
+            <h3 class=" border-gray pb-2 mb-0 text-center">Datos de preguntas</h3>
+
+        </div>
     {% set position = 0 %}
-    <table class="table text-center">
+    <div class="table-responsive">
+    <table class="table text-center ">
+        <thead class="thead-light">
         <tr>
             <th class="active text-center">ID</th>
             <th class="active text-center">Nombre</th>
@@ -300,9 +316,10 @@
             <th class="active text-center">Duracion</th>
 
         </tr>
+        </thead>
         {% for questionData in questionOfUserData%}
 
-        <tr>
+        <tr bgcolor="white">
             <td>{{ questionData.id }}</td>
             <td> {{questionData.title}} </td>
 
@@ -319,16 +336,26 @@
         {% endfor %}
 
     </table>
+    </div>
 
 
+        <div class="my-3 p-3 bg-white rounded shadow-sm">
+            <h3 class=" border-gray pb-2 mb-0 text-center">Número de aciertos de usuario</h3>
 
-    <h2>Numero de ciertos de usuario. </h2>
-    <canvas id="myChart" width="400" height="400"></canvas>
+        </div>
 
-    <h2>Numero de aciertos en cada pregunta.</h2>
+    <canvas id="myChart" width="400" height="400" ></canvas>
+
+        <div class="my-3 p-3 bg-white rounded shadow-sm">
+            <h3 class=" border-gray pb-2 mb-0 text-center">Número de  aciertos en cada pregunta</h3>
+
+        </div>
     <canvas id="myChart2" width="400" height="400"></canvas>
 
-    <h2>Tiempo medio de respuesta de cada usuario. </h2>
+        <div class="my-3 p-3 bg-white rounded shadow-sm">
+            <h3 class=" border-gray pb-2 mb-0 text-center">Tiempo medio de respuesta por usuario</h3>
+
+        </div>
     <canvas id="myChart3" width="400" height="400"></canvas>
 
 
@@ -349,6 +376,8 @@
     </div>
     {% endif %}
 
+
+    </div>
     {% include 'footer.html.twig' %}
 
 {% endblock %}

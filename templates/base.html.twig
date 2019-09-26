@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html xmlns="http://www.w3.org/1999/html">
 <head>
     <title>{% block answertitle %}UCOQUIZZ{% endblock %}</title>
 
@@ -7,69 +7,80 @@
 
     {% block stylesheets %}{% endblock %}
 
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.3.1/sketchy/bootstrap.min.css">
-    <script src="https://kit.fontawesome.com/aa05c1fc8f.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+
+    <link rel="stylesheet" href="{{ asset('css/freelancer.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/freelancer.css') }}">
+
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="{{ asset('jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+
+    <!-- Plugin JavaScript -->
+    <script src="{{ asset('jquery/jquery.min.js') }}"></script>
+
+    <!-- Contact Form JavaScript -->
+    <script src="{{ asset('js/jqBootstrapValidation.js') }}"></script>
+    <script src="{{ asset('js/contact_me.js') }}"></script>
+
+    <!-- Custom scripts for this template -->
+    <script src="{{ asset('js/freelancer.min.js') }}"></script>
+
 </head>
-<body>
+<body class="bg-light">
 
-
-
-
-
-
-<nav class="navbar navbar-default " style="background-color: #e3f2fd;">
+<div class="bg-light">
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg bg-secondary text-uppercase fixed-top" id="mainNav">
     <div class="container-fluid">
-        <div class="navbar-header">
-            <a class="navbar-brand" href="{{ path('questionary.list') }}">UCOQUIZZ</a>
+        <a class="navbar-brand js-scroll-trigger" href="{{ path('questionary.list') }}">UCOQUIZZ</a>
+        <button class="navbar-toggler navbar-toggler-right text-uppercase font-weight-bold bg-primary text-white rounded" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+            Menu
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+            <ul class="navbar-nav m-md-auto">
+                <li class="nav-item mx-0 mx-lg-1 center">
+                    <a class="nav-link py-3 px-0 px-lg-3 rounded " href="{{ path('questionary.list') }}">Menú principal</a>
+                </li>
+                <li class="nav-item mx-0 mx-lg-1">
+                    <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="{{ path('fos_user_profile_show') }}">Perfil</a>
+                </li>
+                <li class="nav-item mx-0 mx-lg-1">
+                    <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="{{ path('questionary.create') }}">Crear cuestionario</a>
+                </li>
+                <li class="nav-item mx-0 mx-lg-1">
+                    <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="{{ path('gamesession.enterkey') }}">Introducir PIN</a>
+                </li>
+            </ul>
+
+            {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
+                <a class="text-primary">Registrado como: </a><a class="link text-light" href="{{ path('fos_user_profile_show') }}"> {{ app.User.username }}</a></a>
+                <a class="btn btn-outline-danger navbar-btn" href="{{ path('fos_user_security_logout') }}">Desconexión</a>
+            {% else %}
+                <a class="btn btn-light navbar-btn" href="{{ path('fos_user_security_login') }}">Identificarse</a>
+                <a class="btn btn-primary navbar-btn" href="{{ path('fos_user_registration_register') }}">Registrarse </a>
+            {% endif %}
         </div>
 
-
-        <ul class="nav nav-pills nav-justified">
-            <li class="nav-item">
-                <a class="nav-link"  href="{{ path('questionary.list') }}"><button type="button" class="btn btn-light"><i class="fas fa-home"></i>  Menú principal</button> </a>
-            </li>
-
-            <li role="nav-item">
-                <a class="nav-link" href="{{ path('fos_user_profile_show') }}"><button type="button" class="btn btn-light"><i class="fas fa-male"></i>  Perfil de usuario</button></a>
-            </li>
-
-            <li role="nav-item">
-                <a class="nav-link" href="{{ path('questionary.create') }}"><button type="button" class="btn btn-light"><i class="fas fa-plus"></i>  Crear cuestionario</button></a>
-            </li>
-
-            <li role="nav-item">
-                <a class="nav-link" href="{{ path('gamesession.enterkey') }}"><button type="button" class="btn btn-light"><i class="fas fa-play"></i>  Entrar a partida</button></a>
-            </li>
-
-        </ul>
-        <ul class="nav navbar-nav navbar-right">
-            <li>
-                <div>
-
-                    {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
-                        Registrado como: <a class="link" href="{{ path('fos_user_profile_show') }}">{{ app.User.username }}</a>
-                        <a class="btn btn-danger navbar-btn" href="{{ path('fos_user_security_logout') }}">Desconexión</a>
-                    {% else %}
-                        <a class="btn btn-light navbar-btn" href="{{ path('fos_user_security_login') }}">Identificarse</a>
-                        <a class="btn btn-primary navbar-btn" href="{{ path('fos_user_registration_register') }}">Registrarse </a>
-                    {% endif %}
-
-                    {#<a href="{{ path('fos_user_profile_show') }}" class="btn btn-default navbar-btn"> Perfil / Login</a>#}
-
-
-                </div>
-            </li>
-        </ul>
     </div>
-    </div>
+
+
+
+    {#<a href="{{ path('fos_user_profile_show') }}" class="btn btn-default navbar-btn"> Perfil / Login</a>#}
 
 </nav>
 
 
-
-<div class="container">
+<div class="container-fluid">
     {% block body %}{% endblock %}
 </div>
-{% block javascripts %}{% endblock %}
+</div>
+    {% block javascripts %}{% endblock %}
 </body>
+
 </html>
