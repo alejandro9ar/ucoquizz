@@ -64,6 +64,11 @@ class GameSession
      */
     private $UserCreator;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $gameMode;
+
 
     public function __construct()
     {
@@ -179,6 +184,18 @@ class GameSession
     public function setUserCreator(?User $UserCreator): self
     {
         $this->UserCreator = $UserCreator;
+
+        return $this;
+    }
+
+    public function getGameMode(): ?string
+    {
+        return $this->gameMode;
+    }
+
+    public function setGameMode(?string $gameMode): self
+    {
+        $this->gameMode = $gameMode;
 
         return $this;
     }

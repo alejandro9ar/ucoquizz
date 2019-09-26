@@ -115,14 +115,25 @@ class QuestionaryController extends AbstractController
      */
     public function show(Questionary $questionary): Response
     {
-        $question = $questionary->getQuestion();;
+        if ( $questionary->getType() == "público" or ($questionary->getType()=="privado" and $questionary->getUser()== $this->getUser())) {
+            $question = $questionary->getQuestion();
 
-        return $this->render('questionary/show.html.twig', [
-            'questionary' => $questionary,
-            'question' => $question,
+            return $this->render('questionary/show.html.twig', [
+                'questionary' => $questionary,
+                'question' => $question,
 
-        ]);
+            ]);
+
+        }else{
+
+            $this->addFlash('notice3', 'El cuestionario es privado, no puedes ver los detalles.');
+            return $this->redirectToRoute('questionary.list');
+
+
+        }
+
     }
+
 
     /**
      * Finds and displays a questionary entity.
@@ -424,8 +435,8 @@ class QuestionaryController extends AbstractController
         $activeSheet->setCellValue('D8', 'Respuesta 2');
         $activeSheet->setCellValue('E8', 'Respuesta 3');
         $activeSheet->setCellValue('F8', 'Respuesta 4');
-        $activeSheet->setCellValue('G8', 'Correcta');
-        $activeSheet->setCellValue('H8', 'Duración');
+        $activeSheet->setCellValue('H8', 'Correcta');
+        $activeSheet->setCellValue('G8', 'Duración');
 
         $questionDeleted = 0;
         for ($i = 0; $i <= $nquestion; ++$i) {
@@ -460,7 +471,7 @@ class QuestionaryController extends AbstractController
 
             }
         }
-        $documentname = "cuestionario_$iddocument"."_$namedocument".'.xlsx';
+        $documentname = "KAHOOT_cuestionario_$iddocument"."_$namedocument".'.xlsx';
         /*
          * Los siguientes encabezados son necesarios para que
          * el navegador entienda que no le estamos mandando
@@ -530,7 +541,7 @@ class QuestionaryController extends AbstractController
 
                 $question->setTitle($locations->getCellByColumnAndRow(1, $rowIndex));
 
-                $question->setDuration($locations->getCellByColumnAndRow(7, $rowIndex)->getFormattedValue());
+                $question->setDuration($locations->getCellByColumnAndRow(7, 2)->getFormattedValue());
 
                 $answer[0]->setAnswertitle($locations->getCellByColumnAndRow(2, $rowIndex));
                 if ($locations->getCellByColumnAndRow(6, $rowIndex)->getFormattedValue()==1){
@@ -579,7 +590,110 @@ class QuestionaryController extends AbstractController
             return $this->redirectToRoute('questionary.show', ['id' => $questionary->getId()]);
         }
 
-        return $this->render('questionary/export.html.twig', [
+        return $this->render('questionary/import.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+
+
+    /**
+     * Finds and displays a questionary entity.
+     *
+     * @Route("/importkahoot/{id}", name="questionary.importkahoot", requirements={"id":"\d+"})
+     *
+     * @param Request                $request
+     * @param EntityManagerInterface $em
+     * @param Questionary            $questionary
+     */
+    public function importkahoot(Request $request, EntityManagerInterface $em, Questionary $questionary)
+    {
+        $this->denyAccessUnlessGranted('QUESTIONARY_OWNER', $questionary);
+
+        $product = new FileUpdated();
+        $form = $this->createForm(FileImpType::class, $product);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            // $file stores the uploaded PDF file
+            /** @var symfony/http-foundation/File/File.php $file */
+            $file = $product->getFileupdate();
+
+            $fileName = $this->generateUniqueFileName().'.'.$file->guessExtension();
+
+            // Move the file to the directory where brochures are stored
+            try {
+                $reader = IOFactory::createReaderForFile($file);
+
+                $locations = $reader->load($file)->getSheet(0);
+            } catch (FileException $e) {
+                throw new InvalidArgumentException(sprintf('El fichero especificado (%s) no existe.', $file));
+            }
+
+            // updates the 'passwordgame' property to store the PDF file name
+            // instead of its contents
+
+            foreach ($locations->getRowIterator(9) as $location) {
+                $question = new Question();
+                $answer[0] = new Answer();
+                $answer[1] = new Answer();
+                $answer[2] = new Answer();
+                $answer[3] = new Answer();
+
+                $question->setActivated(1);
+                $rowIndex = $location->getRowIndex();
+
+                $question->setTitle($locations->getCellByColumnAndRow(2, $rowIndex));
+
+                $question->setDuration($locations->getCellByColumnAndRow(7, 9)->getFormattedValue());
+
+                $answer[0]->setAnswertitle($locations->getCellByColumnAndRow(3, $rowIndex));
+                if ($locations->getCellByColumnAndRow(8, $rowIndex)->getFormattedValue()==1){
+                    $answer[0]->setCorrect(1);
+                }else{
+                    $answer[0]->setCorrect(0);
+                }
+                $question->addAnswer($answer[0]);
+
+                $answer[1]->setAnswertitle($locations->getCellByColumnAndRow(4, $rowIndex));
+                if ($locations->getCellByColumnAndRow(8, $rowIndex)->getFormattedValue()==2){
+                    $answer[1]->setCorrect(1);
+                }else{
+                    $answer[1]->setCorrect(0);
+                }
+                $question->addAnswer($answer[1]);
+
+                $answer[2]->setAnswertitle($locations->getCellByColumnAndRow(5, $rowIndex));
+                if ($locations->getCellByColumnAndRow(8, $rowIndex)->getFormattedValue()==3){
+                    $answer[2]->setCorrect(1);
+                }else{
+                    $answer[2]->setCorrect(0);
+                }
+                $question->addAnswer($answer[2]);
+
+                $answer[3]->setAnswertitle($locations->getCellByColumnAndRow(6, $rowIndex));
+                if ($locations->getCellByColumnAndRow(8, $rowIndex)->getFormattedValue()==4){
+                    $answer[3]->setCorrect(1);
+                }else{
+                    $answer[3]->setCorrect(0);
+                }
+
+
+
+                $question->addAnswer($answer[3]);
+
+                $question->setQuestionary($questionary);
+
+                $em->persist($question);
+            }
+
+            $em->flush();
+
+            // ... persist the $product variable or any other work
+
+            return $this->redirectToRoute('questionary.show', ['id' => $questionary->getId()]);
+        }
+
+        return $this->render('questionary/import.html.twig', [
             'form' => $form->createView(),
         ]);
     }

@@ -140,21 +140,22 @@ class GameSessionController extends AbstractController
 
     public function play(EntityManagerInterface $em, Questionary $questionary): Response
     {
+
         $game = new GameSession();
-        $games= $this->getDoctrine()->getRepository(GameSession::class)->findAll();
+        $games = $this->getDoctrine()->getRepository(GameSession::class)->findAll();
         $user = $this->getUser();
 
-        $variable=0;
+        $gameFoundedForUser = 0;
 
         for ($i = 0; $i <= \count($games) - 1; ++$i) {
-            if ($games[$i]->getUserCreator() == $user ) {
-                $variable = 1;
-            }else{
-                $variable = 0;
+            if ($games[$i]->getUserCreator() == $user) {
+                $gameFoundedForUser = 1;
+            } else {
+                $gameFoundedForUser = 0;
             }
         }
 
-        if($variable==1){
+        if ($gameFoundedForUser == 1) {
             $this->addFlash('notice3', 'El usuario ya tiene una partida creada.');
             return $this->redirectToRoute('questionary.show', ['id' => $questionary->getId()]);
         }
@@ -162,28 +163,45 @@ class GameSessionController extends AbstractController
         $game->setQuestionary($questionary);
         $game->setUserCreator($user);
         $game->addUser($user);
-        $games= $this->getDoctrine()->getRepository(GameSession::class)->findAll();
+        $games = $this->getDoctrine()->getRepository(GameSession::class)->findAll();
 
         $user = $this->getUser()->getId();
 
-        for ($i = 0; $i <= \count($games) - 1; ++$i) {
-            $usersOfGame = $games[$i]->getUser();
+        if (($questionary->getType() == "privado" and $questionary->getUser() == $this->getUser()) or ($questionary->getType() == "público")){
+            for ($i = 0; $i <= \count($games) - 1; ++$i) {
+                $usersOfGame = $games[$i]->getUser();
 
-            for ($a = 0; $a <= \count($usersOfGame) - 1; ++$a) {
+                for ($a = 0; $a <= \count($usersOfGame) - 1; ++$a) {
 
-                if ($usersOfGame[$a]->getId() == $user) {
+                    if ($usersOfGame[$a]->getId() == $user) {
 
-                    $variable = $games[$i]->getId();
-                    return $this->redirectToRoute('gamesession.gamestarting', ['id' => $games[$i]->getId()]);
+                        $gameFoundedForUser = $games[$i]->getId();
+                        return $this->redirectToRoute('gamesession.gamestarting', ['id' => $games[$i]->getId()]);
+                    }
                 }
             }
+        }elseif($questionary->getType() == "privado" and $this->getUser()==$questionary->getUser()){
+            $this->addFlash('notice3', 'El cuestionario es privado, no puedes iniciar partida.');
+            return $this->redirectToRoute('questionary.show', ['id' => $questionary->getId()]);
+
+        }else{
+            $this->addFlash('notice3', 'El cuestionario es privado, no puedes iniciar partida.');
+            return $this->redirectToRoute('questionary.list');
+
         }
+
+        if($questionary->getQuestion()->isEmpty() == true){
+            $this->addFlash('notice3', 'No se puede iniciar partida porque este cuestionario no tiene preguntas');
+            return $this->redirectToRoute('questionary.show', ['id' => $questionary->getId()]);
+
+        }
+
         if ($questionary->getState() == '1') {
             $this->bus->dispatch(
                 new AddGameSessionMessage($game)
             );
         } else {
-            $this->addFlash('notice2', 'El cuestionario esta cerrado. No se puede comenzar una nueva partida');
+            $this->addFlash('notice3', 'El cuestionario esta cerrado. No se puede comenzar una nueva partida');
             return $this->redirectToRoute('questionary.show', ['id' => $questionary->getId()]);
         }
 
@@ -203,6 +221,8 @@ class GameSessionController extends AbstractController
     {
         $this->denyAccessUnlessGranted('GAME_DISPONIBLE', $game);
         //$users = $this->getDoctrine()->getRepository(User::class)->findAll();
+
+
         $questionary = $game->getQuestionary();
         $users = $game->getUser();
 
@@ -228,22 +248,56 @@ class GameSessionController extends AbstractController
     {
         $this->denyAccessUnlessGranted('GAME_DISPONIBLE', $game);
         //$users = $this->getDoctrine()->getRepository(User::class)->findAll();
-        $questionary = $game->getQuestionary();
-        $users = $game->getUser();
 
-        $answer = $this->getDoctrine()->getRepository(PlayerAnswer::class)->findall();
+        if($game->getUserCreator() == $this->getUser() and $game->getStarted() == 0) {
+            $questionary = $game->getQuestionary();
+            $users = $game->getUser();
 
-        $game->setStarted(1);
-        $em->persist($game);
-        $em->flush();
+            $answer = $this->getDoctrine()->getRepository(PlayerAnswer::class)->findall();
 
-        return $this->render('game_session/gamedisponible.html.twig', [
-            'users' => $users,
-            'questionary' => $questionary,
-            'game' => $game,
-            'answered' => $answer,
+            $questionary=$game->getQuestionary();
+            $questions=$questionary->getQuestion();
 
-        ]);
+            $checkerQuestionAvailable = 0;
+
+            $questionToActive = new Question();
+
+            if( $questions->isEmpty()==false) {
+                for ($i = 0; $i <= \count($questions) - 1; ++$i) {
+                    if ($questions[$i]->getActivated() == 1) {
+                        $checkerQuestionAvailable = 1;
+                        $questionToActive = $questions[$i];
+                    }
+                }
+                if ($questionToActive != null){
+                    $game->setActivatedQuestion($questionToActive);
+
+                }
+            }
+
+            if ($checkerQuestionAvailable == 1) {
+                $game->setStarted(1);
+                $game->setGameMode("manual");
+                $em->persist($game);
+                $em->flush();
+
+            }else{
+                $this->addFlash('notice3', 'No hay ninguna pregunta disponible');
+
+            }
+            return $this->render('game_session/gamedisponible.html.twig', [
+                'users' => $users,
+                'questionary' => $questionary,
+                'game' => $game,
+                'answered' => $answer,
+
+            ]);
+        }else{
+            $this->addFlash('notice3', 'Solo el usuario creador de la sesión puede iniciar partida');
+            return $this->redirectToRoute('gamesession.gamestarting', ['id' => $game->getId()]);
+
+
+        }
     }
 
     /**
@@ -257,6 +311,8 @@ class GameSessionController extends AbstractController
     {
         $this->denyAccessUnlessGranted('GAME_DISPONIBLE', $game);
         //$users = $this->getDoctrine()->getRepository(User::class)->findAll();
+
+        if($game->getUserCreator() == $this->getUser() and $game->getStarted() == 0) {
         $questionary = $game->getQuestionary();
         $users = $game->getUser();
 
@@ -267,15 +323,35 @@ class GameSessionController extends AbstractController
         $questionary=$game->getQuestionary();
         $questions=$questionary->getQuestion();
 
-        if( $questions->isEmpty()==false)
-        for ($i = 0; $i <= \count($users) - 1; ++$i) {
-            $users[$i]->setActiveQuestion($questions[1]);
+        $checkerQuestionAvailable = 0;
+
+        $questionToActive = new Question();
+
+        if( $questions->isEmpty()==false) {
+            for ($i = 0; $i <= \count($questions) - 1; ++$i) {
+                if ($questions[$i]->getActivated() == 1) {
+                    $checkerQuestionAvailable = 1;
+                    $questionToActive = $questions[$i];
+                }
+            }
+            if ($questionToActive != null){
+                for ($i = 0; $i <= \count($users) - 1; ++$i) {
+
+                    $users[$i]->setActiveQuestion($questionToActive);
+                }
+             }
         }
 
-        $game->setStarted(1);
-        $em->persist($game);
-        $em->flush();
+        if ($checkerQuestionAvailable == 1) {
+            $game->setStarted(1);
+            $game->setGameMode("auto");
+            $em->persist($game);
+            $em->flush();
 
+        }else{
+                $this->addFlash('notice3', 'No hay ninguna pregunta disponible');
+
+        }
         return $this->render('game_session/gamedisponible.html.twig', [
             'users' => $users,
             'questionary' => $questionary,
@@ -283,6 +359,13 @@ class GameSessionController extends AbstractController
             'answered' => $answer,
 
         ]);
+
+
+        }else{
+            $this->addFlash('notice3', 'Solo el usuario creador de la sesión puede iniciar partida o el juego ya ha empezado');
+            return $this->redirectToRoute('gamesession.gamestarting', ['id' => $game->getId()]);
+
+        }
     }
 
     /**
@@ -295,24 +378,31 @@ class GameSessionController extends AbstractController
     public function gameclose(GameSession $game, EntityManagerInterface $em, $id): Response
     {
 
-        $users = $this->getDoctrine()->getRepository(User::class)->findBy(array( 'gameSession' => $id ));
+        if($game->getUserCreator() == $this->getUser()) {
+            $users = $this->getDoctrine()->getRepository(User::class)->findBy(array( 'gameSession' => $id ));
 
-        for ($i = 0; $i <= \count($users) - 1; ++$i) {
+            for ($i = 0; $i <= \count($users) - 1; ++$i) {
 
-            $actualGamesession = $users[$i]->getGameSession();
-            $users[$i]->setActiveQuestion(null);
-            $users[$i]->setGameSession(null);
-            $em->persist($users[$i]);
+                $actualGamesession = $users[$i]->getGameSession();
+                $users[$i]->setActiveQuestion(null);
+                $users[$i]->setGameSession(null);
+                $em->persist($users[$i]);
+
+            }
+            $game->setUserCreator(null);
+            $game->setClosed(1);
+            $em->persist($game);
+
+            $em->flush();
+
+
+            return $this->redirectToRoute('gamesession.stats', ['id' => $actualGamesession->getId()]);
+
+        }else{
+            $this->addFlash('notice3', 'Solo el usuario creador de la sesión puede cerrar partida');
+            return $this->redirectToRoute('gamesession.gamestarting', ['id' => $game->getId()]);
 
         }
-        $game->setUserCreator(null);
-        $game->setClosed(1);
-        $em->persist($game);
-
-        $em->flush();
-
-
-        return $this->redirectToRoute('gamesession.stats', ['id' => $actualGamesession->getId()]);
     }
 
     /**
@@ -391,144 +481,153 @@ class GameSessionController extends AbstractController
         $actualGameSession = $this->getDoctrine()->getRepository(GameSession::class)->findOneBy(array( 'id' => $idsession) );
 
 
-        //$this->denyAccessUnlessGranted('GAME_DISPONIBLE', $actualGameSession);
-
-        $answerQuestionFounded=0;
-        for ($i = 0; $i <= \count($questionUser) - 1; ++$i) {
-            if ($questionUser[$i]->getQuestion()->getId() == $idquestion and $questionUser[$i]->getAnsweredAt() != null and $questionUser[$i]->getGameSession()->getId() == $actualGameSession->getId() )
-                $answerQuestionFounded = 1 ;
-        }
-
-        if($answerQuestionFounded == 0) {
-            $gamesession = $this->getDoctrine()->getRepository(GameSession::class)->findAll();
-            $question = $this->getDoctrine()->getRepository(Question::class)->findOneBy(array('id' => $idquestion));
-            $answerOfQuestion = $question->getAnswer();
+        $this->denyAccessUnlessGranted('GAME_DISPONIBLE', $actualGameSession);
 
 
-            for ($i = 0; $i <= \count($gamesession) - 1; ++$i) {
-                if ($gamesession[$i]->getId() == $idsession) {
-                    $questionary = $gamesession[$i]->getQuestionary();
+        if( $actualGameSession->getActivatedQuestion() != null  ){
+        if($actualGameSession->getActivatedQuestion()->getId() == $idquestion ){
+            $answerQuestionFounded=0;
+            for ($i = 0; $i <= \count($questionUser) - 1; ++$i) {
+                if ($questionUser[$i]->getQuestion()->getId() == $idquestion and $questionUser[$i]->getAnsweredAt() != null and $questionUser[$i]->getGameSession()->getId() == $actualGameSession->getId() )
+                    $answerQuestionFounded = 1 ;
+            }
+
+            if($answerQuestionFounded == 0) {
+                $gamesession = $this->getDoctrine()->getRepository(GameSession::class)->findAll();
+                $question = $this->getDoctrine()->getRepository(Question::class)->findOneBy(array('id' => $idquestion));
+                $answerOfQuestion = $question->getAnswer();
+
+
+                for ($i = 0; $i <= \count($gamesession) - 1; ++$i) {
+                    if ($gamesession[$i]->getId() == $idsession) {
+                        $questionary = $gamesession[$i]->getQuestionary();
+                    }
                 }
-            }
 
-            $form = $this->createForm(PlayerAnswerType::class, $answerPlayer);
-            $form->handleRequest($request);
-
-
-            // FIND OR CREATE
-
-            $answer = $this->getDoctrine()->getRepository(PlayerAnswer::class)->findOneBy(array('user' => $this->getUser()->getId(), 'question' => $question, 'gamesession' => $actualGameSession));
-
-            if ($answer == false) {
-                $answer = new PlayerAnswer();
-                $answer->setPlayerAnswer('a');
-                $answer->setAnswered(0);
-
-                $questionWasStartedAt = new \DateTime("now");
-                $answer->setStartedAt($questionWasStartedAt);
-                $answer->setUser($this->getUser());
-                $answer->setGamesession($actualGameSession);
-                $answer->setQuestionary($questionary);
-                $answer->setQuestion($question);
-
-                $em->persist($answer);
-                $em->flush();
-            }
-            // save if found is false
+                $form = $this->createForm(PlayerAnswerType::class, $answerPlayer);
+                $form->handleRequest($request);
 
 
+                // FIND OR CREATE
 
 
-            if ($form->isSubmitted() && $form->isValid()) {
-                if(($answerPlayer->getAnswer1() == 1 && $answerPlayer->getAnswer2()== 0 && $answerPlayer->getAnswer3() == 0 && $answerPlayer->getAnswer4() ==0)
-                    || ($answerPlayer->getAnswer1() == 0 && $answerPlayer->getAnswer2()== 1 && $answerPlayer->getAnswer3() == 0 && $answerPlayer->getAnswer4() ==0)
-                    || ($answerPlayer->getAnswer1() == 0 && $answerPlayer->getAnswer2()== 0 && $answerPlayer->getAnswer3() == 2 && $answerPlayer->getAnswer4() ==0)
-                    || ($answerPlayer->getAnswer1() == 0 && $answerPlayer->getAnswer2()== 0 && $answerPlayer->getAnswer3() == 0 && $answerPlayer->getAnswer4() ==3)
-                    || ($answerPlayer->getAnswer1() == 0 && $answerPlayer->getAnswer2()== 0 && $answerPlayer->getAnswer3() == 0 && $answerPlayer->getAnswer4() ==0)) {
+                $answer = $this->getDoctrine()->getRepository(PlayerAnswer::class)->findOneBy(array('user' => $this->getUser()->getId(), 'question' => $question, 'gamesession' => $actualGameSession));
 
+                if ($answer == false) {
+                    $answer = new PlayerAnswer();
+                    $answer->setPlayerAnswer('a');
+                    $answer->setAnswered(0);
 
-                    $answer->setAnswered(true);
+                    $questionWasStartedAt = new \DateTime("now");
+                    $answer->setStartedAt($questionWasStartedAt);
+                    $answer->setUser($this->getUser());
+                    $answer->setGamesession($actualGameSession);
+                    $answer->setQuestionary($questionary);
+                    $answer->setQuestion($question);
 
-                    if ($answerPlayer->getAnswer1() == 1) {
-                        $answer->setPlayerAnswer(1);
-                    }
-                    elseif ($answerPlayer->getAnswer2() == 1) {
-                        $answer->setPlayerAnswer(2);
-                    }
-
-                    elseif ($answerPlayer->getAnswer3() == 1) {
-                        $answer->setPlayerAnswer(3);
-                    }
-                    elseif ($answerPlayer->getAnswer4() == 1) {
-                        $answer->setPlayerAnswer(4);
-                    }else{
-                        $answer->setPlayerAnswer(0);
-                    }
-
-                    //pass to second diference between $questionWasStartedAt and $questionWasAnsweredAt
-                    $questionWasAnsweredAt = new \DateTime("now");
-                    $answer->setAnsweredAt($questionWasAnsweredAt);
-
-                    $seconds = $questionWasAnsweredAt->diff($answer->getStartedAt());
-
-                    $seconds = $seconds->format('%s')+($seconds->format('%i')*60) ;
-
-                    $puntuation = 100 / (0.25 * $seconds);
-
-
-                    $answer->setDurationOfAnswer($seconds);
-
-                    if ($seconds > $answer->getQuestion()->getDuration()) {
-                        $this->addFlash('notice7', 'Pregunta fallida. Has superado el tiempo de respuesta');
-                        $answer->setPuntuation(0);
-                        $answer->setCorrect(false);
-                    } elseif ($answer->getPlayerAnswer() == 1 and $answerOfQuestion[0]->getCorrect() == 1) {
-                        $this->addFlash('notice8', '¡Respuesta correcta!');
-                        $answer->setPuntuation($puntuation);
-                        $answer->setCorrect(true);
-                    } elseif ($answer->getPlayerAnswer() == 2 and $answerOfQuestion[1]->getCorrect() == 1) {
-                        $this->addFlash('notice8', '¡Respuesta correcta!');
-                        $answer->setPuntuation($puntuation);
-                        $answer->setCorrect(true);
-                    } elseif ($answer->getPlayerAnswer() == 3 and $answerOfQuestion[2]->getCorrect() == 1) {
-                        $this->addFlash('notice8', '¡Respuesta correcta!');
-                        $answer->setPuntuation($puntuation);
-                        $answer->setCorrect(true);
-                    } elseif ($answer->getPlayerAnswer() == 4 and $answerOfQuestion[3]->getCorrect() == 1) {
-                        $this->addFlash('notice8', '¡Respuesta correcta!');
-                        $answer->setPuntuation($puntuation);
-                        $answer->setCorrect(true);
-                    } else {
-                        $this->addFlash('notice7', '¡Respuesta fallida!');
-                        $answer->setPuntuation(0);
-                        $answer->setCorrect(false);
-
-                    }
-
-                    $answer->setAnswered(1);
                     $em->persist($answer);
                     $em->flush();
-
-                    return $this->redirectToRoute('gamesession.gamestarting', ['id' => $idsession]);
                 }
-                else{
-                    $this->addFlash('notice', 'Solo puede seleccionar una respuesta correcta');
+                // save if found is false
 
-                    return $this->render('game_session/answerplayer.html.twig', [
-                        'form' => $form->createView(),
-                        'question' => $question,
-                        'game' => $actualGameSession,
 
-                    ]);
 
+
+                if ($form->isSubmitted() && $form->isValid()) {
+                    if(($answerPlayer->getAnswer1() == 1 && $answerPlayer->getAnswer2()== 0 && $answerPlayer->getAnswer3() == 0 && $answerPlayer->getAnswer4() ==0)
+                        || ($answerPlayer->getAnswer1() == 0 && $answerPlayer->getAnswer2()== 1 && $answerPlayer->getAnswer3() == 0 && $answerPlayer->getAnswer4() ==0)
+                        || ($answerPlayer->getAnswer1() == 0 && $answerPlayer->getAnswer2()== 0 && $answerPlayer->getAnswer3() == 2 && $answerPlayer->getAnswer4() ==0)
+                        || ($answerPlayer->getAnswer1() == 0 && $answerPlayer->getAnswer2()== 0 && $answerPlayer->getAnswer3() == 0 && $answerPlayer->getAnswer4() ==3)
+                        || ($answerPlayer->getAnswer1() == 0 && $answerPlayer->getAnswer2()== 0 && $answerPlayer->getAnswer3() == 0 && $answerPlayer->getAnswer4() ==0)) {
+
+
+                        $answer->setAnswered(true);
+
+                        if ($answerPlayer->getAnswer1() == 1) {
+                            $answer->setPlayerAnswer(1);
+                        }
+                        elseif ($answerPlayer->getAnswer2() == 1) {
+                            $answer->setPlayerAnswer(2);
+                        }
+
+                        elseif ($answerPlayer->getAnswer3() == 1) {
+                            $answer->setPlayerAnswer(3);
+                        }
+                        elseif ($answerPlayer->getAnswer4() == 1) {
+                            $answer->setPlayerAnswer(4);
+                        }else{
+                            $answer->setPlayerAnswer(0);
+                        }
+
+                        //pass to second diference between $questionWasStartedAt and $questionWasAnsweredAt
+                        $questionWasAnsweredAt = new \DateTime("now");
+                        $answer->setAnsweredAt($questionWasAnsweredAt);
+
+                        $seconds = $questionWasAnsweredAt->diff($answer->getStartedAt());
+
+                        $seconds = $seconds->format('%s')+($seconds->format('%i')*60) ;
+
+                        $puntuation = 100 / (0.25 * $seconds);
+
+
+                        $answer->setDurationOfAnswer($seconds);
+
+                        if ($seconds > $answer->getQuestion()->getDuration()) {
+                            $this->addFlash('notice7', 'Pregunta fallida. Has superado el tiempo de respuesta');
+                            $answer->setPuntuation(0);
+                            $answer->setCorrect(false);
+                        } elseif ($answer->getPlayerAnswer() == 1 and $answerOfQuestion[0]->getCorrect() == 1) {
+                            $this->addFlash('notice8', '¡Respuesta correcta!');
+                            $answer->setPuntuation($puntuation);
+                            $answer->setCorrect(true);
+                        } elseif ($answer->getPlayerAnswer() == 2 and $answerOfQuestion[1]->getCorrect() == 1) {
+                            $this->addFlash('notice8', '¡Respuesta correcta!');
+                            $answer->setPuntuation($puntuation);
+                            $answer->setCorrect(true);
+                        } elseif ($answer->getPlayerAnswer() == 3 and $answerOfQuestion[2]->getCorrect() == 1) {
+                            $this->addFlash('notice8', '¡Respuesta correcta!');
+                            $answer->setPuntuation($puntuation);
+                            $answer->setCorrect(true);
+                        } elseif ($answer->getPlayerAnswer() == 4 and $answerOfQuestion[3]->getCorrect() == 1) {
+                            $this->addFlash('notice8', '¡Respuesta correcta!');
+                            $answer->setPuntuation($puntuation);
+                            $answer->setCorrect(true);
+                        } else {
+                            $this->addFlash('notice7', '¡Respuesta fallida!');
+                            $answer->setPuntuation(0);
+                            $answer->setCorrect(false);
+
+                        }
+
+                        $answer->setAnswered(1);
+                        $em->persist($answer);
+                        $em->flush();
+
+                        return $this->redirectToRoute('gamesession.gamestarting', ['id' => $idsession]);
+                    }
+                    else{
+                        $this->addFlash('notice', 'Solo puede seleccionar una respuesta correcta');
+
+                        return $this->render('game_session/answerplayer.html.twig', [
+                            'form' => $form->createView(),
+                            'question' => $question,
+                            'game' => $actualGameSession,
+
+                        ]);
+
+                    }
                 }
+
+            }else{
+                $this->addFlash('notice3', 'Ya has respondido la pregunta');
+                return $this->redirectToRoute('gamesession.gamestarting', ['id' => $idsession]);
             }
 
         }else{
-            $this->addFlash('notice4', 'Ya has respondido la pregunta');
+            $this->addFlash('notice3', 'Esta pregunta no está activada en la sesión');
             return $this->redirectToRoute('gamesession.gamestarting', ['id' => $idsession]);
         }
-
+        }
 
         return $this->render('game_session/answerplayer.html.twig', [
             'form' => $form->createView(),
@@ -602,7 +701,7 @@ class GameSessionController extends AbstractController
                 $em->persist($answer);
                 $em->flush();
             }
-            // save if found is false
+            // save falseif found is false
 
 
 
@@ -684,7 +783,7 @@ class GameSessionController extends AbstractController
                     for ($i = 0; $i <= \count($questionGameSession) - 1; ++$i) {
                         $checker = $this->getDoctrine()->getRepository(PlayerAnswer::class)->findOneBy(array('gamesession'=>$actualGameSession, 'question' => $questionGameSession[$i], 'user'=>$user));
 
-                            if($checker == false and $question  ){
+                            if($checker == false and $questionGameSession[$i]->getActivated() == 1  ){
                                 $user->setActiveQuestion($questionGameSession[$i]);
 
                                 $em->persist($user);
@@ -719,6 +818,7 @@ class GameSessionController extends AbstractController
         }
 
 
+
         return $this->render('game_session/answerplayer.html.twig', [
             'form' => $form->createView(),
             'question' => $question,
@@ -739,17 +839,21 @@ class GameSessionController extends AbstractController
      */
     public function activateQuestion (Request $request, EntityManagerInterface $em, $idsession, $idquestion): Response
     {
-        $question = $this->getDoctrine()->getRepository(Question::class)->findOneBy(array( 'id' => $idquestion) );
-        $gamesesion = $this->getDoctrine()->getRepository(GameSession::class)->findOneBy(array( 'id' => $idsession) );
+        $question = $this->getDoctrine()->getRepository(Question::class)->findOneBy(array('id' => $idquestion));
+        $gamesesion = $this->getDoctrine()->getRepository(GameSession::class)->findOneBy(array('id' => $idsession));
 
-
+        if ($question->getActivated() == 1 and $gamesesion->getUserCreator()== $this->getUser()){
             $gamesesion->setActivatedQuestion($question);
 
-                $em->persist($gamesesion);
-                $em->flush();
+            $em->persist($gamesesion);
+            $em->flush();
 
+        }else{
 
+            $this->addFlash('notice7', 'Esta pregunta está eliminada del cuestionario o no eres el administrador de la partida.');
+        }
                 return $this->redirectToRoute('gamesession.gamestarting', ['id' => $idsession]);
+
     }
 
 
@@ -758,7 +862,8 @@ class GameSessionController extends AbstractController
      */
     public function stats($id)
     {
-
+        $actualGameSession = $this->getDoctrine()->getRepository(GameSession::class)->findOneBy(array( 'id' => $id) );
+        //$this->denyAccessUnlessGranted('GAME_DISPONIBLE', $actualGameSession);
 
         $clasification = $this->getDoctrine()->getRepository(PlayerAnswer::class)->findByMorePutuation($id);
         $questionOfUserData = $this->getDoctrine()->getRepository(PlayerAnswer::class)->findByQuestionData($id,$this->getUser()->getId());
@@ -832,6 +937,7 @@ class GameSessionController extends AbstractController
         ];*/
 
         $data3 = $this->getDoctrine()->getRepository(PlayerAnswer::class)->findByAverageDurationOfAnswer($id);
+
 
         return new JsonResponse(
             $data3,

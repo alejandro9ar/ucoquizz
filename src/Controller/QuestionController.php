@@ -181,6 +181,9 @@ class QuestionController extends AbstractController
      */
     public function delete(Request $request, Question $question, EntityManagerInterface $em): Response
     {
+
+        $this->denyAccessUnlessGranted('QUESTION_OWNER', $question);
+
         $questionary = $question->getQuestionary();
 
         $answer = $question->getAnswer();
