@@ -83,27 +83,32 @@
                             {% for game in sessions %}
 
 
-                                {% if game.user.id == app.user.id %}
+
                                     <tr bgcolor="white">
                                     <td>
+                                        {% if game != 0 %}
+                                            {{ game }}
 
-                                            {{ game.gamesession.questionary.id }}
-
+                                        {% endif %}
                                     </td>
 
                                         <td>
-
-                                            {{ game.gamesession.questionary.name}}
-
+                                            {% if game != 0 %}
+                                            {{ game }}
+                                            {% else %}
+                                                No hay partidas disponibles
+                                            {% endif %}
                                         </td>
 
                                         <td>
-                                            <a href="{{ path('gamesession.stats', {id: game.gamesession.id }) }}">
+                                            {% if game != 0 %}
+                                            <a href="{{ path('gamesession.stats', {id: game }) }}">
                                                 Ver estadísticas
                                             </a>
+
+                                            {% endif %}
                                         </td>
                                     </tr>
-                                {% endif %}
 
                             {% endfor %}
                         </table>

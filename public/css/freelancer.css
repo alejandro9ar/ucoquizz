@@ -5037,7 +5037,7 @@ a.badge-dark:focus, a.badge-dark.focus {
 
 .progress-bar-striped {
   background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
-  background-size: 1rem 1rem;
+  background-size: 100% 100%
 }
 
 .progress-bar-animated {
@@ -5127,6 +5127,7 @@ a.badge-dark:focus, a.badge-dark.focus {
   margin-right: -0.125rem;
   margin-bottom: 0;
 }
+
 
 .list-group-horizontal .list-group-item:first-child {
   border-top-left-radius: 0.5rem;
@@ -6266,7 +6267,7 @@ button.bg-danger:focus {
 }
 
 .bg-light {
-  background-color: #f8f9fa !important;
+  background-color: #e9f8ff !important;
 }
 
 a.bg-light:hover, a.bg-light:focus,

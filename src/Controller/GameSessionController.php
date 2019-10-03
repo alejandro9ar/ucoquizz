@@ -318,6 +318,7 @@ class GameSessionController extends AbstractController
 
         //to eliminate repeat
         $cont=0;
+        $sessionId[0]=0;
         for ($i = 0; $i <= \count($allSessions) - 1; ++$i) {
 
             if ($allSessions[$i]->getUser() == $this->getUser()) {
@@ -326,7 +327,9 @@ class GameSessionController extends AbstractController
             }
         }
 
+
         $sessionsWithoutRepetition= array_unique($sessionId);
+
 
         return $this->render('bundles/FOSUserBundle/Profile/showlastgames.html.twig', [
             'sessions' => $sessionsWithoutRepetition
