@@ -318,7 +318,7 @@ class GameSessionController extends AbstractController
 
         //to eliminate repeat
         $cont=0;
-        $sessionId[0]=0;
+
         for ($i = 0; $i <= \count($allSessions) - 1; ++$i) {
 
             if ($allSessions[$i]->getUser() == $this->getUser()) {
@@ -327,6 +327,9 @@ class GameSessionController extends AbstractController
             }
         }
 
+        if($cont == 0){
+            $sessionId[0]=0;
+        }
 
         $sessionsWithoutRepetition= array_unique($sessionId);
 
@@ -660,6 +663,7 @@ class GameSessionController extends AbstractController
                             'question' => $question,
                             'game' => $actualGameSession,
 
+
                         ]);
 
                     }
@@ -697,7 +701,7 @@ class GameSessionController extends AbstractController
     public function answergameauto (Request $request, EntityManagerInterface $em, $idsession, $idquestion): Response
     {
 
-
+        $checkerAnswer=0;
         $answerPlayer = new PlayerAnswerDTO();
         $questionary = new Questionary();
         //question of logged user
@@ -792,7 +796,7 @@ class GameSessionController extends AbstractController
 
                     $answer->setDurationOfAnswer($seconds);
 
-                    $checkerAnswer=0;
+
                     if ($seconds > $answer->getQuestion()->getDuration()) {
                         $checkerAnswer=1;
                         $answer->setPuntuation(0);
@@ -852,8 +856,8 @@ class GameSessionController extends AbstractController
 
                         'question' => $question,
                         'game' => $actualGameSession,
-                        'answer' =>$checkerAnswer,
-                        'checker' =>$answer,
+                        'answer' =>$answer,
+                        'checker' =>$checkerAnswer,
                     ]);
 
                 }

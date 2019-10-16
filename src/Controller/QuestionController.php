@@ -171,7 +171,7 @@ class QuestionController extends AbstractController
     /**
      * Delete a question entity.
      *
-     * @Route("question/{id}/delete", name="question.delete", methods="DELETE", requirements={"id":"\d+"})
+     * @Route("question/{id}/delete", name="question.delete", requirements={"id":"\d+"})
      *
      * @param Request                $request
      * @param Question               $question
