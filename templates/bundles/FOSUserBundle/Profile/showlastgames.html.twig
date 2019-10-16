@@ -81,9 +81,6 @@
                             </thead>
 
                             {% for game in sessions %}
-
-
-
                                     <tr bgcolor="white">
                                     <td>
                                         {% if game != 0 %}
@@ -93,8 +90,10 @@
                                     </td>
 
                                         <td>
+
                                             {% if game != 0 %}
-                                            {{ game }}
+                                                    {{ game }}
+
                                             {% else %}
                                                 No hay partidas disponibles
                                             {% endif %}
